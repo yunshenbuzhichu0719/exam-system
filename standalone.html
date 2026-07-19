@@ -1679,7 +1679,10 @@ function renderRecord() {
       let rightMark = r.ok ? "✓" : "✗";
       let answerMark;
       if (t === "judge") {
-        answerMark = `（${rightMark}）`;
+        let correctAns = q.answer && q.answer.trim().toUpperCase();
+        let isCorrectStatement = correctAns === "A" || correctAns === "正确" || correctAns === "TRUE" || correctAns === "T";
+        let displayAns = isCorrectStatement ? "✓" : "×";
+        answerMark = `（${displayAns}）${rightMark}`;
       } else if (r.isObj) {
         answerMark = `（${esc(ua)||"未答"}）${r.ok ? "" : rightMark}`;
       } else {
