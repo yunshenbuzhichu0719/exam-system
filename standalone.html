@@ -3,68 +3,383 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>湖南绿盾卫士检测技术有限公司考试系统</title>
+<title>湖南绿盾卫士检测技术有限公司 - 在线考试系统</title>
 <style>
-* { box-sizing: border-box; }
-body { font-family: "Microsoft YaHei", "PingFang SC", sans-serif; margin: 0; background: #f4f6f9; color: #222; }
-.wrap { max-width: 860px; margin: 0 auto; padding: 24px 16px 60px; }
-.card { background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
-h1,h2,h3 { margin-top: 0; }
-input, select, textarea, button { font-family: inherit; font-size: 15px; }
-input[type=text], input[type=password], select, textarea {
-  width: 100%; padding: 10px 12px; border: 1px solid #d0d7de; border-radius: 8px; margin: 6px 0 14px;
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#1a3a6b;
+  --primary-light:#2a5aaa;
+  --accent:#c9a84c;
+  --accent-light:#f0d080;
+  --bg:#e8edf4;
+  --card:#fff;
+  --text:#1a1a2e;
+  --text-light:#5a6a7a;
+  --border:#d0d8e4;
+  --success:#1a8a4a;
+  --danger:#c0392b;
+  --warn:#e67e22;
 }
-button, .btn { background: #2563eb; color: #fff; border: 0; border-radius: 8px; padding: 10px 18px; cursor: pointer; }
-button:hover { background: #1d4ed8; }
-.btn-ghost { background: #e5e7eb; color: #222; }
-.brand { font-size: 13px; color: #2563eb; font-weight: 700; letter-spacing: .5px; margin-bottom: 6px; }
-.module { margin-top: 24px; }
-.module-title { font-size: 19px; border-left: 4px solid #2563eb; padding-left: 10px; margin-bottom: 12px; }
-.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
-.chip { background: #eef2ff; color: #4338ca; border: 1px solid #c7d2fe; border-radius: 999px; padding: 6px 14px; cursor: pointer; font-size: 13px; }
-.chip.active { background: #2563eb; color: #fff; border-color: #2563eb; }
-.papers { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.paper-card { border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; background: #fafbff; }
-.paper-name { font-weight: 700; font-size: 16px; margin-bottom: 6px; }
-.paper-meta { font-size: 13px; color: #475569; margin-bottom: 4px; }
-.paper-sub { font-size: 12px; color: #94a3b8; margin-bottom: 10px; }
-.q { border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; margin: 14px 0; }
-.q .stem { font-weight: 600; margin-bottom: 10px; }
-.opt { display: block; padding: 8px 10px; border-radius: 8px; }
-.opt:hover { background: #f1f5f9; }
-.opt input { width: auto; margin-right: 8px; vertical-align: middle; }
-.tag { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 999px; background: #eef2ff; color: #4338ca; margin-left: 8px; }
-.score-badge { float: right; font-weight: 700; }
-.ok { color: #16a34a; } .bad { color: #dc2626; }
-.ans-box { background: #f8fafc; border-left: 3px solid #94a3b8; padding: 8px 12px; margin: 8px 0; border-radius: 0 8px 8px 0; }
-.toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
-.flash { background: #fef3c7; color: #92400e; padding: 10px 14px; border-radius: 8px; margin-bottom: 14px; }
-.note { font-size: 13px; color: #64748b; }
-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-th, td { border: 1px solid #e2e8f0; padding: 8px 10px; text-align: left; }
-th { background: #f1f5f9; }
-.pass { color: #16a34a; font-weight: 700; } .fail { color: #dc2626; font-weight: 700; }
-.hidden { display: none; }
-@media (max-width: 600px) { .papers { grid-template-columns: 1fr; } }
-@media print {
-  body { background: #fff; }
-  .wrap { max-width: 100%; }
-  .card { box-shadow: none; }
-  .no-print { display: none !important; }
-  .q { border: 1px solid #999; page-break-inside: avoid; }
+body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* ===== 顶部导航 ===== */
+.topbar{
+  background: linear-gradient(135deg,#1a3a6b 0%,#0d2247 100%);
+  color:#fff;padding:0 40px;height:64px;display:flex;align-items:center;
+  box-shadow:0 2px 16px rgba(10,30,70,.35);position:sticky;top:0;z-index:100;
+}
+.topbar-logo{display:flex;align-items:center;gap:12px;flex:1}
+.topbar-logo .shield{
+  width:40px;height:40px;background:var(--accent);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;
+}
+.topbar-logo .name{font-size:17px;font-weight:700;letter-spacing:.5px}
+.topbar-logo .sub{font-size:11px;opacity:.7;letter-spacing:1px}
+.topbar-info{display:flex;align-items:center;gap:24px;font-size:14px;opacity:.9}
+.topbar-info .user-icon{background:rgba(255,255,255,.15);padding:6px 12px;border-radius:20px}
+
+/* ===== 主页 ===== */
+.page-home{max-width:1100px;margin:0 auto;padding:40px 20px}
+
+.hero{
+  background: linear-gradient(135deg,#1a3a6b 0%,#1a5a9a 50%,#0d2247 100%);
+  border-radius:20px;padding:60px 50px;margin-bottom:36px;
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 8px 40px rgba(26,58,107,.35);position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;right:-60px;top:-60px;
+  width:280px;height:280px;background:rgba(201,168,76,.12);border-radius:50%;
+}
+.hero::after{
+  content:'';position:absolute;right:40px;bottom:-80px;
+  width:200px;height:200px;background:rgba(201,168,76,.08);border-radius:50%;
+}
+.hero-text{flex:1;position:relative;z-index:1}
+.hero-text h1{font-size:32px;font-weight:700;margin-bottom:12px;color:#fff;line-height:1.3}
+.hero-text p{font-size:15px;color:rgba(255,255,255,.75);line-height:1.7;max-width:500px}
+.hero-badge{
+  background:rgba(201,168,76,.2);border:1px solid rgba(201,168,76,.4);
+  border-radius:16px;padding:16px 24px;text-align:center;color:var(--accent-light);
+  font-size:13px;position:relative;z-index:1;
+}
+.hero-badge .num{font-size:36px;font-weight:800;display:block;color:#fff}
+
+.card{
+  background:var(--card);border-radius:16px;padding:32px;
+  box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid var(--border);
+  margin-bottom:24px;
+}
+.card-title{
+  font-size:18px;font-weight:700;color:var(--primary);margin-bottom:24px;
+  padding-bottom:14px;border-bottom:2px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+}
+.card-title::before{
+  content:'';width:4px;height:22px;background:var(--accent);border-radius:2px;
+}
+
+/* 姓名输入区 */
+.name-section{display:flex;gap:16px;align-items:flex-end;margin-bottom:32px}
+.name-section input{
+  flex:1;padding:14px 18px;border:2px solid var(--border);border-radius:12px;
+  font-size:16px;transition:border-color .2s;outline:none;
+}
+.name-section input:focus{border-color:var(--primary-light)}
+.name-section .btn-start{
+  background:linear-gradient(135deg,#1a3a6b,#1a5a9a);color:#fff;
+  border:none;border-radius:12px;padding:14px 32px;font-size:16px;font-weight:700;
+  cursor:pointer;white-space:nowrap;transition:transform .15s,box-shadow .15s;
+}
+.name-section .btn-start:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(26,58,107,.4)}
+
+/* 试卷卡片 */
+.paper-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
+.paper-card{
+  border:2px solid var(--border);border-radius:16px;padding:24px;
+  transition:border-color .2s,box-shadow .2s,transform .15s;cursor:pointer;
+  background:var(--card);
+}
+.paper-card:hover{
+  border-color:var(--primary-light);box-shadow:0 6px 24px rgba(26,58,107,.12);
+  transform:translateY(-2px);
+}
+.paper-card .paper-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.paper-card .paper-title{font-size:16px;font-weight:700;color:var(--text);line-height:1.4}
+.paper-card .paper-tag{
+  background:#eef2ff;color:var(--primary-light);border-radius:8px;
+  padding:4px 10px;font-size:12px;flex-shrink:0;margin-left:12px;
+}
+.paper-card .paper-desc{font-size:13px;color:var(--text-light);line-height:1.6;margin-bottom:16px}
+.paper-card .paper-meta{display:flex;gap:16px;font-size:12px;color:var(--text-light);margin-bottom:20px;flex-wrap:wrap}
+.paper-card .paper-meta span{display:flex;align-items:center;gap:4px}
+.paper-card .paper-meta .dot{width:6px;height:6px;background:var(--accent);border-radius:50%;flex-shrink:0}
+.paper-card .paper-btn{
+  width:100%;background:linear-gradient(135deg,var(--primary),var(--primary-light));
+  color:#fff;border:none;border-radius:10px;padding:12px;font-size:15px;font-weight:600;
+  cursor:pointer;transition:opacity .2s,transform .15s;
+}
+.paper-card .paper-btn:hover{opacity:.88;transform:translateY(-1px)}
+
+/* 模块标签页 */
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:24px}
+.tab{
+  padding:12px 28px;font-size:15px;font-weight:600;color:var(--text-light);
+  cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;
+  transition:color .2s,border-color .2s;
+}
+.tab.active{color:var(--primary);border-bottom-color:var(--accent)}
+
+/* ===== 考试页面 ===== */
+.page-exam{display:flex;gap:24px;max-width:1200px;margin:0 auto;padding:24px 20px;align-items:flex-start}
+
+/* 左侧题号面板 */
+.sidebar{width:220px;flex-shrink:0;position:sticky;top:80px}
+.sidebar .card{padding:20px}
+.sidebar-title{font-size:14px;font-weight:700;color:var(--primary);margin-bottom:16px}
+.q-nav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:16px}
+.q-dot{
+  width:36px;height:36px;border-radius:8px;border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:600;color:var(--text-light);
+  cursor:pointer;transition:all .15s;
+}
+.q-dot.answered{border-color:var(--primary-light);background:#eef2ff;color:var(--primary-light)}
+.q-dot.current{border-color:var(--accent);background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(201,168,76,.4)}
+.q-dot.wrong{border-color:var(--danger);background:#fef2f2;color:var(--danger)}
+.q-dot.right{border-color:var(--success);background:#f0fdf4;color:var(--success)}
+.q-legend{display:flex;flex-direction:column;gap:8px;font-size:12px;color:var(--text-light)}
+.q-legend span{display:flex;align-items:center;gap:8px}
+.q-legend .dot{width:14px;height:14px;border-radius:4px;border:2px solid}
+
+.timer-box{
+  background:linear-gradient(135deg,#fff8e8,#fff3cc);border:1px solid #e8d090;
+  border-radius:12px;padding:14px;margin-top:16px;text-align:center;
+}
+.timer-box .timer-label{font-size:12px;color:var(--warn);font-weight:600;margin-bottom:4px}
+.timer-box .timer-num{font-size:28px;font-weight:800;color:var(--warn);font-variant-numeric:tabular-nums}
+
+/* 右侧答题区 */
+.exam-main{flex:1;min-width:0}
+.exam-header{
+  background:var(--card);border-radius:16px;padding:24px 28px;
+  box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid var(--border);
+  margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+}
+.exam-header h2{font-size:18px;color:var(--primary)}
+.exam-header .exam-info{display:flex;gap:20px;font-size:14px;color:var(--text-light)}
+.exam-header .exam-info strong{color:var(--text)}
+.progress-bar{width:100%;height:6px;background:#e8edf4;border-radius:3px;overflow:hidden;margin-top:4px}
+.progress-bar .fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--primary-light));border-radius:3px;transition:width .4s}
+
+.question-card{
+  background:var(--card);border-radius:16px;padding:28px;
+  box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid var(--border);
+  margin-bottom:20px;
+}
+.question-card .q-type{
+  display:inline-block;background:#eef2ff;color:var(--primary-light);
+  border-radius:6px;padding:4px 12px;font-size:12px;font-weight:700;
+  margin-bottom:16px;letter-spacing:.5px;
+}
+.question-card .q-stem{font-size:16px;line-height:1.7;font-weight:600;margin-bottom:20px;color:var(--text)}
+.options{list-style:none;display:flex;flex-direction:column;gap:10px}
+.option-item{
+  display:flex;align-items:center;gap:14px;padding:14px 18px;
+  border:2px solid var(--border);border-radius:12px;cursor:pointer;
+  transition:border-color .15s,background .15s;
+}
+.option-item:hover{border-color:var(--primary-light);background:#f5f7ff}
+.option-item.selected{border-color:var(--primary);background:#eef2ff}
+.option-item .opt-letter{
+  width:32px;height:32px;border-radius:50%;border:2px solid currentColor;
+  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;
+  flex-shrink:0;
+}
+.option-item .opt-text{flex:1;font-size:15px;line-height:1.5}
+.option-item input[type=radio],.option-item input[type=checkbox]{display:none}
+
+/* 多选/判断 */
+.short-area textarea{
+  width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:12px;
+  font-size:15px;line-height:1.7;resize:vertical;min-height:120px;
+  font-family:inherit;outline:none;transition:border-color .2s;
+}
+.short-area textarea:focus{border-color:var(--primary-light)}
+
+.q-nav-bottom{display:flex;gap:12px;flex-wrap:wrap}
+.q-nav-bottom .btn{
+  border:none;border-radius:10px;padding:12px 24px;font-size:15px;font-weight:600;
+  cursor:pointer;transition:transform .15s,box-shadow .15s;
+}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(26,58,107,.35)}
+.btn-ghost{background:#f1f4f8;color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{background:#e8edf4}
+.btn-accent{background:linear-gradient(135deg,#c9a84c,#e0bc5a);color:#fff}
+.btn-accent:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(201,168,76,.4)}
+.btn-danger{background:#fef2f2;color:var(--danger);border:1px solid #fecaca}
+.btn-danger:hover{background:#fee2e2}
+
+/* ===== 结果页面 ===== */
+.page-result{max-width:960px;margin:0 auto;padding:40px 20px}
+
+.result-hero{
+  text-align:center;padding:60px 40px;background:linear-gradient(135deg,#1a3a6b,#0d2247);
+  border-radius:24px;margin-bottom:40px;position:relative;overflow:hidden;
+}
+.result-hero::before{
+  content:'✓';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  font-size:220px;color:rgba(201,168,76,.08);line-height:1;
+}
+.result-hero .result-icon{
+  width:80px;height:80px;border-radius:50%;background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-size:40px;margin:0 auto 20px;position:relative;
+}
+.result-hero h1{font-size:36px;color:#fff;margin-bottom:12px;position:relative}
+.result-hero .result-score{font-size:72px;font-weight:900;color:var(--accent-light);margin-bottom:8px;position:relative}
+.result-hero .result-sub{font-size:16px;color:rgba(255,255,255,.65);position:relative}
+
+.cert-box{
+  background:var(--card);border-radius:20px;border:2px solid var(--accent);
+  padding:48px 60px;text-align:center;margin-bottom:32px;position:relative;
+}
+.cert-box::before,.cert-box::after{
+  content:'★';position:absolute;top:20px;font-size:20px;color:var(--accent);
+}
+.cert-box::before{left:30px}
+.cert-box::after{right:30px}
+.cert-box .cert-title{
+  font-size:13px;letter-spacing:8px;color:var(--text-light);margin-bottom:8px;
+}
+.cert-box .cert-company{font-size:24px;font-weight:900;color:var(--primary);margin-bottom:24px;letter-spacing:2px}
+.cert-box .cert-line{border-top:1px dashed var(--border);margin:24px 0}
+.cert-box .cert-text{font-size:15px;color:var(--text-light);line-height:2}
+.cert-box .cert-name{font-size:22px;font-weight:700;color:var(--text);margin:16px 0;letter-spacing:4px}
+.cert-box .cert-score{font-size:48px;font-weight:900;color:var(--accent);margin:16px 0}
+.cert-box .cert-status{
+  display:inline-block;font-size:20px;font-weight:800;
+  padding:8px 32px;border-radius:30px;margin-top:12px;
+}
+.cert-status.pass{background:#f0fdf4;color:var(--success);border:2px solid var(--success)}
+.cert-status.fail{background:#fef2f2;color:var(--danger);border:2px solid var(--danger)}
+.cert-box .cert-date{font-size:13px;color:var(--text-light);margin-top:20px}
+.cert-box .cert-id{font-size:12px;color:#b0bec5;margin-top:6px;font-family:monospace}
+
+.result-detail{background:var(--card);border-radius:16px;border:1px solid var(--border);overflow:hidden}
+.result-detail-header{
+  background:#f5f7ff;padding:20px 28px;font-size:16px;font-weight:700;color:var(--primary);
+  border-bottom:1px solid var(--border);
+}
+.result-detail-body{padding:24px 28px}
+.detail-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.detail-stat{
+  text-align:center;padding:20px;border-radius:12px;border:1px solid var(--border);
+}
+.detail-stat .stat-num{font-size:28px;font-weight:800;color:var(--primary)}
+.detail-stat .stat-label{font-size:13px;color:var(--text-light);margin-top:4px}
+.detail-stat.success{background:#f0fdf4;border-color:#bbf7d0}
+.detail-stat.success .stat-num{color:var(--success)}
+.detail-stat.danger{background:#fef2f2;border-color:#fecaca}
+.detail-stat.danger .stat-num{color:var(--danger)}
+.detail-stat.warn{background:#fff8e8;border-color:#e8d090}
+.detail-stat.warn .stat-num{color:var(--warn)}
+
+.q-list-item{
+  border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:12px;
+}
+.q-list-item .q-list-stem{font-size:15px;font-weight:600;margin-bottom:12px}
+.q-list-item .q-list-meta{display:flex;gap:16px;font-size:13px;color:var(--text-light);flex-wrap:wrap}
+.q-list-item .q-list-meta .tag{
+  padding:2px 10px;border-radius:6px;font-size:12px;font-weight:600;
+}
+.tag-right{background:#f0fdf4;color:var(--success)}
+.tag-wrong{background:#fef2f2;color:var(--danger)}
+.tag-wait{background:#fff8e8;color:var(--warn)}
+.tag-manual{background:#f0f4ff;color:var(--primary-light)}
+
+.result-actions{display:flex;gap:16px;justify-content:center;margin-top:32px;flex-wrap:wrap}
+
+/* 提交确认弹窗 */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;
+  display:flex;align-items:center;justify-content:center;padding:20px;
+}
+.modal-box{
+  background:#fff;border-radius:20px;padding:40px;max-width:460px;width:100%;
+  text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);
+}
+.modal-box h3{font-size:20px;color:var(--primary);margin-bottom:16px}
+.modal-box p{color:var(--text-light);line-height:1.7;margin-bottom:28px}
+.modal-box .modal-actions{display:flex;gap:12px;justify-content:center}
+
+/* 未答提示 */
+.unanswered-alert{
+  background:#fef3cd;border:1px solid #f0c040;color:#7a5000;
+  border-radius:12px;padding:16px 20px;margin-bottom:20px;font-size:14px;
+}
+
+/* 页脚 */
+.footer{text-align:center;padding:32px 20px;font-size:12px;color:var(--text-light)}
+
+/* 工具提示 */
+.info-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  background:#f1f4f8;border-radius:999px;padding:4px 12px;font-size:12px;color:var(--text-light);
+}
+.info-pill strong{color:var(--text)}
+
+/* 动画 */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.page-home,.page-exam,.page-result{animation:fadeUp .35s ease-out}
+.card,.paper-card,.question-card{transition:all .2s}
+
+/* 响应式 */
+@media(max-width:900px){
+  .page-exam{flex-direction:column}
+  .sidebar{width:100%;position:static}
+  .q-nav{grid-template-columns:repeat(10,1fr)}
+  .hero{flex-direction:column;text-align:center;padding:40px 30px;gap:24px}
+  .hero-badge{margin-top:0}
+  .detail-stats{grid-template-columns:repeat(2,1fr)}
+  .cert-box{padding:32px 24px}
+}
+@media(max-width:600px){
+  .topbar{padding:0 16px}
+  .topbar-info .user-icon{display:none}
+  .paper-grid{grid-template-columns:1fr}
+  .exam-header{flex-direction:column;align-items:flex-start}
 }
 </style>
 </head>
 <body>
-<div class="wrap" id="app"></div>
+
+<!-- 顶部导航 -->
+<div class="topbar" id="topbar">
+  <div class="topbar-logo">
+    <div class="shield">🛡️</div>
+    <div>
+      <div class="name">湖南绿盾卫士检测技术有限公司</div>
+      <div class="sub">在线培训考核系统</div>
+    </div>
+  </div>
+  <div class="topbar-info">
+    <span>📞 0731-88888888</span>
+    <span class="user-icon" id="topbar-user">👤 未登录</span>
+  </div>
+</div>
+
+<!-- 主应用区 -->
+<div id="app"></div>
 
 <script>
-// ====== 题库数据 ======
+// ===== 题库数据 =====
 const TASKS = [
   {
     id: 1,
     name: "GB/T 18204 培训考核卷",
-    desc: "公共场所卫生检验方法 6 部分 培训考核（与讲义配套）",
+    desc: "公共场所卫生检验方法 6 部分核心知识点，覆盖法律法规、采样技术、微生物检测与质控要点。",
     pass_score: 80,
     scoring_mode: "auto",
     paper_mode: "fixed",
@@ -108,26 +423,19 @@ const TASKS = [
   }
 ];
 
-const CATEGORIES = ["法律法规", "专业知识"];
-const SUBCATS = {
-  "专业知识": ["理化检测", "检测技术", "微生物", "采样技术", "公司管理体系文件"]
-};
-const SCORING_MODES = { manual: "全手动阅卷", auto: "客观题自动算，主观题留白", keyword: "关键词自动匹配给分" };
-const PAPER_MODES = { fixed: "固定试卷", random: "随机抽题", mixed: "混合（随机+题型覆盖）" };
-
-// ====== 全局状态 ======
+// ===== 全局状态 =====
 let state = {
   view: "home",
   candName: "",
   taskId: null,
   questions: [],
   answers: {},
+  currentQ: 0,
   submitted: false,
   score: 0,
   passed: false
 };
 
-// ====== 工具函数 ======
 function $(id) { return document.getElementById(id); }
 function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
@@ -139,248 +447,456 @@ function shuffle(arr) {
 
 function buildPaper(task) {
   if (task.paper_mode === "fixed") return task.questions.slice();
-  let n = task.random_count || task.questions.length;
-  if (task.paper_mode === "random") return shuffle(task.questions).slice(0, n);
-  // mixed: 保证每种题型至少1道
-  let byType = {};
-  task.questions.forEach(q => { (byType[q.qtype] = byType[q.qtype] || []).push(q); });
-  Object.keys(byType).forEach(k => { byType[k] = shuffle(byType[k]); });
-  let picked = [];
-  Object.keys(byType).forEach(k => { if (byType[k].length) picked.push(byType[k].shift()); });
-  let rest = shuffle([].concat(...Object.values(byType)));
-  while (picked.length < n && rest.length) picked.push(rest.shift());
-  return picked.slice(0, n);
+  return shuffle(task.questions).slice(0, task.random_count || task.questions.length);
 }
 
 function calcScore(task, questions, answers) {
-  let total = 0, auto = 0, manual = 0;
+  let auto = 0, manual = 0;
   questions.forEach(q => {
-    total += q.score;
-    let ua = answers[q.id] || "";
-    if (q.qtype === "single" || q.qtype === "judge") {
-      if (ua === q.answer) auto += q.score;
+    if (["single","judge"].includes(q.qtype)) {
+      if ((answers[q.id] || "") === q.answer) auto += q.score;
     } else if (q.qtype === "multi") {
       let ca = q.answer.split(",").sort().join(",");
-      if (ua.split(",").sort().join(",") === ca) auto += q.score;
+      if ((answers[q.id] || "").split(",").sort().join(",") === ca) auto += q.score;
     } else {
-      manual += q.score; // 主观题留白
+      manual += q.score;
     }
   });
-  return { total, auto, manual, final: auto };
+  return { auto, manual };
 }
 
-// ====== 渲染函数 ======
+function totalScore(questions) { return questions.reduce((s,q)=>s+q.score,0); }
+
+// ===== 渲染 =====
 function render() {
-  let html = "";
-  switch (state.view) {
-    case "home": html = renderHome(); break;
-    case "exam": html = renderExam(); break;
-    case "result": html = renderResult(); break;
+  document.getElementById("topbar").style.display = state.view === "home" ? "flex" : "flex";
+  switch(state.view) {
+    case "home": $("app").innerHTML = renderHome(); break;
+    case "exam": renderExam(); break;
+    case "result": $("app").innerHTML = renderResult(); break;
   }
-  $("app").innerHTML = html;
 }
 
+// ===== 首页 =====
 function renderHome() {
-  let grouped = {};
-  CATEGORIES.forEach(c => grouped[c] = []);
-  TASKS.forEach(t => {
-    let cat = t.category || "专业知识";
-    if (!grouped[cat]) grouped[cat] = [];
-    grouped[cat].push(t);
-  });
-
-  let chips = SUBCATS["专业知识"].map(s =>
-    `<button type="button" class="chip" data-sub="${esc(s)}" onclick="filterSub(this)">${esc(s)}</button>`
-  ).join("");
-
-  let modules = CATEGORIES.map(cat => {
-    let cards = grouped[cat].map(t => `
-      <div class="paper-card" data-cat="${esc(t.category)}" data-sub="${esc(t.subcategory || '通用')}">
-        <div class="paper-name">${esc(t.name)}</div>
-        <div class="paper-meta">${esc(SCORING_MODES[t.scoring_mode]||t.scoring_mode)} · ${esc(PAPER_MODES[t.paper_mode]||t.paper_mode)} · 合格线 ${t.pass_score} 分</div>
-        <div class="paper-sub">分类：${esc(t.category)} / ${esc(t.subcategory || '通用')}</div>
-        <button class="btn" onclick="startExam(${t.id})">开始考试</button>
-      </div>
-    `).join("") || `<p class="note">该模块暂无试卷。</p>`;
-    let subFilter = cat === "专业知识" ? `<div class="chips"><button type="button" class="chip active" data-sub="all" onclick="filterSub(this)">全部</button>${chips}</div>` : "";
-    return `
-      <div class="module">
-        <h2 class="module-title">${esc(cat)}</h2>
-        ${subFilter}
-        <div class="papers">${cards}</div>
-      </div>
-    `;
-  }).join("");
-
+  const task = TASKS[0];
   return `
-    <div class="card">
-      <div class="brand">湖南绿盾卫士检测技术有限公司考试系统</div>
-      <h1>考生端 · 在线考试</h1>
-      <p class="note">请先填写姓名，再选择下方考试模块中的试卷开始。</p>
-      <label>考生姓名</label>
-      <input type="text" id="candName" placeholder="请输入姓名" value="${esc(state.candName)}">
-      ${modules}
-      <p class="note" style="margin-top:18px">单文件 HTML 版 · 数据存储在本地浏览器（LocalStorage）</p>
+    <div class="page-home">
+      <div class="hero">
+        <div class="hero-text">
+          <h1>在线培训考核系统</h1>
+          <p>湖南绿盾卫士检测技术有限公司官方培训平台，支持 GB/T 18204 等标准核心知识点在线学习与考核，自动评分，合格即发证。</p>
+        </div>
+        <div class="hero-badge">
+          <span class="num">${TASKS.length}</span>
+          套试卷
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">考生信息</div>
+        <div class="name-section">
+          <input type="text" id="candName" placeholder="请输入真实姓名（将显示在证书上）" value="${esc(state.candName)}">
+          <button class="btn-start" onclick="startExam()">进入考试 →</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">选择考试科目</div>
+        <div class="paper-grid">
+          ${TASKS.map(t => `
+            <div class="paper-card">
+              <div class="paper-header">
+                <div class="paper-title">${esc(t.name)}</div>
+                <span class="paper-tag">${esc(t.category)}</span>
+              </div>
+              <div class="paper-desc">${esc(t.desc)}</div>
+              <div class="paper-meta">
+                <span><span class="dot"></span>${t.questions.length} 题</span>
+                <span><span class="dot"></span>满分 ${totalScore(t.questions)} 分</span>
+                <span><span class="dot"></span>合格线 ${t.pass_score} 分</span>
+              </div>
+              <button class="paper-btn" onclick="startExam()">开始考试</button>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="footer">© 2026 湖南绿盾卫士检测技术有限公司 · 仅供内部培训使用 · 数据存储在本地浏览器</div>
     </div>
   `;
 }
 
-function filterSub(btn) {
-  let sub = btn.getAttribute("data-sub");
-  btn.parentElement.querySelectorAll(".chip").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-  document.querySelectorAll(".paper-card").forEach(c => {
-    c.style.display = (sub === "all" || c.getAttribute("data-sub") === sub) ? "" : "none";
-  });
-}
-
-function startExam(taskId) {
-  let nm = $("candName").value.trim();
-  if (!nm) { alert("请先填写考生姓名"); return; }
-  let task = TASKS.find(t => t.id === taskId);
-  if (!task) { alert("试卷不存在"); return; }
+function startExam() {
+  let nm = $("candName")?.value?.trim();
+  if (!nm) {
+    alert("请先输入考生姓名");
+    return;
+  }
   state.candName = nm;
-  state.taskId = taskId;
+  document.getElementById("topbar-user").textContent = "👤 " + nm;
+
+  let task = TASKS[0];
+  state.taskId = task.id;
   state.questions = buildPaper(task);
   state.answers = {};
+  state.currentQ = 0;
   state.submitted = false;
-  state.score = 0;
-  state.passed = false;
   state.view = "exam";
   render();
+  scrollTo(0, 0);
 }
 
+// ===== 考试页面 =====
 function renderExam() {
   let task = TASKS.find(t => t.id === state.taskId);
-  let totalScore = state.questions.reduce((s, q) => s + q.score, 0);
-  let qHtml = state.questions.map((q, i) => {
-    let opts = "";
-    if (q.qtype === "single" || q.qtype === "judge") {
-      opts = q.options.map(o => `
-        <label class="opt"><input type="radio" name="q${q.id}" value="${o[0]}" onchange="setAnswer(${q.id},this.value)" ${state.answers[q.id]===o[0]?"checked":""}> ${esc(o)}</label>
-      `).join("");
-    } else if (q.qtype === "multi") {
-      opts = q.options.map(o => `
-        <label class="opt"><input type="checkbox" name="q${q.id}" value="${o[0]}" onchange="toggleMulti(${q.id},this)" ${state.answers[q.id]===o[0]?"checked":""}> ${esc(o)}</label>
-      `).join("");
-    } else {
-      opts = `<textarea rows="4" style="width:100%" onchange="setAnswer(${q.id},this.value)">${esc(state.answers[q.id]||"")}</textarea>`;
-    }
-    return `
-      <div class="q">
-        <div class="stem">${i+1}. [${q.qtype==="single"?"单选":q.qtype==="multi"?"多选":q.qtype==="judge"?"判断":q.qtype==="short"?"简答":"场景"} ${q.score}分] ${esc(q.stem)}</div>
-        ${opts}
-      </div>
-    `;
+  let total = totalScore(state.questions);
+  let answered = state.questions.filter(q => !!state.answers[q.id]).length;
+  let pct = Math.round(answered / state.questions.length * 100);
+
+  let navHtml = state.questions.map((q, i) => {
+    let cls = "q-dot";
+    if (i === state.currentQ) cls += " current";
+    else if (state.answers[q.id]) cls += " answered";
+    return `<div class="${cls}" onclick="jumpTo(${i})">${i+1}</div>`;
   }).join("");
 
-  return `
-    <div class="card">
-      <div class="brand">湖南绿盾卫士检测技术有限公司考试系统</div>
-      <h1>${esc(task.name)}</h1>
-      <p class="note">考生：${esc(state.candName)} · 共 ${state.questions.length} 题 · 满分 ${totalScore} 分</p>
-      ${qHtml}
-      <div class="toolbar">
-        <button class="btn" onclick="submitExam()">提交试卷</button>
-        <button class="btn btn-ghost" onclick="backHome()">返回首页</button>
+  let app = $("app");
+  app.innerHTML = `
+    <div class="page-exam">
+      <!-- 左侧题号面板 -->
+      <div class="sidebar">
+        <div class="card">
+          <div class="sidebar-title">答题进度</div>
+          <div class="q-nav">${navHtml}</div>
+          <div class="q-legend">
+            <span><span class="dot" style="background:#eef2ff;border-color:var(--primary-light)"></span>未答</span>
+            <span><span class="dot" style="background:#eef2ff;border-color:var(--primary-light)"></span>已答</span>
+            <span><span class="dot" style="background:var(--accent);border-color:var(--accent)"></span>当前题</span>
+          </div>
+          <div class="timer-box">
+            <div class="timer-label">⏱ 剩余时间</div>
+            <div class="timer-num" id="timer">--:--</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右侧答题区 -->
+      <div class="exam-main">
+        <div class="exam-header">
+          <div>
+            <h2>${esc(task.name)}</h2>
+            <div class="exam-info">
+              <span>考生：<strong>${esc(state.candName)}</strong></span>
+              <span>已答：<strong>${answered}/${state.questions.length}</strong></span>
+              <span>满分：<strong>${total}</strong> 分</span>
+            </div>
+            <div class="progress-bar"><div class="fill" style="width:${pct}%"></div></div>
+          </div>
+          <button class="btn btn-accent" onclick="confirmSubmit()">提交试卷</button>
+        </div>
+
+        <div class="question-card" id="q-card"></div>
+
+        <div class="q-nav-bottom">
+          <button class="btn btn-ghost" onclick="prevQ()">← 上一题</button>
+          <button class="btn btn-primary" onclick="nextQ()">下一题 →</button>
+          ${state.currentQ === state.questions.length - 1 ? `<button class="btn btn-accent" onclick="confirmSubmit()">提交试卷</button>` : ""}
+          <button class="btn btn-ghost" onclick="backHome()">退出考试</button>
+        </div>
       </div>
     </div>
   `;
+
+  renderCurrentQ();
+  startTimer();
 }
 
-function setAnswer(qid, val) {
-  state.answers[qid] = val;
-}
+function renderCurrentQ() {
+  let q = state.questions[state.currentQ];
+  let card = document.getElementById("q-card");
+  if (!card) return;
 
-function toggleMulti(qid, cb) {
-  let arr = (state.answers[qid] || "").split(",").filter(x => x);
-  if (cb.checked) {
-    if (!arr.includes(cb.value)) arr.push(cb.value);
+  let typeLabel = {"single":"单选题","multi":"多选题","judge":"判断题","short":"简答题","scenario":"场景分析题"}[q.qtype] || "问答题";
+  let typeColor = {"single":"#1a5a9a","multi":"#6b3fa0","judge":"#1a8a4a","short":"#c05a20","scenario":"#8a1a4a"}[q.qtype] || "#1a3a6b";
+
+  let optsHtml = "";
+  if (q.qtype === "single" || q.qtype === "judge") {
+    optsHtml = q.options.map(o => {
+      let sel = (state.answers[q.id] || "") === o[0];
+      let letter = o[0];
+      let text = o.slice(2);
+      return `<div class="option-item${sel?" selected":""}" onclick="selectOption(this,'${letter}')">
+        <span class="opt-letter" style="color:${sel?"#fff":"var(--primary-light)"};border-color:${sel?"var(--primary)":"currentColor"};background:${sel?"var(--primary)":"transparent"}">${letter}</span>
+        <span class="opt-text">${esc(text)}</span>
+      </div>`;
+    }).join("");
+  } else if (q.qtype === "multi") {
+    let selArr = (state.answers[q.id] || "").split(",").filter(x=>x);
+    optsHtml = q.options.map(o => {
+      let sel = selArr.includes(o[0]);
+      let text = o.slice(2);
+      return `<div class="option-item${sel?" selected":""}" onclick="toggleMulti(this,'${o[0]}')">
+        <span class="opt-letter" style="color:${sel?"#fff":"#6b3fa0"};border-color:${sel?"#6b3fa0":"currentColor"};background:${sel?"#6b3fa0":"transparent"}">${o[0]}</span>
+        <span class="opt-text">${esc(text)}</span>
+      </div>`;
+    }).join("");
   } else {
-    arr = arr.filter(x => x !== cb.value);
+    optsHtml = `<div class="short-area">
+      <textarea id="short-answer" placeholder="请在此输入你的答案..." onchange="setShort(this.value)">${esc(state.answers[q.id]||"")}</textarea>
+    </div>`;
   }
-  state.answers[qid] = arr.sort().join(",");
+
+  card.innerHTML = `
+    <span class="q-type" style="background:${typeColor}20;color:${typeColor}">${typeLabel} · ${q.score}分</span>
+    <div class="q-stem">${esc(q.stem)}</div>
+    <ul class="options">${optsHtml}</ul>
+  `;
 }
 
-function submitExam() {
+function selectOption(el, val) {
+  let q = state.questions[state.currentQ];
+  state.answers[q.id] = val;
+  el.parentElement.querySelectorAll(".option-item").forEach(e => {
+    e.classList.remove("selected");
+    e.querySelector(".opt-letter").style.background = "transparent";
+    e.querySelector(".opt-letter").style.color = "var(--primary-light)";
+    e.querySelector(".opt-letter").style.borderColor = "currentColor";
+  });
+  el.classList.add("selected");
+  el.querySelector(".opt-letter").style.background = "var(--primary)";
+  el.querySelector(".opt-letter").style.color = "#fff";
+  el.querySelector(".opt-letter").style.borderColor = "var(--primary)";
+  updateNav();
+}
+
+function toggleMulti(el, val) {
+  let q = state.questions[state.currentQ];
+  let arr = (state.answers[q.id] || "").split(",").filter(x=>x);
+  if (arr.includes(val)) {
+    arr = arr.filter(x=>x!==val);
+    el.classList.remove("selected");
+    el.querySelector(".opt-letter").style.background = "transparent";
+    el.querySelector(".opt-letter").style.color = "#6b3fa0";
+    el.querySelector(".opt-letter").style.borderColor = "currentColor";
+  } else {
+    arr.push(val);
+    el.classList.add("selected");
+    el.querySelector(".opt-letter").style.background = "#6b3fa0";
+    el.querySelector(".opt-letter").style.color = "#fff";
+    el.querySelector(".opt-letter").style.borderColor = "#6b3fa0";
+  }
+  state.answers[q.id] = arr.sort().join(",");
+  updateNav();
+}
+
+function setShort(val) {
+  state.answers[state.questions[state.currentQ].id] = val;
+  updateNav();
+}
+
+function updateNav() {
+  let nav = document.querySelector(".q-nav");
+  if (!nav) return;
+  state.questions.forEach((q, i) => {
+    let dot = nav.children[i];
+    if (!dot) return;
+    dot.className = "q-dot";
+    if (i === state.currentQ) dot.classList.add("current");
+    else if (state.answers[q.id]) dot.classList.add("answered");
+  });
+  // 更新进度
+  let answered = state.questions.filter(q => !!state.answers[q.id]).length;
+  let pct = Math.round(answered / state.questions.length * 100);
+  let fill = document.querySelector(".progress-bar .fill");
+  if (fill) fill.style.width = pct + "%";
+}
+
+function jumpTo(idx) {
+  state.currentQ = idx;
+  renderCurrentQ();
+  updateNav();
+}
+function prevQ() {
+  if (state.currentQ > 0) { state.currentQ--; renderCurrentQ(); updateNav(); }
+}
+function nextQ() {
+  if (state.currentQ < state.questions.length - 1) { state.currentQ++; renderCurrentQ(); updateNav(); }
+}
+
+// ===== 倒计时 =====
+let timerInterval = null;
+function startTimer() {
+  if (timerInterval) clearInterval(timerInterval);
+  let sec = 60 * 60; // 60分钟
+  timerInterval = setInterval(() => {
+    sec--;
+    if (sec <= 0) { clearInterval(timerInterval); confirmSubmit(); return; }
+    let m = Math.floor(sec/60), s = sec%60;
+    let el = document.getElementById("timer");
+    if (el) el.textContent = String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+  }, 1000);
+}
+
+// ===== 提交确认 =====
+function confirmSubmit() {
+  if (timerInterval) clearInterval(timerInterval);
+  let unanswered = state.questions.filter(q => !state.answers[q.id]).length;
+  let html = `<div class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <h3>确认提交试卷？</h3>
+      ${unanswered > 0 ? `<p>你还有 <strong>${unanswered} 道题</strong>未作答，提交后将无法修改答案。</p>` : `<p>你已完成全部题目，确认提交吗？</p>`}
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal()">继续答题</button>
+        <button class="btn btn-accent" onclick="doSubmit()">确认提交 ✓</button>
+      </div>
+    </div>
+  </div>`;
+  document.body.insertAdjacentHTML("beforeend", html);
+}
+function closeModal(e) {
+  if (e && e.target !== e.currentTarget) return;
+  document.querySelector(".modal-overlay")?.remove();
+  if (timerInterval === null) startTimer(); // 如果之前是超时提交的，不再启动
+}
+
+function doSubmit() {
+  document.querySelector(".modal-overlay")?.remove();
   let task = TASKS.find(t => t.id === state.taskId);
   let result = calcScore(task, state.questions, state.answers);
-  state.score = result.final;
+  state.score = result.auto;
   state.passed = state.score >= task.pass_score;
   state.submitted = true;
   state.view = "result";
   saveRecord();
   render();
+  scrollTo(0, 0);
 }
 
+function backHome() {
+  if (!confirm("确定退出？考试记录将丢失。")) return;
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = null;
+  state.view = "home";
+  state.taskId = null;
+  state.answers = {};
+  document.getElementById("topbar-user").textContent = "👤 未登录";
+  render();
+}
+
+// ===== 结果页 =====
 function renderResult() {
   let task = TASKS.find(t => t.id === state.taskId);
-  let total = state.questions.reduce((s, q) => s + q.score, 0);
-  let qHtml = state.questions.map((q, i) => {
-    let ua = state.answers[q.id] || "";
-    let ca = q.answer;
+  let total = totalScore(state.questions);
+  let auto = 0, manual = 0;
+  state.questions.forEach(q => {
+    if (["single","judge"].includes(q.qtype)) {
+      if ((state.answers[q.id]||"")===q.answer) auto+=q.score;
+    } else if (q.qtype==="multi") {
+      let ca=q.answer.split(",").sort().join(",");
+      if ((state.answers[q.id]||"").split(",").sort().join(",")===ca) auto+=q.score;
+    } else { manual+=q.score; }
+  });
+
+  let rightCount = state.questions.filter(q => {
+    if(["single","judge"].includes(q.qtype)) return (state.answers[q.id]||"")===q.answer;
+    if(q.qtype==="multi") return (state.answers[q.id]||"").split(",").sort().join(",")===q.answer.split(",").sort().join(",");
+    return false;
+  }).length;
+
+  let qList = state.questions.map((q,i) => {
     let isObj = ["single","multi","judge"].includes(q.qtype);
-    let ok = false;
+    let ua = state.answers[q.id] || "";
+    let ok = false, tagCls="tag-wait", tagText="待阅";
     if (isObj) {
-      if (q.qtype === "multi") {
-        ok = ua.split(",").sort().join(",") === ca.split(",").sort().join(",");
-      } else {
-        ok = ua === ca;
-      }
+      if (q.qtype==="multi") ok = ua.split(",").sort().join(",")===q.answer.split(",").sort().join(",");
+      else ok = ua===q.answer;
+      tagCls = ok ? "tag-right" : "tag-wrong";
+      tagText = ok ? "✓ 正确" : "✗ 错误";
+    } else {
+      tagCls = "tag-manual";
+      tagText = "待人工阅卷";
     }
-    let badge = isObj ? (ok ? `<span class="score-badge ok">+${q.score}</span>` : `<span class="score-badge bad">0</span>`) : `<span class="score-badge">待阅</span>`;
-    let uaText = q.qtype === "single" || q.qtype === "judge" ? ua : (q.qtype === "multi" ? ua : `<div class="ans-box">${esc(ua) || "（未作答）"}</div>`);
-    let caText = q.qtype === "single" || q.qtype === "judge" || q.qtype === "multi" ? ca : `<div class="ans-box">${esc(ca)}</div>`;
-    return `
-      <div class="q">
-        <div class="stem">${i+1}. ${esc(q.stem)} ${badge}</div>
-        <p><b>你的答案：</b>${uaText}</p>
-        <p><b>参考答案：</b>${caText}</p>
-        ${q.explanation ? `<p class="note">${esc(q.explanation)}</p>` : ""}
+    return `<div class="q-list-item">
+      <div class="q-list-stem">${i+1}. ${esc(q.stem)} <span class="tag ${tagCls}">${tagText}</span> <span class="tag" style="background:#f1f4f8;color:var(--text-light)">${q.score}分</span></div>
+      <div class="q-list-meta">
+        <span>你的答案：<strong>${esc(ua)||"未作答"}</strong></span>
+        ${isObj?`<span>正确答案：<strong>${esc(q.answer)}</strong></span>`:""}
+        ${q.explanation?`<span style="color:var(--primary-light)">${esc(q.explanation)}</span>`:""}
       </div>
-    `;
+    </div>`;
   }).join("");
 
+  let certId = "LV" + Date.now().toString(36).toUpperCase();
+  let certDate = new Date().toLocaleDateString("zh-CN",{year:"numeric",month:"long",day:"numeric"});
+  let bgIcon = state.passed ? "🏆" : "📋";
+
   return `
-    <div class="card">
-      <div class="brand">湖南绿盾卫士检测技术有限公司考试系统</div>
-      <h1>考试结果</h1>
-      <p class="note">考生：${esc(state.candName)} · ${esc(task.name)} · <span class="${state.passed?'pass':'fail'}">${state.passed?'合格':'不合格'}</span></p>
-      <p>得分：<strong>${state.score}</strong> / ${total} · 合格线：${task.pass_score}</p>
-      ${qHtml}
-      <div class="toolbar no-print">
-        <button class="btn" onclick="window.print()">打印 / 存档</button>
+    <div class="page-result">
+      <div class="result-hero">
+        <div class="result-icon">${bgIcon}</div>
+        <h1>${state.passed ? "恭喜！考试合格" : "考试结束"}</h1>
+        <div class="result-score">${state.score} <span style="font-size:24px;font-weight:400;opacity:.7">/ ${total} 分</span></div>
+        <div class="result-sub">合格线 ${task.pass_score} 分 · ${state.passed?"合格":"不合格"} · ${esc(state.candName)} · ${esc(task.name)}</div>
+      </div>
+
+      <div class="cert-box">
+        <div class="cert-title">湖南绿盾卫士检测技术有限公司</div>
+        <div class="cert-company">培训考核合格证书</div>
+        <div class="cert-line"></div>
+        <div class="cert-text">经考核，成绩合格，特发此证。</div>
+        <div class="cert-name">${esc(state.candName)}</div>
+        <div class="cert-score">${state.score} 分</div>
+        <div class="cert-status ${state.passed?"pass":"fail"}">${state.passed?"✓ 合格":"✗ 不合格"}</div>
+        <div class="cert-date">考核日期：${certDate}</div>
+        <div class="cert-id">证书编号：${certId}</div>
+      </div>
+
+      <div class="result-detail">
+        <div class="result-detail-header">📊 答题详情（共 ${state.questions.length} 题）</div>
+        <div class="result-detail-body">
+          <div class="detail-stats">
+            <div class="detail-stat success">
+              <div class="stat-num">${rightCount}</div>
+              <div class="stat-label">答对题数</div>
+            </div>
+            <div class="detail-stat danger">
+              <div class="stat-num">${state.questions.length - rightCount - (state.questions.length - state.questions.filter(q=>["single","multi","judge"].includes(q.qtype)).length)}</div>
+              <div class="stat-label">答错题数</div>
+            </div>
+            <div class="detail-stat warn">
+              <div class="stat-num">${state.questions.filter(q=>["short","scenario"].includes(q.qtype)).length}</div>
+              <div class="stat-label">主观题（待阅）</div>
+            </div>
+            <div class="detail-stat">
+              <div class="stat-num">${task.pass_score}</div>
+              <div class="stat-label">合格线</div>
+            </div>
+          </div>
+          ${qList}
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <button class="btn btn-primary" onclick="window.print()">🖨 打印证书</button>
         <button class="btn btn-ghost" onclick="backHome()">返回首页</button>
       </div>
+
+      <div class="footer">© 2026 湖南绿盾卫士检测技术有限公司 · 培训考核系统</div>
     </div>
   `;
 }
 
-function backHome() {
-  state.view = "home";
-  state.taskId = null;
-  state.questions = [];
-  state.answers = {};
-  state.submitted = false;
-  render();
-}
-
-// ====== LocalStorage 记录 ======
+// ===== LocalStorage =====
 function saveRecord() {
   let task = TASKS.find(t => t.id === state.taskId);
   let records = JSON.parse(localStorage.getItem("exam_records") || "[]");
-  records.push({
-    time: new Date().toISOString(),
-    name: state.candName,
-    task: task.name,
-    score: state.score,
-    passed: state.passed
-  });
+  records.push({time: new Date().toISOString(), name: state.candName, task: task.name, score: state.score, passed: state.passed});
   localStorage.setItem("exam_records", JSON.stringify(records));
 }
 
-// ====== 初始化 ======
-window.onload = render;
+// ===== 初始化 =====
+window.onload = () => render();
 </script>
 </body>
 </html>
