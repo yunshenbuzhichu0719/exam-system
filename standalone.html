@@ -105,9 +105,37 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 
 /* 右侧表单区 */
 .auth-form-area{flex:1;max-width:420px;display:flex;flex-direction:column}
-.auth-form-tabs{display:flex;margin-bottom:0}
-.auth-form-tab{flex:1;text-align:center;padding:14px;font-size:15px;font-weight:600;color:var(--text-light);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;letter-spacing:.5px}
-.auth-form-tab.active{color:#fff;background:linear-gradient(135deg,var(--primary),var(--primary-light));border-bottom-color:transparent;clip-path:polygon(0 0, 100% 0, calc(100% - 16px) 100%, 0 100%);filter:drop-shadow(0 4px 8px rgba(26,58,107,0.25))}
+.auth-form-tabs{display:flex;margin-bottom:0;align-items:flex-end;padding:0}
+.auth-form-tab{position:relative;flex:1;text-align:center;padding:14px 20px;font-size:15px;font-weight:600;color:var(--text-light);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;letter-spacing:.5px;background:transparent}
+.auth-form-tab.active{
+  color:#fff;
+  font-size:16px;
+  font-weight:700;
+  letter-spacing:2px;
+  padding:16px 28px 18px;
+  margin-bottom:-4px;
+  background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 60%,var(--accent) 100%);
+  border-bottom:none;
+  clip-path:polygon(0 0, calc(100% - 22px) 0, 100% 100%, 0 100%);
+  box-shadow:0 6px 20px rgba(26,58,107,0.4),0 2px 6px rgba(26,58,107,0.2),inset 0 1px 0 rgba(255,255,255,0.25);
+  filter:drop-shadow(0 4px 10px rgba(26,58,107,0.35));
+  z-index:1;
+}
+.auth-form-tab.active::before{
+  content:"";
+  position:absolute;
+  bottom:0;left:0;right:22px;height:3px;
+  background:linear-gradient(90deg,rgba(255,255,255,0.5),rgba(255,255,255,0.1));
+  border-radius:2px 2px 0 0;
+}
+.auth-form-tab.active::after{
+  content:"";
+  position:absolute;
+  top:2px;right:26px;
+  width:6px;height:6px;border-radius:50%;
+  background:rgba(255,255,255,0.7);
+  box-shadow:0 0 6px rgba(255,255,255,0.8);
+}
 .auth-form-tab:hover:not(.active){color:var(--text)}
 .auth-form-wrap{background:var(--card);border-radius:0 0 20px 20px;padding:30px 34px;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,.07);flex:1}
 
@@ -811,7 +839,7 @@ function renderAuthPage() {
       <!-- 右侧登录表单 -->
       <div class="auth-form-area">
         <div class="auth-form-tabs">
-          <div class="auth-form-tab active" id="tab-login" onclick="switchAuthTab('login')">登录</div>
+          <div class="auth-form-tab active" id="tab-login" onclick="switchAuthTab('login')">考生登录</div>
         </div>
         <div class="auth-form-wrap">
           ${loginForm}
