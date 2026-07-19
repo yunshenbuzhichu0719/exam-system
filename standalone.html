@@ -1032,6 +1032,7 @@ function renderPuzzle(tab) {
   if (maxT < minT + 30) maxT = minT + 30;
   puzzleState.targetX = minT + Math.floor(Math.random() * Math.max(1, maxT - minT));
   puzzleState.verified = false;
+  puzzleState.dragging = false;
   puzzleState.activeTab = tab;
   // set hole
   let hole = $("puzzle-hole-" + tab);
@@ -1041,14 +1042,15 @@ function renderPuzzle(tab) {
   // reset hint
   let hint = $("puzzle-hint-" + tab);
   if (hint) { hint.textContent = "拖动滑块完成拼图"; hint.className = "af-puzzle-hint"; }
-  // unlock thumb
+  // unlock thumb & reset drag-ready flag so listeners re-attach
   let thumb = $("puzzle-thumb-" + tab);
-  if (thumb) thumb.classList.remove("locked");
+  if (thumb) { thumb.classList.remove("locked"); thumb._dragReady = false; }
+  if (track) track._dragReady = false;
   img.classList.remove("shake");
   // draw varied background
   let canvas = $("puzzle-canvas-" + tab);
   if (canvas) drawPuzzleBg(canvas, tab);
-  // attach drag listeners (one-time per tab)
+  // attach drag listeners (reset flag ensures re-binding on tab switch)
   attachPuzzleDrag(tab);
 }
 
@@ -1066,6 +1068,7 @@ function attachPuzzleDrag(tab) {
   if (!thumb || !track) return;
   if (thumb._dragReady) return;
   thumb._dragReady = true;
+  track._dragReady = true;
 
   function onDown(e) {
     if (puzzleState.verified) return;
@@ -1136,16 +1139,25 @@ function verifyPuzzle(tab) {
 
 function refreshPuzzle(tab) {
   generatePuzzle();
+  // 清理可能残留的全局拖拽事件
+  puzzleState.dragging = false;
+  document.removeEventListener("mousemove", arguments.callee._om || function(){});
+  document.removeEventListener("mouseup", arguments.callee._ou || function(){});
+  document.removeEventListener("touchmove", arguments.callee._om || function(){});
+  document.removeEventListener("touchend", arguments.callee._ou || function(){});
   let img = $("puzzle-img-" + tab);
   if (img) { img.classList.remove("shake"); }
   let hint = $("puzzle-hint-" + tab);
   if (hint) { hint.textContent = "拖动滑块完成拼图"; hint.className = "af-puzzle-hint"; }
   let thumb = $("puzzle-thumb-" + tab);
-  if (thumb) thumb.classList.remove("locked");
+  if (thumb) { thumb.classList.remove("locked"); thumb._dragReady = false; } // 关键：重置标志，下次 attachPuzzleDrag 会重新绑定
+  let track = $("puzzle-track-" + tab);
+  if (track) track._dragReady = false;
   setPuzzleX(tab, 0);
   let canvas = $("puzzle-canvas-" + tab);
   if (canvas) drawPuzzleBg(canvas, tab);
   puzzleState.verified = false;
+  attachPuzzleDrag(tab); // 重新绑定拖拽事件
 }
 
 function onPwStrength(val, id) {
