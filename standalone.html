@@ -141,6 +141,28 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 .af-link-ghost{font-size:13px;color:var(--text-light);text-decoration:none;cursor:pointer}
 .af-link-ghost:hover{color:var(--text)}
 
+/* ===== 滑动拼图验证 ===== */
+.af-puzzle{border:1.5px solid var(--border);border-radius:10px;padding:10px;background:#f8faff;margin-top:2px}
+.af-puzzle-img{position:relative;width:100%;height:88px;border-radius:8px;background:linear-gradient(135deg,#1a3a6b 0%,#2a5aaa 50%,#1a3a6b 100%);overflow:hidden;margin-bottom:8px}
+.af-puzzle-img::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 30%,rgba(201,168,76,0.35),transparent 38%),radial-gradient(circle at 72% 65%,rgba(255,255,255,0.18),transparent 38%)}
+.af-puzzle-img::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,0.04) 0,rgba(255,255,255,0.04) 1px,transparent 1px 16px)}
+.af-puzzle-hole{position:absolute;top:24px;width:40px;height:40px;border-radius:7px;border:2.5px dashed rgba(255,255,255,0.65);background:rgba(255,255,255,0.12);box-sizing:border-box}
+.af-puzzle-piece{position:absolute;top:24px;width:40px;height:40px;border-radius:7px;background:linear-gradient(135deg,rgba(201,168,76,0.92),rgba(220,190,95,0.92));border:2px solid rgba(255,255,255,0.85);box-shadow:0 2px 10px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.4);cursor:grab;touch-action:none}
+.af-puzzle-piece::after{content:"";position:absolute;left:50%;top:-10px;transform:translateX(-50%);width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,rgba(201,168,76,0.92),rgba(220,190,95,0.92));border:2px solid rgba(255,255,255,0.8);box-shadow:0 1px 4px rgba(0,0,0,0.2)}
+.af-puzzle-piece::before{content:"";position:absolute;left:-5px;top:50%;transform:translateY(-50%);width:14px;height:14px;border-radius:50%;background:rgba(0,0,0,0.15)}
+.af-puzzle-bar{display:flex;align-items:center;gap:8px}
+.af-puzzle-track{flex:1;height:34px;background:#e2e8f0;border-radius:17px;position:relative;cursor:pointer;touch-action:none}
+.af-puzzle-thumb{position:absolute;top:0;left:0;width:46px;height:34px;background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:17px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:700;cursor:grab;touch-action:none;box-shadow:0 2px 8px rgba(26,58,107,0.35);user-select:none;transition:left 0.02s linear}
+.af-puzzle-thumb:active{cursor:grabbing}
+.af-puzzle-thumb.locked{background:linear-gradient(135deg,#1a8a4a,#27b855);cursor:default}
+.af-puzzle-hint{font-size:12px;color:var(--text-light);white-space:nowrap;min-width:60px;text-align:right}
+.af-puzzle-hint.success{color:#1a8a4a;font-weight:600}
+.af-puzzle-hint.fail{color:#c0392b}
+.af-puzzle-refresh{background:#fff;border:1.5px solid var(--border);border-radius:8px;padding:5px 9px;cursor:pointer;font-size:14px;color:var(--text-light);transition:all .2s;flex-shrink:0}
+.af-puzzle-refresh:hover{color:var(--primary);border-color:var(--primary-light)}
+.af-puzzle-img.shake{animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+
 @media(max-width:900px){
   .auth-brand{display:none}
   .auth-main{padding:20px 16px;gap:0}
@@ -592,12 +614,21 @@ function renderAuthPage() {
         </div>
       </div>
       <div class="af-row">
-        <div class="af-icon">🔢</div>
+        <div class="af-icon">🧩</div>
         <div class="af-field">
-          <div class="af-label">验证码</div>
-          <div class="af-captcha-row">
-            <input class="af-input af-cap-in" type="text" id="login-captcha" placeholder="请输入答案" maxlength="6" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()">
-            <canvas class="af-canvas" id="captcha-login" onclick="refreshCaptcha('login')" title="点击刷新验证码"></canvas>
+          <div class="af-label">安全验证</div>
+          <div class="af-puzzle" id="puzzle-login">
+            <div class="af-puzzle-img" id="puzzle-img-login">
+              <div class="af-puzzle-hole" id="puzzle-hole-login"></div>
+              <div class="af-puzzle-piece" id="puzzle-piece-login"></div>
+            </div>
+            <div class="af-puzzle-bar">
+              <div class="af-puzzle-track" id="puzzle-track-login">
+                <div class="af-puzzle-thumb" id="puzzle-thumb-login">➤</div>
+              </div>
+              <span class="af-puzzle-hint" id="puzzle-hint-login">拖动滑块完成拼图</span>
+              <button type="button" class="af-puzzle-refresh" onclick="refreshPuzzle('login')" title="换一换">↻</button>
+            </div>
           </div>
         </div>
       </div>
@@ -645,12 +676,21 @@ function renderAuthPage() {
         </div>
       </div>
       <div class="af-row">
-        <div class="af-icon">🔢</div>
+        <div class="af-icon">🧩</div>
         <div class="af-field">
-          <div class="af-label">验证码</div>
-          <div class="af-captcha-row">
-            <input class="af-input af-cap-in" type="text" id="reg-captcha" placeholder="请输入答案" maxlength="6" autocomplete="off">
-            <canvas class="af-canvas" id="captcha-reg" onclick="refreshCaptcha('reg')" title="点击刷新验证码"></canvas>
+          <div class="af-label">安全验证</div>
+          <div class="af-puzzle" id="puzzle-register">
+            <div class="af-puzzle-img" id="puzzle-img-register">
+              <div class="af-puzzle-hole" id="puzzle-hole-register"></div>
+              <div class="af-puzzle-piece" id="puzzle-piece-register"></div>
+            </div>
+            <div class="af-puzzle-bar">
+              <div class="af-puzzle-track" id="puzzle-track-register">
+                <div class="af-puzzle-thumb" id="puzzle-thumb-register">➤</div>
+              </div>
+              <span class="af-puzzle-hint" id="puzzle-hint-register">拖动滑块完成拼图</span>
+              <button type="button" class="af-puzzle-refresh" onclick="refreshPuzzle('register')" title="换一换">↻</button>
+            </div>
           </div>
         </div>
       </div>
@@ -670,12 +710,21 @@ function renderAuthPage() {
         </div>
       </div>
       <div class="af-row">
-        <div class="af-icon">🔢</div>
+        <div class="af-icon">🧩</div>
         <div class="af-field">
-          <div class="af-label">验证码</div>
-          <div class="af-captcha-row">
-            <input class="af-input af-cap-in" type="text" id="fg-captcha" placeholder="请输入答案" maxlength="6" autocomplete="off">
-            <canvas class="af-canvas" id="captcha-forgot" onclick="refreshCaptcha('forgot')" title="点击刷新验证码"></canvas>
+          <div class="af-label">安全验证</div>
+          <div class="af-puzzle" id="puzzle-forgot">
+            <div class="af-puzzle-img" id="puzzle-img-forgot">
+              <div class="af-puzzle-hole" id="puzzle-hole-forgot"></div>
+              <div class="af-puzzle-piece" id="puzzle-piece-forgot"></div>
+            </div>
+            <div class="af-puzzle-bar">
+              <div class="af-puzzle-track" id="puzzle-track-forgot">
+                <div class="af-puzzle-thumb" id="puzzle-thumb-forgot">➤</div>
+              </div>
+              <span class="af-puzzle-hint" id="puzzle-hint-forgot">拖动滑块完成拼图</span>
+              <button type="button" class="af-puzzle-refresh" onclick="refreshPuzzle('forgot')" title="换一换">↻</button>
+            </div>
           </div>
         </div>
       </div>
@@ -780,12 +829,135 @@ function switchAuthTab(tab) {
     document.getElementById("tab-"+t).classList.toggle("active", t===tab);
   });
   // 刷新验证码
-  setTimeout(() => refreshCaptcha(tab), 50);
+  setTimeout(() => renderPuzzle(tab), 50);
 }
 
 function refreshCaptcha(tab) {
-  let canvas = document.getElementById("captcha-"+tab);
-  if (canvas) renderCaptchaCanvas(canvas);
+  renderPuzzle(tab);
+}
+
+// ===== 滑动拼图验证 =====
+let puzzleState = { targetX: 120, verified: false, maxOffset: 240, tolerance: 5, dragging: false, startX: 0, startPieceX: 0, activeTab: "login" };
+
+function generatePuzzle() {
+  puzzleState.targetX = 70 + Math.floor(Math.random() * 80); // 70~149
+  puzzleState.verified = false;
+}
+
+function renderPuzzle(tab) {
+  if (!tab) tab = puzzleState.activeTab;
+  let img = $("puzzle-img-" + tab);
+  let track = $("puzzle-track-" + tab);
+  if (!img || !track) return;
+  let w = img.clientWidth;
+  let pieceW = 40;
+  puzzleState.maxOffset = w - pieceW;
+  let minT = 60, maxT = puzzleState.maxOffset - pieceW - 20;
+  if (maxT < minT + 30) maxT = minT + 30;
+  puzzleState.targetX = minT + Math.floor(Math.random() * Math.max(1, maxT - minT));
+  puzzleState.verified = false;
+  puzzleState.activeTab = tab;
+  // set hole
+  let hole = $("puzzle-hole-" + tab);
+  if (hole) hole.style.left = puzzleState.targetX + "px";
+  // reset piece and thumb
+  setPuzzleX(tab, 0);
+  // reset hint
+  let hint = $("puzzle-hint-" + tab);
+  if (hint) { hint.textContent = "拖动滑块完成拼图"; hint.className = "af-puzzle-hint"; }
+  // unlock thumb
+  let thumb = $("puzzle-thumb-" + tab);
+  if (thumb) thumb.classList.remove("locked");
+  img.classList.remove("shake");
+  // attach drag listeners (one-time per tab)
+  attachPuzzleDrag(tab);
+}
+
+function setPuzzleX(tab, x) {
+  x = Math.max(0, Math.min(x, puzzleState.maxOffset));
+  let piece = $("puzzle-piece-" + tab);
+  let thumb = $("puzzle-thumb-" + tab);
+  if (piece) piece.style.left = x + "px";
+  if (thumb) thumb.style.left = x + "px";
+}
+
+function attachPuzzleDrag(tab) {
+  let thumb = $("puzzle-thumb-" + tab);
+  let track = $("puzzle-track-" + tab);
+  if (!thumb || !track) return;
+  if (thumb._dragReady) return;
+  thumb._dragReady = true;
+
+  function onDown(e) {
+    if (puzzleState.verified) return;
+    e.preventDefault();
+    let ev = e.touches ? e.touches[0] : e;
+    puzzleState.dragging = true;
+    puzzleState.startX = ev.clientX;
+    let piece = $("puzzle-piece-" + tab);
+    puzzleState.startPieceX = parseInt(piece.style.left) || 0;
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+    document.addEventListener("touchmove", onMove, { passive: false });
+    document.addEventListener("touchend", onUp);
+  }
+
+  function onMove(e) {
+    if (!puzzleState.dragging) return;
+    e.preventDefault();
+    let ev = e.touches ? e.touches[0] : e;
+    let dx = ev.clientX - puzzleState.startX;
+    setPuzzleX(tab, puzzleState.startPieceX + dx);
+  }
+
+  function onUp() {
+    if (!puzzleState.dragging) return;
+    puzzleState.dragging = false;
+    document.removeEventListener("mousemove", onMove);
+    document.removeEventListener("mouseup", onUp);
+    document.removeEventListener("touchmove", onMove);
+    document.removeEventListener("touchend", onUp);
+    verifyPuzzle(tab);
+  }
+
+  thumb.addEventListener("mousedown", onDown);
+  thumb.addEventListener("touchstart", onDown, { passive: false });
+  // also track mousedown on the whole track for better UX
+  track.addEventListener("mousedown", function(e) {
+    if (puzzleState.verified) return;
+    e.preventDefault();
+    let ev = e.touches ? e.touches[0] : e;
+    puzzleState.dragging = true;
+    puzzleState.startX = ev.clientX;
+    puzzleState.startPieceX = 0; // snap to click position
+    setPuzzleX(tab, 0);
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+  });
+}
+
+function verifyPuzzle(tab) {
+  let piece = $("puzzle-piece-" + tab);
+  let pieceX = parseInt(piece.style.left) || 0;
+  let hint = $("puzzle-hint-" + tab);
+  let img = $("puzzle-img-" + tab);
+  let thumb = $("puzzle-thumb-" + tab);
+  if (Math.abs(pieceX - puzzleState.targetX) <= puzzleState.tolerance) {
+    puzzleState.verified = true;
+    setPuzzleX(tab, puzzleState.targetX);
+    if (hint) { hint.textContent = "✓ 验证成功"; hint.className = "af-puzzle-hint success"; }
+    if (thumb) thumb.classList.add("locked");
+  } else {
+    puzzleState.verified = false;
+    setPuzzleX(tab, 0);
+    if (img) { img.classList.add("shake"); setTimeout(function() { img.classList.remove("shake"); }, 450); }
+    if (hint) { hint.textContent = "未对齐，请重试"; hint.className = "af-puzzle-hint fail"; setTimeout(function() { if (hint) { hint.textContent = "拖动滑块完成拼图"; hint.className = "af-puzzle-hint"; } }, 1500); }
+  }
+}
+
+function refreshPuzzle(tab) {
+  generatePuzzle();
+  renderPuzzle(tab);
 }
 
 function onPwStrength(val, id) {
@@ -812,16 +984,8 @@ function togglePw(id, btn) {
 function doLogin() {
   let username = $("login-username")?.value?.trim();
   let pw = $("login-pw")?.value;
-  let captcha = $("login-captcha")?.value?.trim();
-
   if (!username || !pw) { showToast("请填写用户名和密码", "error"); return; }
-
-  // 验证码
-  let q = getCaptchaQ();
-  if (String(captcha).trim() !== String(q.answer)) {
-    showToast("验证码错误，请重试", "error");
-    refreshCaptcha("login");
-    return;
+  if (!puzzleState.verified) { showToast("请先完成安全验证", "error"); return;
   }
 
   let users = getUsers();
@@ -844,18 +1008,11 @@ function doRegister() {
   let username = $("reg-username")?.value?.trim();
   let pw = $("reg-pw")?.value;
   let pw2 = $("reg-pw2")?.value;
-  let captcha = $("reg-captcha")?.value?.trim();
-
   if (!name) { showToast("请输入真实姓名", "error"); return; }
   if (!username || username.length < 2) { showToast("请输入正确的用户名（至少2位）", "error"); return; }
   if (pw.length < 6) { showToast("密码至少6位", "error"); return; }
   if (pw !== pw2) { showToast("两次密码不一致", "error"); return; }
-
-  let q = getCaptchaQ();
-  if (String(captcha).trim() !== String(q.answer)) {
-    showToast("验证码错误，请重试", "error");
-    refreshCaptcha("register");
-    return;
+  if (!puzzleState.verified) { showToast("请先完成安全验证", "error"); return;
   }
 
   let users = getUsers();
@@ -885,9 +1042,7 @@ function doForgot() {
 
   if (forgotStep === 0) {
     if (!username || username.length < 2) { showToast("请输入正确的用户名", "error"); return; }
-    let q = getCaptchaQ();
-    if (String(captcha).trim() !== String(q.answer)) {
-      showToast("验证码错误", "error"); refreshCaptcha("forgot"); return;
+    if (!puzzleState.verified) { showToast("请先完成安全验证", "error"); return;
     }
     let users = getUsers();
     if (!users.find(u => u.username === username)) {
@@ -1628,12 +1783,13 @@ window.onload = () => {
   state.view = currentUser ? "home" : "auth";
   render();
   // 自动刷新验证码
-  setTimeout(() => refreshCaptcha(state.authTab), 100);
+  setTimeout(() => renderPuzzle(state.authTab), 100);
 };
 
 // 全局函数
 window.switchAuthTab = switchAuthTab;
 window.refreshCaptcha = refreshCaptcha;
+window.refreshPuzzle = refreshPuzzle;
 window.onPwStrength = onPwStrength;
 window.togglePw = togglePw;
 window.showAdminTab = showAdminTab;
