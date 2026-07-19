@@ -273,6 +273,12 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 .detail-stat.danger .stat-num{color:var(--danger)}
 .detail-stat.warn{background:#fff8e8;border-color:#e8d090}
 .detail-stat.warn .stat-num{color:var(--warn)}
+.detail-stat.clickable{cursor:pointer;transition:transform .15s,box-shadow .15s}
+.detail-stat.clickable:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.1)}
+.detail-stat.active{outline:2px solid var(--primary-light);outline-offset:2px}
+.result-filter-tip{font-size:12px;color:var(--text-light);margin:-6px 0 14px;padding-left:2px}
+.result-filter-tip a{color:var(--primary-light);cursor:pointer;font-weight:600}
+.q-gr{color:var(--warn);font-weight:600;font-size:12px}
 .q-list-item{border:1px solid var(--border);border-radius:11px;padding:18px;margin-bottom:10px}
 .q-list-item .q-list-stem{font-size:14px;font-weight:600;margin-bottom:10px}
 .tag{padding:2px 9px;border-radius:5px;font-size:11px;font-weight:600}
@@ -453,7 +459,7 @@ function saveRecords(r) { localStorage.setItem(RECORDS_KEY, JSON.stringify(r)); 
 let questions = getQuestions();
 let currentUser = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
 let isAdmin = false;
-let state = { view: "auth", authTab: "login", candName: "", taskId: 1, questions: [], answers: {}, currentQ: 0, submitted: false, score: 0, passed: false };
+let state = { view: "auth", authTab: "login", candName: "", taskId: 1, questions: [], answers: {}, currentQ: 0, submitted: false, score: 0, passed: false, resultFilter: "all" };
 let timerInterval = null;
 let currentCaptcha = { code: "", ops: [] };
 
@@ -1142,6 +1148,12 @@ function updateNav() {
 }
 
 function jumpTo(idx) { state.currentQ=idx; renderCurrentQ(); updateNav(); }
+function setResultFilter(f) {
+  if (f!=='all' && state.resultFilter===f) f='all';
+  state.resultFilter=f;
+  let app=$("app");
+  if(app) app.innerHTML=renderResult();
+}
 function prevQ() { if(state.currentQ>0){state.currentQ--;renderCurrentQ();updateNav()} }
 function nextQ() { if(state.currentQ<state.questions.length-1){state.currentQ++;renderCurrentQ();updateNav()} }
 
@@ -1197,6 +1209,34 @@ function doSubmit() {
   scrollTo(0,0);
 }
 
+// 主观题（简答/场景）按关键词覆盖率自动评分
+function gradeSubjective(q, ua) {
+  let ua2 = (ua||"").toLowerCase();
+  let keys = (q.keyword||"").split(/[；;]/).map(k=>k.trim()).filter(Boolean);
+  if (keys.length === 0) return { matched:0, total:0, ratio:0, score:0, auto:false };
+  let matched = keys.filter(k => ua2.indexOf(k.toLowerCase()) >= 0).length;
+  let ratio = matched / keys.length;
+  let score = Math.round((q.score||0) * ratio);
+  return { matched, total:keys.length, ratio, score, auto:true };
+}
+
+// 单题评判结果：返回 {isObj,isSubj,ok,g}
+function questionResult(q, ua) {
+  let isObj = ["single","multi","judge"].includes(q.qtype);
+  let isSubj = q.qtype === "short" || q.qtype === "scenario";
+  if (isObj) {
+    let ok;
+    if (q.qtype === "multi") ok = (ua||"").split(",").sort().join(",") === q.answer.split(",").sort().join(",");
+    else ok = (ua||"") === q.answer;
+    return { isObj, isSubj, ok, g:null };
+  }
+  if (isSubj) {
+    let g = gradeSubjective(q, ua);
+    return { isObj, isSubj, ok: g.total>0 && g.ratio>=0.5, g };
+  }
+  return { isObj, isSubj, ok:false, g:null };
+}
+
 function calcScore(qs, answers) {
   let auto=0;
   qs.forEach(q => {
@@ -1205,6 +1245,8 @@ function calcScore(qs, answers) {
     } else if(q.qtype==="multi") {
       let ca=q.answer.split(",").sort().join(",");
       if((answers[q.id]||"").split(",").sort().join(",")===ca) auto+=q.score;
+    } else if(q.qtype==="short"||q.qtype==="scenario") {
+      auto += gradeSubjective(q, answers[q.id]).score;
     }
   });
   return auto;
@@ -1227,30 +1269,38 @@ function saveRecord(score, passed) {
 function renderResult() {
   let total=totalScore(state.questions);
   let rightCount=state.questions.filter(q=>{
-    if(["single","judge"].includes(q.qtype)) return (state.answers[q.id]||"")===q.answer;
-    if(q.qtype==="multi") return (state.answers[q.id]||"").split(",").sort().join(",")===q.answer.split(",").sort().join(",");
-    return false;
+    let r=questionResult(q, state.answers[q.id]);
+    return r.ok;
   }).length;
 
+  let subjCount=state.questions.filter(q=>q.qtype==="short"||q.qtype==="scenario").length;
+  let subjScore=state.questions.filter(q=>q.qtype==="short"||q.qtype==="scenario").reduce((s,q)=>s+gradeSubjective(q, state.answers[q.id]).score, 0);
+
   let qList=state.questions.map((q,i)=>{
-    let isObj=["single","multi","judge"].includes(q.qtype);
     let ua=state.answers[q.id]||"";
-    let ok=false,tagCls="tag-wait",tagText="待阅";
-    if(isObj){
-      if(q.qtype==="multi") ok=ua.split(",").sort().join(",")===q.answer.split(",").sort().join(",");
-      else ok=ua===q.answer;
-      tagCls=ok?"tag-right":"tag-wrong";
-      tagText=ok?"✓ 正确":"✗ 错误";
-    } else {tagCls="tag-manual";tagText="待人工阅卷";}
+    let r=questionResult(q, ua);
+    let tagCls, tagText, extraMeta="";
+    if(r.isObj){
+      tagCls=r.ok?"tag-right":"tag-wrong";
+      tagText=r.ok?"✓ 正确":"✗ 错误";
+    } else if(r.isSubj){
+      if(r.g.total===0){ tagCls="tag-manual"; tagText="待人工阅卷"; }
+      else { tagCls=r.ok?"tag-right":"tag-wrong"; tagText="自动评 "+r.g.score+"分"; extraMeta=`<span class="q-gr">关键词命中 ${r.g.matched}/${r.g.total}（覆盖率 ${Math.round(r.g.ratio*100)}%）</span>`; }
+    } else { tagCls="tag-manual"; tagText="待人工阅卷"; }
+    let cat=r.ok?"right":"wrong";
+    if(r.isSubj) cat="subjective";
+    if(state.resultFilter!=="all" && state.resultFilter!==cat) return "";
     return `<div class="q-list-item">
       <div class="q-list-stem">${i+1}. ${esc(q.stem)} <span class="tag ${tagCls}">${tagText}</span> <span class="tag" style="background:#f1f4f8;color:var(--text-light)">${q.score}分</span></div>
       <div class="q-list-meta">
         <span>你的答案：<strong>${esc(ua)||"未作答"}</strong></span>
-        ${isObj?`<span>正确答案：<strong>${esc(q.answer)}</strong></span>`:""}
+        ${r.isObj?`<span>正确答案：<strong>${esc(q.answer)}</strong></span>`:""}
+        ${extraMeta}
         ${q.explanation?`<span style="color:var(--primary-light)">${esc(q.explanation)}</span>`:""}
       </div>
     </div>`;
-  }).join("");
+  }).filter(Boolean).join("");
+  if(!qList) qList=`<p style="text-align:center;color:var(--text-light);font-size:13px;padding:24px">该分类下暂无题目</p>`;
 
   let certId="LV"+(+new Date()).toString(36).toUpperCase();
   let certDate=new Date().toLocaleDateString("zh-CN",{year:"numeric",month:"long",day:"numeric"});
@@ -1276,11 +1326,12 @@ function renderResult() {
       <div class="result-detail-header">📊 答题详情（共 ${state.questions.length} 题）</div>
       <div class="result-detail-body">
         <div class="detail-stats">
-          <div class="detail-stat success"><div class="stat-num">${rightCount}</div><div class="stat-label">答对题数</div></div>
-          <div class="detail-stat danger"><div class="stat-num">${state.questions.filter(q=>["single","multi","judge"].includes(q.qtype)).length-rightCount}</div><div class="stat-label">答错题数</div></div>
-          <div class="detail-stat warn"><div class="stat-num">${state.questions.filter(q=>["short","scenario"].includes(q.qtype)).length}</div><div class="stat-label">主观题（待阅）</div></div>
-          <div class="detail-stat"><div class="stat-num">80</div><div class="stat-label">合格线</div></div>
+          <div class="detail-stat success clickable${state.resultFilter==='right'?' active':''}" onclick="setResultFilter('right')"><div class="stat-num">${rightCount}</div><div class="stat-label">答对题数 ✓</div></div>
+          <div class="detail-stat danger clickable${state.resultFilter==='wrong'?' active':''}" onclick="setResultFilter('wrong')"><div class="stat-num">${state.questions.length-rightCount}</div><div class="stat-label">答错题数 ✗</div></div>
+          <div class="detail-stat warn clickable${state.resultFilter==='subjective'?' active':''}" onclick="setResultFilter('subjective')"><div class="stat-num">${subjCount}</div><div class="stat-label">主观题（自动评 ${subjScore}分）</div></div>
+          <div class="detail-stat clickable${state.resultFilter==='all'?' active':''}" onclick="setResultFilter('all')"><div class="stat-num">全部</div><div class="stat-label">查看全部</div></div>
         </div>
+        ${state.resultFilter!=='all'?`<div class="result-filter-tip">当前显示：<strong>${state.resultFilter==='right'?'答对的题目':state.resultFilter==='wrong'?'答错的题目':'主观题（已自动评分）'}</strong> · <a onclick="setResultFilter('all')">查看全部</a></div>`:""}
         ${qList}
       </div>
     </div>
