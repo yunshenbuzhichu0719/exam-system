@@ -206,7 +206,11 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 .sidebar{width:210px;flex-shrink:0;position:sticky;top:80px}
 .sidebar .card{padding:18px}
 .sidebar-title{font-size:13px;font-weight:700;color:var(--primary);margin-bottom:14px}
-.q-nav{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:14px}
+.q-nav{display:flex;flex-direction:column;gap:14px;margin-bottom:14px}
+.q-group-title{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--text-light);margin-bottom:8px}
+.q-group-title .q-badge{display:inline-block;width:3px;height:13px;border-radius:2px;background:var(--primary-light)}
+.q-group-range{margin-left:6px;font-weight:500;font-size:11px;color:#9aa6b4}
+.q-group-dots{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
 .q-dot{width:34px;height:34px;border-radius:7px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--text-light);cursor:pointer;transition:all .15s}
 .q-dot.answered{border-color:var(--primary-light);background:#eef2ff;color:var(--primary-light)}
 .q-dot.current{border-color:var(--accent);background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(201,168,76,.4)}
@@ -342,7 +346,7 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 @media(max-width:900px){
   .page-exam{flex-direction:column}
   .sidebar{width:100%;position:static}
-  .q-nav{grid-template-columns:repeat(10,1fr)}
+  .q-group-dots{grid-template-columns:repeat(10,1fr)}
   .hero{flex-direction:column;text-align:center;padding:36px 28px;gap:22px}
   .detail-stats{grid-template-columns:repeat(2,1fr)}
   .cert-box{padding:30px 22px}
@@ -975,11 +979,31 @@ function renderExam() {
   let total = totalScore(state.questions);
   let answered = state.questions.filter(q => !!state.answers[q.id]).length;
   let pct = Math.round(answered / state.questions.length * 100);
-  let navHtml = state.questions.map((q, i) => {
-    let cls = "q-dot";
-    if (i === state.currentQ) cls += " current";
-    else if (state.answers[q.id]) cls += " answered";
-    return `<div class="${cls}" onclick="jumpTo(${i})">${i+1}</div>`;
+  let typeLabel = {single:"单选题",multi:"多选题",judge:"判断题",short:"简答题",scenario:"场景分析题"};
+  let typeColor = {single:"#1a5a9a",multi:"#6b3fa0",judge:"#1a8a4a",short:"#c05a20",scenario:"#8a1a4a"};
+  let order = [];
+  let groups = {};
+  state.questions.forEach((q,i) => {
+    let t = q.qtype || "other";
+    if (!groups[t]) { groups[t] = []; order.push(t); }
+    groups[t].push(i);
+  });
+  let navHtml = order.map(t => {
+    let idxs = groups[t];
+    let start = idxs[0] + 1, end = idxs[idxs.length - 1] + 1;
+    let rangeTxt = idxs.length > 1 ? (start + "-" + end + "题") : (start + "题");
+    let dots = idxs.map(i => {
+      let cls = "q-dot";
+      if (i === state.currentQ) cls += " current";
+      else if (state.answers[state.questions[i].id]) cls += " answered";
+      return `<div class="${cls}" data-idx="${i}" onclick="jumpTo(${i})">${i+1}</div>`;
+    }).join("");
+    let lbl = typeLabel[t] || "其他";
+    let col = typeColor[t] || "#1a3a6b";
+    return `<div class="q-group">
+      <div class="q-group-title"><span class="q-badge" style="background:${col}"></span>${lbl}<span class="q-group-range">${rangeTxt}</span></div>
+      <div class="q-group-dots">${dots}</div>
+    </div>`;
   }).join("");
 
   $("app").innerHTML = `
@@ -1106,7 +1130,7 @@ function updateNav() {
   let nav = document.querySelector(".q-nav");
   if (!nav) return;
   state.questions.forEach((q,i) => {
-    let dot = nav.children[i];
+    let dot = nav.querySelector('.q-dot[data-idx="'+i+'"]');
     if (!dot) return;
     dot.className = "q-dot";
     if (i===state.currentQ) dot.classList.add("current");
