@@ -169,28 +169,6 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 .af-link-ghost{font-size:13px;color:var(--text-light);text-decoration:none;cursor:pointer}
 .af-link-ghost:hover{color:var(--text)}
 
-/* ===== 滑动拼图验证 ===== */
-.af-puzzle{border:1.5px solid var(--border);border-radius:10px;padding:10px;background:#f8faff;margin-top:2px}
-.af-puzzle-img{position:relative;width:100%;height:88px;border-radius:8px;overflow:hidden;margin-bottom:8px}
-.af-puzzle-img::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 30%,rgba(201,168,76,0.35),transparent 38%),radial-gradient(circle at 72% 65%,rgba(255,255,255,0.18),transparent 38%)}
-.af-puzzle-img::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,0.04) 0,rgba(255,255,255,0.04) 1px,transparent 1px 16px)}
-.af-puzzle-hole{position:absolute;top:24px;width:40px;height:40px;border-radius:7px;border:2.5px dashed rgba(255,255,255,0.65);background:rgba(255,255,255,0.12);box-sizing:border-box}
-.af-puzzle-piece{position:absolute;top:24px;width:40px;height:40px;border-radius:7px;background:linear-gradient(135deg,rgba(201,168,76,0.92),rgba(220,190,95,0.92));border:2px solid rgba(255,255,255,0.85);box-shadow:0 2px 10px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.4);cursor:grab;touch-action:none}
-.af-puzzle-piece::after{content:"";position:absolute;left:50%;top:-10px;transform:translateX(-50%);width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,rgba(201,168,76,0.92),rgba(220,190,95,0.92));border:2px solid rgba(255,255,255,0.8);box-shadow:0 1px 4px rgba(0,0,0,0.2)}
-.af-puzzle-piece::before{content:"";position:absolute;left:-5px;top:50%;transform:translateY(-50%);width:14px;height:14px;border-radius:50%;background:rgba(0,0,0,0.15)}
-.af-puzzle-bar{display:flex;align-items:center;gap:8px}
-.af-puzzle-track{flex:1;height:34px;background:#e2e8f0;border-radius:17px;position:relative;cursor:pointer;touch-action:none}
-.af-puzzle-thumb{position:absolute;top:0;left:0;width:46px;height:34px;background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:17px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:700;cursor:grab;touch-action:none;box-shadow:0 2px 8px rgba(26,58,107,0.35);user-select:none;transition:left 0.02s linear}
-.af-puzzle-thumb:active{cursor:grabbing}
-.af-puzzle-thumb.locked{background:linear-gradient(135deg,#1a8a4a,#27b855);cursor:default}
-.af-puzzle-hint{font-size:12px;color:var(--text-light);white-space:nowrap;min-width:60px;text-align:right}
-.af-puzzle-hint.success{color:#1a8a4a;font-weight:600}
-.af-puzzle-hint.fail{color:#c0392b}
-.af-puzzle-refresh{background:#fff;border:1.5px solid var(--border);border-radius:8px;padding:5px 9px;cursor:pointer;font-size:14px;color:var(--text-light);transition:all .2s;flex-shrink:0}
-.af-puzzle-refresh:hover{color:var(--primary);border-color:var(--primary-light)}
-.af-puzzle-img.shake{animation:shake .4s}
-@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
-
 @media(max-width:900px){
   .auth-brand{display:none}
   .auth-main{padding:20px 16px;gap:0}
@@ -641,26 +619,6 @@ function renderAuthPage() {
           </div>
         </div>
       </div>
-      <div class="af-row">
-        <div class="af-icon">🧩</div>
-        <div class="af-field">
-          <div class="af-label">安全验证</div>
-          <div class="af-puzzle" id="puzzle-login">
-            <div class="af-puzzle-img" id="puzzle-img-login">
-              <canvas id="puzzle-canvas-login"></canvas>
-              <div class="af-puzzle-hole" id="puzzle-hole-login"></div>
-              <div class="af-puzzle-piece" id="puzzle-piece-login"></div>
-            </div>
-            <div class="af-puzzle-bar">
-              <div class="af-puzzle-track" id="puzzle-track-login">
-                <div class="af-puzzle-thumb" id="puzzle-thumb-login">➤</div>
-              </div>
-              <span class="af-puzzle-hint" id="puzzle-hint-login">拖动滑块完成拼图</span>
-              <button type="button" class="af-puzzle-refresh" onclick="refreshPuzzle('login')" title="换一换">↻</button>
-            </div>
-          </div>
-        </div>
-      </div>
       <button class="af-submit-btn" onclick="doLogin()">登 录</button>
       <div class="af-links">
         <a class="af-link-primary" onclick="switchAuthTab('register')">新用户注册</a>
@@ -704,26 +662,6 @@ function renderAuthPage() {
           </div>
         </div>
       </div>
-      <div class="af-row">
-        <div class="af-icon">🧩</div>
-        <div class="af-field">
-          <div class="af-label">安全验证</div>
-          <div class="af-puzzle" id="puzzle-register">
-            <div class="af-puzzle-img" id="puzzle-img-register">
-              <canvas id="puzzle-canvas-register"></canvas>
-              <div class="af-puzzle-hole" id="puzzle-hole-register"></div>
-              <div class="af-puzzle-piece" id="puzzle-piece-register"></div>
-            </div>
-            <div class="af-puzzle-bar">
-              <div class="af-puzzle-track" id="puzzle-track-register">
-                <div class="af-puzzle-thumb" id="puzzle-thumb-register">➤</div>
-              </div>
-              <span class="af-puzzle-hint" id="puzzle-hint-register">拖动滑块完成拼图</span>
-              <button type="button" class="af-puzzle-refresh" onclick="refreshPuzzle('register')" title="换一换">↻</button>
-            </div>
-          </div>
-        </div>
-      </div>
       <button class="af-submit-btn af-reg-btn" onclick="doRegister()">立即注册</button>
       <div class="af-links">
         <a class="af-link-primary" onclick="switchAuthTab('login')">已有账号，直接登录</a>
@@ -737,26 +675,6 @@ function renderAuthPage() {
         <div class="af-field">
           <div class="af-label">用户名</div>
           <input class="af-input" type="text" id="fg-username" placeholder="请输入注册的用户名" maxlength="20" autocomplete="off">
-        </div>
-      </div>
-      <div class="af-row">
-        <div class="af-icon">🧩</div>
-        <div class="af-field">
-          <div class="af-label">安全验证</div>
-          <div class="af-puzzle" id="puzzle-forgot">
-            <div class="af-puzzle-img" id="puzzle-img-forgot">
-              <canvas id="puzzle-canvas-forgot"></canvas>
-              <div class="af-puzzle-hole" id="puzzle-hole-forgot"></div>
-              <div class="af-puzzle-piece" id="puzzle-piece-forgot"></div>
-            </div>
-            <div class="af-puzzle-bar">
-              <div class="af-puzzle-track" id="puzzle-track-forgot">
-                <div class="af-puzzle-thumb" id="puzzle-thumb-forgot">➤</div>
-              </div>
-              <span class="af-puzzle-hint" id="puzzle-hint-forgot">拖动滑块完成拼图</span>
-              <button type="button" class="af-puzzle-refresh" onclick="refreshPuzzle('forgot')" title="换一换">↻</button>
-            </div>
-          </div>
         </div>
       </div>
       <div id="fg-step2" style="display:none">
@@ -859,306 +777,9 @@ function switchAuthTab(tab) {
     document.getElementById("form-"+t).classList.toggle("active", t===tab);
     document.getElementById("tab-"+t).classList.toggle("active", t===tab);
   });
-  // 刷新验证码
-  setTimeout(() => renderPuzzle(tab), 50);
 }
 
-function refreshCaptcha(tab) {
-  renderPuzzle(tab);
-}
-
-// ===== 滑动拼图验证 =====
-let puzzleState = { targetX: 120, verified: false, maxOffset: 240, tolerance: 5, dragging: false, startX: 0, startPieceX: 0, activeTab: "login" };
-
-// ---- 8种随机背景主题 ----
-const PUZZLE_THEMES = [
-  // 0: 星空
-  function(c, W, H) {
-    let g = c.createLinearGradient(0,0,0,H);
-    g.addColorStop(0,"#0a0a2e"); g.addColorStop(1,"#1a1a4e");
-    c.fillStyle = g; c.fillRect(0,0,W,H);
-    for (let i=0;i<45;i++) {
-      let sx=Math.random()*W, sy=Math.random()*H, r=0.5+Math.random()*1.8;
-      c.beginPath(); c.arc(sx,sy,r,0,Math.PI*2);
-      c.fillStyle="rgba(255,255,255,"+(0.4+Math.random()*0.6)+")"; c.fill();
-    }
-    // 月亮
-    c.beginPath(); c.arc(W*0.8,H*0.25,14,0,Math.PI*2);
-    let mg=c.createRadialGradient(W*0.8,H*0.25,0,W*0.8,H*0.25,14);
-    mg.addColorStop(0,"#fffde0"); mg.addColorStop(1,"#ffe080");
-    c.fillStyle=mg; c.fill();
-  },
-  // 1: 日落
-  function(c, W, H) {
-    let g=c.createLinearGradient(0,0,0,H);
-    g.addColorStop(0,"#ff6a00"); g.addColorStop(0.45,"#ff4500"); g.addColorStop(0.75,"#c0392b"); g.addColorStop(1,"#2c003e");
-    c.fillStyle=g; c.fillRect(0,0,W,H);
-    // 太阳
-    let sx=W*0.65, sy=H*0.55, sr=18;
-    let sg=c.createRadialGradient(sx,sy,0,sx,sy,sr+8);
-    sg.addColorStop(0,"rgba(255,240,100,0.9)"); sg.addColorStop(1,"rgba(255,100,0,0)");
-    c.beginPath(); c.arc(sx,sy,sr+8,0,Math.PI*2); c.fillStyle=sg; c.fill();
-    c.beginPath(); c.arc(sx,sy,sr,0,Math.PI*2); c.fillStyle="#ffe566"; c.fill();
-    // 云
-    function cloud(cx,cy,cr) {
-      c.beginPath(); c.arc(cx,cy,cr,0,Math.PI*2); c.arc(cx+cr*1.2,cy-cr*0.3,cr*0.8,0,Math.PI*2);
-      c.arc(cx+cr*2.2,cy,cr*0.9,0,Math.PI*2); c.fillStyle="rgba(255,220,180,0.55)"; c.fill();
-    }
-    cloud(W*0.2,H*0.25,8); cloud(W*0.55,H*0.15,6);
-  },
-  // 2: 极光
-  function(c, W, H) {
-    let g=c.createLinearGradient(0,0,0,H);
-    g.addColorStop(0,"#0f2027"); g.addColorStop(0.5,"#203a43"); g.addColorStop(1,"#2c5364");
-    c.fillStyle=g; c.fillRect(0,0,W,H);
-    for (let i=0;i<5;i++) {
-      let x0=Math.random()*W, y0=Math.random()*H*0.6;
-      let gg=c.createLinearGradient(x0,y0,x0+60+Math.random()*40,y0+H*0.4);
-      let cols=["rgba(0,255,127,","rgba(100,200,255,","rgba(180,100,255,","rgba(0,200,200,"];
-      let col=cols[i%cols.length];
-      gg.addColorStop(0,col+"0.55)"); gg.addColorStop(0.5,col+"0.25)"); gg.addColorStop(1,col+"0)");
-      c.save(); c.translate(x0,y0); c.rotate(-0.3+Math.random()*0.4);
-      c.fillStyle=gg; c.fillRect(-30,-H,120,H*2); c.restore();
-    }
-  },
-  // 3: 电路板
-  function(c, W, H) {
-    c.fillStyle="#0a2a1a"; c.fillRect(0,0,W,H);
-    c.strokeStyle="rgba(0,220,100,0.5)"; c.lineWidth=1.2;
-    for (let y=0;y<H;y+=14) { c.beginPath(); c.moveTo(0,y); c.lineTo(W,y); c.stroke(); }
-    for (let x=0;x<W;x+=14) { c.beginPath(); c.moveTo(x,0); c.lineTo(x,H); c.stroke(); }
-    for (let i=0;i<8;i++) {
-      let px=10+Math.random()*(W-20), py=10+Math.random()*(H-20);
-      c.beginPath(); c.arc(px,py,4,0,Math.PI*2); c.fillStyle="rgba(0,220,100,0.9)"; c.fill();
-      c.beginPath(); c.arc(px,py,7,0,Math.PI*2); c.strokeStyle="rgba(0,220,100,0.4)"; c.lineWidth=1; c.stroke();
-    }
-  },
-  // 4: 山水
-  function(c, W, H) {
-    let g=c.createLinearGradient(0,0,0,H);
-    g.addColorStop(0,"#1565c0"); g.addColorStop(0.55,"#42a5f5"); g.addColorStop(1,"#bbdefb");
-    c.fillStyle=g; c.fillRect(0,0,W,H);
-    // 山1
-    c.beginPath(); c.moveTo(0,H*0.65); c.lineTo(W*0.35,H*0.25); c.lineTo(W*0.65,H*0.55); c.lineTo(W,H*0.3); c.lineTo(W,H); c.lineTo(0,H); c.closePath();
-    c.fillStyle="#2e7d32"; c.fill();
-    // 山2
-    c.beginPath(); c.moveTo(0,H*0.75); c.lineTo(W*0.2,H*0.5); c.lineTo(W*0.5,H*0.7); c.lineTo(W*0.75,H*0.4); c.lineTo(W,H*0.65); c.lineTo(W,H); c.lineTo(0,H); c.closePath();
-    c.fillStyle="#388e3c"; c.fill();
-    // 水面
-    c.fillStyle="rgba(255,255,255,0.25)"; c.fillRect(0,H*0.78,W,H*0.22);
-  },
-  // 5: 彩色三角
-  function(c, W, H) {
-    let palettes=[["#e91e63","#9c27b0","#673ab7"],["#00bcd4","#009688","#4caf50"],["#ff5722","#ff9800","#ffc107"],["#3f51b5","#2196f3","#03a9f4"]];
-    let pal=palettes[Math.floor(Math.random()*palettes.length)];
-    c.fillStyle=pal[0]; c.fillRect(0,0,W,H);
-    function tri(x1,y1,x2,y2,x3,y3,col,alpha) {
-      c.beginPath(); c.moveTo(x1,y1); c.lineTo(x2,y2); c.lineTo(x3,y3); c.closePath();
-      c.fillStyle=col.replace(")",","+alpha+")"); c.fill();
-    }
-    tri(0,H,W*0.55,0,W,H,pal[1],"0.75");
-    tri(0,H,W*0.3,H*0.4,W,H*0.7,pal[2],"0.65");
-    tri(W*0.6,H,W,W*0.3,W,H*0.8,"rgba(255,255,255,0.3)","1");
-  },
-  // 6: 波浪
-  function(c, W, H) {
-    let g=c.createLinearGradient(0,0,0,H);
-    g.addColorStop(0,"#006994"); g.addColorStop(1,"#001f3f");
-    c.fillStyle=g; c.fillRect(0,0,W,H);
-    for (let layer=0;layer<4;layer++) {
-      let amp=8+Math.random()*10, freq=0.015+Math.random()*0.015, sp=layer*15, alpha=0.15+layer*0.1;
-      let cols=["0,180,220","0,130,200","0,100,180","0,70,150"];
-      c.beginPath(); c.moveTo(0,H);
-      for (let x=0;x<=W;x+=3) { let y=H-sp-Math.sin(x*freq+layer*1.2)*amp-Math.sin(x*freq*2.1)*amp*0.4; c.lineTo(x,y); }
-      c.lineTo(W,H); c.closePath();
-      c.fillStyle="rgba("+cols[layer]+","+alpha+")"; c.fill();
-    }
-  },
-  // 7: 城市天际线
-  function(c, W, H) {
-    let g=c.createLinearGradient(0,0,0,H);
-    g.addColorStop(0,"#0d1b2a"); g.addColorStop(1,"#1b263b");
-    c.fillStyle=g; c.fillRect(0,0,W,H);
-    // 建筑
-    let buildings=[
-      {x:0,w:20,h:50},{x:22,w:14,h:35},{x:38,w:22,h:65},{x:62,w:12,h:28},
-      {x:76,w:18,h:52},{x:96,w:10,h:38},{x:108,w:20,h:58},{x:130,w:14,h:30},
-      {x:146,w:22,h:48},{x:170,w:12,h:42},{x:184,w:18,h:55},{x:204,w:14,h:32},
-      {x:220,w:22,h:60},{x:244,w:10,h:28},{x:256,w:18,h:44},{x:276,w:14,h:50},
-    ];
-    buildings.forEach(function(b) {
-      if (b.x+b.w > W) return;
-      c.fillStyle="#1e3a5f"; c.fillRect(b.x,H-b.h,b.w,b.h);
-      for (let row=0;row<Math.floor(b.h/10);row++) {
-        for (let col=0;col<Math.floor(b.w/7);col++) {
-          if (Math.random()>0.4) {
-            let lx=b.x+col*7+2, ly=H-b.h+row*10+2;
-            c.fillStyle="rgba(255,220,100,"+(0.4+Math.random()*0.5)+")"; c.fillRect(lx,ly,4,6);
-          }
-        }
-      }
-    });
-  },
-];
-
-function drawPuzzleBg(canvas, tab) {
-  let img = $("puzzle-img-" + tab);
-  if (!canvas || !img) return;
-  let W = img.clientWidth || canvas.offsetWidth || 300;
-  let H = img.clientHeight || 88;
-  canvas.width = W; canvas.height = H;
-  canvas.style.cssText = "position:absolute;inset:0;width:100%;height:100%;border-radius:8px";
-  let ctx = canvas.getContext("2d");
-  let themeIdx = Math.floor(Math.random() * PUZZLE_THEMES.length);
-  PUZZLE_THEMES[themeIdx](ctx, W, H);
-  // 如果是成功状态，重叠一个半透明遮罩表示"已验证"
-  // （verification 不在 background 层处理，保持背景不变）
-}
-
-function generatePuzzle() {
-  puzzleState.targetX = 70 + Math.floor(Math.random() * 80); // 70~149
-  puzzleState.verified = false;
-}
-
-function renderPuzzle(tab) {
-  if (!tab) tab = puzzleState.activeTab;
-  let img = $("puzzle-img-" + tab);
-  let track = $("puzzle-track-" + tab);
-  if (!img || !track) return;
-  let w = img.clientWidth;
-  let pieceW = 40;
-  puzzleState.maxOffset = w - pieceW;
-  let minT = 60, maxT = puzzleState.maxOffset - pieceW - 20;
-  if (maxT < minT + 30) maxT = minT + 30;
-  puzzleState.targetX = minT + Math.floor(Math.random() * Math.max(1, maxT - minT));
-  puzzleState.verified = false;
-  puzzleState.dragging = false;
-  puzzleState.activeTab = tab;
-  // set hole
-  let hole = $("puzzle-hole-" + tab);
-  if (hole) hole.style.left = puzzleState.targetX + "px";
-  // reset piece and thumb
-  setPuzzleX(tab, 0);
-  // reset hint
-  let hint = $("puzzle-hint-" + tab);
-  if (hint) { hint.textContent = "拖动滑块完成拼图"; hint.className = "af-puzzle-hint"; }
-  // unlock thumb & reset drag-ready flag so listeners re-attach
-  let thumb = $("puzzle-thumb-" + tab);
-  if (thumb) { thumb.classList.remove("locked"); thumb._dragReady = false; }
-  if (track) track._dragReady = false;
-  img.classList.remove("shake");
-  // draw varied background
-  let canvas = $("puzzle-canvas-" + tab);
-  if (canvas) drawPuzzleBg(canvas, tab);
-  // attach drag listeners (reset flag ensures re-binding on tab switch)
-  attachPuzzleDrag(tab);
-}
-
-function setPuzzleX(tab, x) {
-  x = Math.max(0, Math.min(x, puzzleState.maxOffset));
-  let piece = $("puzzle-piece-" + tab);
-  let thumb = $("puzzle-thumb-" + tab);
-  if (piece) piece.style.left = x + "px";
-  if (thumb) thumb.style.left = x + "px";
-}
-
-function attachPuzzleDrag(tab) {
-  let thumb = $("puzzle-thumb-" + tab);
-  let track = $("puzzle-track-" + tab);
-  if (!thumb || !track) return;
-  if (thumb._dragReady) return;
-  thumb._dragReady = true;
-  track._dragReady = true;
-
-  function onDown(e) {
-    if (puzzleState.verified) return;
-    e.preventDefault();
-    let ev = e.touches ? e.touches[0] : e;
-    puzzleState.dragging = true;
-    puzzleState.startX = ev.clientX;
-    let piece = $("puzzle-piece-" + tab);
-    puzzleState.startPieceX = parseInt(piece.style.left) || 0;
-    document.addEventListener("mousemove", onMove);
-    document.addEventListener("mouseup", onUp);
-    document.addEventListener("touchmove", onMove, { passive: false });
-    document.addEventListener("touchend", onUp);
-  }
-
-  function onMove(e) {
-    if (!puzzleState.dragging) return;
-    e.preventDefault();
-    let ev = e.touches ? e.touches[0] : e;
-    let dx = ev.clientX - puzzleState.startX;
-    setPuzzleX(tab, puzzleState.startPieceX + dx);
-  }
-
-  function onUp() {
-    if (!puzzleState.dragging) return;
-    puzzleState.dragging = false;
-    document.removeEventListener("mousemove", onMove);
-    document.removeEventListener("mouseup", onUp);
-    document.removeEventListener("touchmove", onMove);
-    document.removeEventListener("touchend", onUp);
-    verifyPuzzle(tab);
-  }
-
-  thumb.addEventListener("mousedown", onDown);
-  thumb.addEventListener("touchstart", onDown, { passive: false });
-  // also track mousedown on the whole track for better UX
-  track.addEventListener("mousedown", function(e) {
-    if (puzzleState.verified) return;
-    e.preventDefault();
-    let ev = e.touches ? e.touches[0] : e;
-    puzzleState.dragging = true;
-    puzzleState.startX = ev.clientX;
-    puzzleState.startPieceX = 0; // snap to click position
-    setPuzzleX(tab, 0);
-    document.addEventListener("mousemove", onMove);
-    document.addEventListener("mouseup", onUp);
-  });
-}
-
-function verifyPuzzle(tab) {
-  let piece = $("puzzle-piece-" + tab);
-  let pieceX = parseInt(piece.style.left) || 0;
-  let hint = $("puzzle-hint-" + tab);
-  let img = $("puzzle-img-" + tab);
-  let thumb = $("puzzle-thumb-" + tab);
-  if (Math.abs(pieceX - puzzleState.targetX) <= puzzleState.tolerance) {
-    puzzleState.verified = true;
-    setPuzzleX(tab, puzzleState.targetX);
-    if (hint) { hint.textContent = "✓ 验证成功"; hint.className = "af-puzzle-hint success"; }
-    if (thumb) thumb.classList.add("locked");
-  } else {
-    puzzleState.verified = false;
-    setPuzzleX(tab, 0);
-    if (img) { img.classList.add("shake"); setTimeout(function() { img.classList.remove("shake"); }, 450); }
-    if (hint) { hint.textContent = "未对齐，请重试"; hint.className = "af-puzzle-hint fail"; setTimeout(function() { if (hint) { hint.textContent = "拖动滑块完成拼图"; hint.className = "af-puzzle-hint"; } }, 1500); }
-  }
-}
-
-function refreshPuzzle(tab) {
-  generatePuzzle();
-  // 清理可能残留的全局拖拽事件
-  puzzleState.dragging = false;
-  document.removeEventListener("mousemove", arguments.callee._om || function(){});
-  document.removeEventListener("mouseup", arguments.callee._ou || function(){});
-  document.removeEventListener("touchmove", arguments.callee._om || function(){});
-  document.removeEventListener("touchend", arguments.callee._ou || function(){});
-  let img = $("puzzle-img-" + tab);
-  if (img) { img.classList.remove("shake"); }
-  let hint = $("puzzle-hint-" + tab);
-  if (hint) { hint.textContent = "拖动滑块完成拼图"; hint.className = "af-puzzle-hint"; }
-  let thumb = $("puzzle-thumb-" + tab);
-  if (thumb) { thumb.classList.remove("locked"); thumb._dragReady = false; } // 关键：重置标志，下次 attachPuzzleDrag 会重新绑定
-  let track = $("puzzle-track-" + tab);
-  if (track) track._dragReady = false;
-  setPuzzleX(tab, 0);
-  let canvas = $("puzzle-canvas-" + tab);
-  if (canvas) drawPuzzleBg(canvas, tab);
-  puzzleState.verified = false;
-  attachPuzzleDrag(tab); // 重新绑定拖拽事件
-}
+function refreshCaptcha(tab) {}
 
 function onPwStrength(val, id) {
   let bar = document.getElementById(id);
@@ -1185,8 +806,6 @@ function doLogin() {
   let username = $("login-username")?.value?.trim();
   let pw = $("login-pw")?.value;
   if (!username || !pw) { showToast("请填写用户名和密码", "error"); return; }
-  if (!puzzleState.verified) { showToast("请先完成安全验证", "error"); return;
-  }
 
   let users = getUsers();
   let user = users.find(u => u.username === username && u.pwHash === hashPin(pw));
@@ -1212,8 +831,6 @@ function doRegister() {
   if (!username || username.length < 2) { showToast("请输入正确的用户名（至少2位）", "error"); return; }
   if (pw.length < 6) { showToast("密码至少6位", "error"); return; }
   if (pw !== pw2) { showToast("两次密码不一致", "error"); return; }
-  if (!puzzleState.verified) { showToast("请先完成安全验证", "error"); return;
-  }
 
   let users = getUsers();
   if (users.find(u => u.username === username)) {
@@ -1242,8 +859,7 @@ function doForgot() {
 
   if (forgotStep === 0) {
     if (!username || username.length < 2) { showToast("请输入正确的用户名", "error"); return; }
-    if (!puzzleState.verified) { showToast("请先完成安全验证", "error"); return;
-    }
+
     let users = getUsers();
     if (!users.find(u => u.username === username)) {
       showToast("该用户名未注册", "error"); return;
@@ -1982,14 +1598,11 @@ window.onload = () => {
   }
   state.view = currentUser ? "home" : "auth";
   render();
-  // 自动刷新验证码
-  setTimeout(() => renderPuzzle(state.authTab), 100);
 };
 
 // 全局函数
 window.switchAuthTab = switchAuthTab;
 window.refreshCaptcha = refreshCaptcha;
-window.refreshPuzzle = refreshPuzzle;
 window.onPwStrength = onPwStrength;
 window.togglePw = togglePw;
 window.showAdminTab = showAdminTab;
