@@ -279,6 +279,11 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 .result-filter-tip{font-size:12px;color:var(--text-light);margin:-6px 0 14px;padding-left:2px}
 .result-filter-tip a{color:var(--primary-light);cursor:pointer;font-weight:600}
 .q-gr{color:var(--warn);font-weight:600;font-size:12px}
+.rec-row{cursor:pointer;transition:background .15s}
+.rec-row:hover{background:#f5f8ff}
+.score-input{width:54px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-size:13px;text-align:center;outline:none}
+.score-input:focus{border-color:var(--primary-light)}
+.print-area table tfoot td{border:1px solid #555;padding:5px 7px;background:#f0f0f0}
 .q-list-item{border:1px solid var(--border);border-radius:11px;padding:18px;margin-bottom:10px}
 .q-list-item .q-list-stem{font-size:14px;font-weight:600;margin-bottom:10px}
 .tag{padding:2px 9px;border-radius:5px;font-size:11px;font-weight:600}
@@ -365,6 +370,7 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 }
 @media print{
   body{background:#fff}
+  .page{padding:0!important}
   .topbar,.page-exam,.page-result,.no-print,.sidebar,.print-toolbar,.footer,.modal-overlay,.auth-page,.hero,.card:not(.print-card){display:none!important}
   .page-result{max-width:100%;padding:0}
   .print-area{display:block!important}
@@ -459,7 +465,7 @@ function saveRecords(r) { localStorage.setItem(RECORDS_KEY, JSON.stringify(r)); 
 let questions = getQuestions();
 let currentUser = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
 let isAdmin = false;
-let state = { view: "auth", authTab: "login", candName: "", taskId: 1, questions: [], answers: {}, currentQ: 0, submitted: false, score: 0, passed: false, resultFilter: "all" };
+let state = { view: "auth", authTab: "login", candName: "", taskId: 1, questions: [], answers: {}, currentQ: 0, submitted: false, score: 0, passed: false, resultFilter: "all", recordIndex: -1 };
 let timerInterval = null;
 let currentCaptcha = { code: "", ops: [] };
 
@@ -558,6 +564,8 @@ function render() {
     $("app").innerHTML = renderResult();
   } else if (state.view === "admin") {
     $("app").innerHTML = renderAdmin();
+  } else if (state.view === "record") {
+    $("app").innerHTML = renderRecord();
   } else if (state.view === "print") {
     $("app").innerHTML = renderPrintPage();
   }
@@ -1261,7 +1269,14 @@ function backHome() {
 
 function saveRecord(score, passed) {
   let records = getRecords();
-  records.push({time:new Date().toISOString(),name:state.candName,username:currentUser?.username||"",score,passed});
+  records.push({
+    time:new Date().toISOString(),
+    name:state.candName,
+    username:currentUser?.username||"",
+    score, passed,
+    answers: JSON.parse(JSON.stringify(state.answers)),
+    questions: JSON.parse(JSON.stringify(state.questions))
+  });
   saveRecords(records);
 }
 
@@ -1382,7 +1397,7 @@ function renderAdmin() {
       <td>${q.id}</td>
       <td><span class="type-badge ${clsMap[q.qtype]}">${typeMap[q.qtype]||q.qtype}</span></td>
       <td style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(q.stem)}</td>
-      <td style="text-align:center">${q.score}</td>
+      <td style="text-align:center"><input type="number" class="score-input" value="${q.score}" min="0" onchange="setQuestionScore(${q.id}, this.value)"></td>
       <td style="text-align:center"><button class="btn-sm btn-sm-danger" onclick="deleteQuestion(${q.id})">删除</button></td>
     </tr>`;
   }).join("");
@@ -1390,12 +1405,13 @@ function renderAdmin() {
   let recordsHtml = records.length===0
     ? "<p style='color:var(--text-light);font-size:13px;text-align:center;padding:24px'>暂无考试记录</p>"
     : `<table class="q-table"><thead><tr><th>#</th><th>姓名</th><th>用户名</th><th>得分</th><th>结果</th><th>时间</th></tr></thead><tbody>
-    ${records.slice().reverse().map((r,i)=>`<tr>
-      <td>${i+1}</td><td>${esc(r.name)}</td><td>${esc(r.username||"")}</td>
+    ${records.slice().reverse().map((r, di) => { let idx = records.length - 1 - di; return `<tr class="rec-row" onclick="openRecord(${idx})">
+      <td>${di+1}</td><td>${esc(r.name)}</td><td>${esc(r.username||"")}</td>
       <td>${r.score} 分</td>
       <td><span class="tag ${r.passed?'tag-right':'tag-wrong'}">${r.passed?'合格':'不合格'}</span></td>
       <td>${new Date(r.time).toLocaleString("zh-CN")}</td>
-    </tr>`).join("")}
+      <td><button class="btn-sm btn-sm-primary" onclick="event.stopPropagation();openRecord(${idx})">查看</button></td>
+    </tr>`; }).join("")}
     </tbody></table>`;
 
   return `<div class="page">
@@ -1574,6 +1590,97 @@ function deleteQuestion(id) {
   saveQuestions(questions);
   showToast("已删除", "info");
   render();
+}
+
+function setQuestionScore(id, val) {
+  let v = parseInt(val, 10);
+  if (isNaN(v) || v < 0) { showToast("分值无效", "error"); render(); return; }
+  let q = questions.find(x => x.id === id);
+  if (q) { q.score = v; saveQuestions(questions); showToast("分值已更新（第 " + id + " 题 " + v + " 分）", "info"); }
+}
+
+function openRecord(idx) {
+  state.recordIndex = idx;
+  state.view = "record";
+  render();
+  scrollTo(0,0);
+}
+
+function backToRecords() {
+  state.view = "admin";
+  render();
+  setTimeout(() => showAdminTab("records"), 50);
+}
+
+function renderRecord() {
+  let records = getRecords();
+  let rec = records[state.recordIndex];
+  if (!rec) { state.view="admin"; render(); return; }
+  let qs = rec.questions || [];
+  let ans = rec.answers || {};
+  if (!qs.length) {
+    return `<div class="page">
+      <div class="no-print" style="margin-bottom:20px"><button class="btn btn-ghost" onclick="backToRecords()">← 返回记录</button></div>
+      <div class="card"><p style="text-align:center;color:var(--text-light);padding:30px">该记录为旧版格式，未保存详细答卷数据，无法查看成绩试卷。<br>（之后的考试记录将自动保存完整答卷，可正常查看与打印。）</p></div>
+    </div>`;
+  }
+  let typeMap = {single:"单选题",multi:"多选题",judge:"判断题",short:"简答题",scenario:"场景分析题"};
+  let clsMap = {single:"type-single",multi:"type-multi",judge:"type-judge",short:"type-short",scenario:"type-scenario"};
+  let rows = qs.map((q,i) => {
+    let r = questionResult(q, ans[q.id]);
+    let ua = ans[q.id] || "";
+    let got;
+    if (r.isObj) got = r.ok ? q.score : 0;
+    else if (r.isSubj) got = (r.g && r.g.total>0) ? r.g.score : (ua ? "待阅" : 0);
+    else got = ua ? "待阅" : 0;
+    let rightMark = r.ok ? "<span class='tag tag-right'>✓</span>" : "<span class='tag tag-wrong'>✗</span>";
+    return `<tr>
+      <td class="num">${i+1}</td>
+      <td><span class="type-badge ${clsMap[q.qtype]}">${typeMap[q.qtype]||q.qtype}</span></td>
+      <td class="q-text">${esc(q.stem)}</td>
+      <td>${esc(ua)||"未作答"}</td>
+      <td>${r.isObj ? esc(q.answer) : (q.answer ? esc(q.answer) : "—")}</td>
+      <td style="text-align:center">${got}</td>
+      <td style="text-align:center">${rightMark}</td>
+    </tr>`;
+  }).join("");
+  let subjTotal = qs.filter(q=>q.qtype==="short"||q.qtype==="scenario").reduce((s,q)=>{ let g=gradeSubjective(q, ans[q.id]); return s + (g.total>0?g.score:0); }, 0);
+  return `<div class="page">
+    <div class="no-print" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:12px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="font-size:24px">📋</div>
+        <div>
+          <div style="font-size:18px;font-weight:700;color:var(--primary)">考生成绩试卷</div>
+          <div style="font-size:12px;color:var(--text-light)">${esc(rec.name)} · ${esc(rec.username||"")} · ${new Date(rec.time).toLocaleString("zh-CN")}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-ghost" onclick="backToRecords()">← 返回记录</button>
+        <button class="btn btn-accent" onclick="window.print()">🖨 打印成绩试卷</button>
+      </div>
+    </div>
+    <div class="print-area" id="print-area">
+      <div class="print-header">
+        <h1>🛡️ 湖南绿盾卫士检测技术有限公司</h1>
+        <p style="font-size:15px;font-weight:700;margin-top:4px">GB/T 18204 培训考核卷 · 成绩试卷</p>
+      </div>
+      <div class="info-row">
+        <span>姓名：<input class="wide" value="${esc(rec.name)}" readonly></span>
+        <span>用户名：<input class="wide" value="${esc(rec.username||"")}" readonly></span>
+        <span>考核日期：<input class="wide" value="${new Date(rec.time).toLocaleDateString("zh-CN")}" readonly></span>
+        <span>总分：<input value="${rec.score}" readonly></span>
+        <span>结果：<input value="${rec.passed?'合格':'不合格'}" readonly></span>
+      </div>
+      <table>
+        <thead><tr><th style="width:22px">题号</th><th>题型</th><th>题目</th><th>考生答案</th><th>参考答案</th><th style="width:34px">得分</th><th style="width:30px">判分</th></tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot><tr><td colspan="5" style="text-align:right;font-weight:700">合计得分</td><td style="text-align:center;font-weight:800">${rec.score}</td><td></td></tr></tfoot>
+      </table>
+      <div style="margin-top:10px;padding:8px;background:#f8f8f8;border-radius:6px;font-size:12px;line-height:1.8">
+        <strong>说明：</strong>客观题自动判分；主观题按关键词覆盖率自动评分（满分 ${subjTotal} 分）。本成绩试卷由系统自动生成。
+      </div>
+    </div>
+  </div>`;
 }
 
 // ===== 打印考核卷 =====
