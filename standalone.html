@@ -300,6 +300,9 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 .paper-opt-letter{flex:0 0 16px;font-weight:700;color:var(--primary)}
 .paper-opt-text{flex:1}
 .paper-opt-mark{margin-left:4px;color:#1a8f3c;font-weight:700;font-size:11px}
+.paper-section{margin-top:10px}
+.paper-section-title{font-size:13px;font-weight:800;background:#f5f5f5;padding:5px 8px;border-left:3px solid var(--primary);margin-bottom:6px}
+.paper-stem-inline{font-weight:600;line-height:1.4;flex:1}
 
 .q-list-item{border:1px solid var(--border);border-radius:11px;padding:18px;margin-bottom:10px}
 .q-list-item .q-list-stem{font-size:14px;font-weight:600;margin-bottom:10px}
@@ -1655,35 +1658,52 @@ function renderRecord() {
       <div class="card"><p style="text-align:center;color:var(--text-light);padding:30px">该记录为旧版格式，未保存详细答卷数据，无法查看成绩试卷。<br>（之后的考试记录将自动保存完整答卷，可正常查看与打印。）</p></div>
     </div>`;
   }
-  let typeMap = {single:"单选题",multi:"多选题",judge:"判断题",short:"简答题",scenario:"场景分析题"};
-  let clsMap = {single:"type-single",multi:"type-multi",judge:"type-judge",short:"type-short",scenario:"type-scenario"};
-  let blocks = qs.map((q,i) => {
-    let r = questionResult(q, ans[q.id]);
-    let ua = ans[q.id] || "";
-    let got;
-    if (r.isObj) got = r.ok ? q.score : 0;
-    else if (r.isSubj) got = (r.g && r.g.total>0) ? r.g.score : (ua ? "待阅" : 0);
-    else got = ua ? "待阅" : 0;
-    let subjInfo = (r.isSubj && r.g && r.g.total>0) ? `（关键词命中 ${r.g.matched}/${r.g.total}，覆盖率 ${Math.round(r.g.ratio*100)}%）` : "";
-    let rightMark = r.ok ? "✓" : "✗";
-    let answerMark = r.isObj ? `（答案：${esc(ua)||"未答"} ${rightMark}）` : "";
-    let optsHtml;
-    if (["single","multi","judge"].includes(q.qtype) && q.options && q.options.length) {
-      let chosenArr = Array.isArray(ua) ? ua : (typeof ua==="string" && ua.indexOf(",")>=0 ? ua.split(",").map(s=>s.trim()) : (ua?[ua]:[]));
-      optsHtml = '<div class="paper-opts">' + q.options.map(o => {
-        let letter = o[0];
-        let isChosen = chosenArr.includes(letter);
-        return `<div class="paper-opt${isChosen?' chosen':''}"><span class="paper-opt-letter">${letter}</span><span class="paper-opt-text">${esc(o.slice(2))}</span>${isChosen?'<span class="paper-opt-mark">✔</span>':''}</div>`;
-      }).join("") + '</div>';
-    } else {
-      optsHtml = `<div class="paper-subj-ans">作答：${ua ? esc(ua) : '（未作答）'}<br>得分：${got} 分 ${subjInfo} ${rightMark}</div>`;
-    }
-    return `<div class="paper-q">
-      <div class="paper-q-head"><span class="paper-num">${i+1}.</span><span class="type-badge ${clsMap[q.qtype]}">${typeMap[q.qtype]||q.qtype}</span><span class="paper-score">${q.score} 分</span>${answerMark}</div>
-      <div class="paper-stem">${esc(q.stem)}</div>
-      ${optsHtml}
-    </div>`;
-  }).join("");
+  let typeMap = {single:"单项选择题",multi:"多项选择题",judge:"判断题",short:"简答题",scenario:"场景分析题"};
+  let typeOrder = ["single","multi","judge","short","scenario"];
+  let cnNum = ["一","二","三","四","五","六","七","八","九","十"];
+  let sections = [];
+  typeOrder.forEach(t => {
+    let tqs = qs.filter(q => q.qtype === t);
+    if (tqs.length === 0) return;
+    let totalScore = tqs.reduce((s,q) => s + q.score, 0);
+    let eachScore = tqs[0].score;
+    let header = `<div class="paper-section"><div class="paper-section-title">${cnNum[sections.length]} ${typeMap[t]}（每题${eachScore}分，共${totalScore}分）</div></div>`;
+    let items = tqs.map((q,i) => {
+      let r = questionResult(q, ans[q.id]);
+      let ua = ans[q.id] || "";
+      let got;
+      if (r.isObj) got = r.ok ? q.score : 0;
+      else if (r.isSubj) got = (r.g && r.g.total>0) ? r.g.score : (ua ? "待阅" : 0);
+      else got = ua ? "待阅" : 0;
+      let subjInfo = (r.isSubj && r.g && r.g.total>0) ? `（关键词命中 ${r.g.matched}/${r.g.total}，覆盖率 ${Math.round(r.g.ratio*100)}%）` : "";
+      let rightMark = r.ok ? "✓" : "✗";
+      let answerMark;
+      if (t === "judge") {
+        answerMark = `（${rightMark}）`;
+      } else if (r.isObj) {
+        answerMark = `（${esc(ua)||"未答"}）${r.ok ? "" : rightMark}`;
+      } else {
+        answerMark = "";
+      }
+      let optsHtml;
+      if (["single","multi","judge"].includes(t) && q.options && q.options.length) {
+        let chosenArr = Array.isArray(ua) ? ua : (typeof ua==="string" && ua.indexOf(",")>=0 ? ua.split(",").map(s=>s.trim()) : (ua?[ua]:[]));
+        optsHtml = '<div class="paper-opts">' + q.options.map(o => {
+          let letter = o[0];
+          let isChosen = chosenArr.includes(letter);
+          return `<div class="paper-opt${isChosen?' chosen':''}"><span class="paper-opt-letter">${letter}</span><span class="paper-opt-text">${esc(o.slice(2))}</span></div>`;
+        }).join("") + '</div>';
+      } else {
+        optsHtml = `<div class="paper-subj-ans">作答：${ua ? esc(ua) : '（未作答）'}<br>得分：${got} 分 ${subjInfo} ${rightMark}</div>`;
+      }
+      return `<div class="paper-q">
+        <div class="paper-q-head"><span class="paper-num">${i+1}.</span><span class="paper-stem-inline">${esc(q.stem)}${answerMark}</span></div>
+        ${optsHtml}
+      </div>`;
+    }).join("");
+    sections.push(header + items);
+  });
+  let blocks = sections.join("");
   let subjTotal = qs.filter(q=>q.qtype==="short"||q.qtype==="scenario").reduce((s,q)=>{ let g=gradeSubjective(q, ans[q.id]); return s + (g.total>0?g.score:0); }, 0);
   return `<div class="page">
     <div class="no-print" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:12px;flex-wrap:wrap">
