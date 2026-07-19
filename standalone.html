@@ -7,356 +7,276 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --primary:#1a3a6b;
-  --primary-light:#2a5aaa;
-  --accent:#c9a84c;
-  --accent-light:#f0d080;
-  --bg:#e8edf4;
-  --card:#fff;
-  --text:#1a1a2e;
-  --text-light:#5a6a7a;
-  --border:#d0d8e4;
-  --success:#1a8a4a;
-  --danger:#c0392b;
-  --warn:#e67e22;
+  --primary:#1a3a6b;--primary-light:#2a5aaa;--accent:#c9a84c;--accent-light:#f0d080;
+  --bg:#e8edf4;--card:#fff;--text:#1a1a2e;--text-light:#5a6a7a;--border:#d0d8e4;
+  --success:#1a8a4a;--danger:#c0392b;--warn:#e67e22;
 }
 body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 
 /* ===== 顶部导航 ===== */
 .topbar{
-  background: linear-gradient(135deg,#1a3a6b 0%,#0d2247 100%);
-  color:#fff;padding:0 40px;height:64px;display:flex;align-items:center;
+  background:linear-gradient(135deg,#1a3a6b 0%,#0d2247 100%);color:#fff;
+  padding:0 40px;height:64px;display:flex;align-items:center;
   box-shadow:0 2px 16px rgba(10,30,70,.35);position:sticky;top:0;z-index:100;
 }
 .topbar-logo{display:flex;align-items:center;gap:12px;flex:1}
-.topbar-logo .shield{
-  width:40px;height:40px;background:var(--accent);border-radius:8px;
-  display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;
-}
+.topbar-logo .shield{width:40px;height:40px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
 .topbar-logo .name{font-size:17px;font-weight:700;letter-spacing:.5px}
 .topbar-logo .sub{font-size:11px;opacity:.7;letter-spacing:1px}
-.topbar-info{display:flex;align-items:center;gap:24px;font-size:14px;opacity:.9}
-.topbar-info .user-icon{background:rgba(255,255,255,.15);padding:6px 12px;border-radius:20px}
-
-/* ===== 主页 ===== */
-.page-home{max-width:1100px;margin:0 auto;padding:40px 20px}
-
-.hero{
-  background: linear-gradient(135deg,#1a3a6b 0%,#1a5a9a 50%,#0d2247 100%);
-  border-radius:20px;padding:60px 50px;margin-bottom:36px;
-  display:flex;align-items:center;justify-content:space-between;
-  box-shadow:0 8px 40px rgba(26,58,107,.35);position:relative;overflow:hidden;
-}
-.hero::before{
-  content:'';position:absolute;right:-60px;top:-60px;
-  width:280px;height:280px;background:rgba(201,168,76,.12);border-radius:50%;
-}
-.hero::after{
-  content:'';position:absolute;right:40px;bottom:-80px;
-  width:200px;height:200px;background:rgba(201,168,76,.08);border-radius:50%;
-}
-.hero-text{flex:1;position:relative;z-index:1}
-.hero-text h1{font-size:32px;font-weight:700;margin-bottom:12px;color:#fff;line-height:1.3}
-.hero-text p{font-size:15px;color:rgba(255,255,255,.75);line-height:1.7;max-width:500px}
-.hero-badge{
+.topbar-right{display:flex;align-items:center;gap:12px}
+.topbar-right .user-icon{background:rgba(255,255,255,.15);padding:6px 14px;border-radius:20px;font-size:13px}
+.topbar-right .btn-bar{
   background:rgba(201,168,76,.2);border:1px solid rgba(201,168,76,.4);
-  border-radius:16px;padding:16px 24px;text-align:center;color:var(--accent-light);
-  font-size:13px;position:relative;z-index:1;
+  color:var(--accent-light);padding:6px 14px;border-radius:20px;font-size:13px;
+  cursor:pointer;transition:background .2s;
 }
+.topbar-right .btn-bar:hover{background:rgba(201,168,76,.35)}
+
+/* ===== 页面通用 ===== */
+.page{padding:40px 20px;max-width:1200px;margin:0 auto;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+.card{background:var(--card);border-radius:16px;padding:32px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid var(--border);margin-bottom:24px}
+.card-title{font-size:17px;font-weight:700;color:var(--primary);margin-bottom:24px;padding-bottom:14px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:10px}
+.card-title::before{content:'';width:4px;height:22px;background:var(--accent);border-radius:2px}
+
+/* ===== 首页 ===== */
+.hero{background:linear-gradient(135deg,#1a3a6b 0%,#1a5a9a 50%,#0d2247 100%);border-radius:20px;padding:56px 50px;margin-bottom:36px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;right:-60px;top:-60px;width:280px;height:280px;background:rgba(201,168,76,.12);border-radius:50%}
+.hero-text{position:relative;z-index:1}
+.hero-text h1{font-size:30px;font-weight:700;color:#fff;margin-bottom:10px}
+.hero-text p{font-size:14px;color:rgba(255,255,255,.7);line-height:1.7;max-width:480px}
+.hero-badge{background:rgba(201,168,76,.2);border:1px solid rgba(201,168,76,.4);border-radius:16px;padding:16px 24px;text-align:center;color:var(--accent-light);position:relative;z-index:1}
 .hero-badge .num{font-size:36px;font-weight:800;display:block;color:#fff}
 
-.card{
-  background:var(--card);border-radius:16px;padding:32px;
-  box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid var(--border);
-  margin-bottom:24px;
-}
-.card-title{
-  font-size:18px;font-weight:700;color:var(--primary);margin-bottom:24px;
-  padding-bottom:14px;border-bottom:2px solid var(--border);
-  display:flex;align-items:center;gap:10px;
-}
-.card-title::before{
-  content:'';width:4px;height:22px;background:var(--accent);border-radius:2px;
-}
-
-/* 姓名输入区 */
-.name-section{display:flex;gap:16px;align-items:flex-end;margin-bottom:32px}
-.name-section input{
-  flex:1;padding:14px 18px;border:2px solid var(--border);border-radius:12px;
-  font-size:16px;transition:border-color .2s;outline:none;
-}
+.name-section{display:flex;gap:14px;align-items:flex-end;margin-bottom:32px;flex-wrap:wrap}
+.name-section input{flex:1;min-width:200px;padding:13px 18px;border:2px solid var(--border);border-radius:12px;font-size:16px;outline:none;transition:border-color .2s}
 .name-section input:focus{border-color:var(--primary-light)}
-.name-section .btn-start{
-  background:linear-gradient(135deg,#1a3a6b,#1a5a9a);color:#fff;
-  border:none;border-radius:12px;padding:14px 32px;font-size:16px;font-weight:700;
-  cursor:pointer;white-space:nowrap;transition:transform .15s,box-shadow .15s;
-}
-.name-section .btn-start:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(26,58,107,.4)}
+.btn-start{background:linear-gradient(135deg,#1a3a6b,#1a5a9a);color:#fff;border:none;border-radius:12px;padding:13px 32px;font-size:16px;font-weight:700;cursor:pointer;white-space:nowrap;transition:transform .15s,box-shadow .15s}
+.btn-start:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(26,58,107,.4)}
 
-/* 试卷卡片 */
-.paper-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
-.paper-card{
-  border:2px solid var(--border);border-radius:16px;padding:24px;
-  transition:border-color .2s,box-shadow .2s,transform .15s;cursor:pointer;
-  background:var(--card);
-}
-.paper-card:hover{
-  border-color:var(--primary-light);box-shadow:0 6px 24px rgba(26,58,107,.12);
-  transform:translateY(-2px);
-}
-.paper-card .paper-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
-.paper-card .paper-title{font-size:16px;font-weight:700;color:var(--text);line-height:1.4}
-.paper-card .paper-tag{
-  background:#eef2ff;color:var(--primary-light);border-radius:8px;
-  padding:4px 10px;font-size:12px;flex-shrink:0;margin-left:12px;
-}
-.paper-card .paper-desc{font-size:13px;color:var(--text-light);line-height:1.6;margin-bottom:16px}
-.paper-card .paper-meta{display:flex;gap:16px;font-size:12px;color:var(--text-light);margin-bottom:20px;flex-wrap:wrap}
-.paper-card .paper-meta span{display:flex;align-items:center;gap:4px}
-.paper-card .paper-meta .dot{width:6px;height:6px;background:var(--accent);border-radius:50%;flex-shrink:0}
-.paper-card .paper-btn{
-  width:100%;background:linear-gradient(135deg,var(--primary),var(--primary-light));
-  color:#fff;border:none;border-radius:10px;padding:12px;font-size:15px;font-weight:600;
-  cursor:pointer;transition:opacity .2s,transform .15s;
-}
-.paper-card .paper-btn:hover{opacity:.88;transform:translateY(-1px)}
-
-/* 模块标签页 */
-.tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:24px}
-.tab{
-  padding:12px 28px;font-size:15px;font-weight:600;color:var(--text-light);
-  cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;
-  transition:color .2s,border-color .2s;
-}
-.tab.active{color:var(--primary);border-bottom-color:var(--accent)}
+.paper-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+.paper-card{border:2px solid var(--border);border-radius:16px;padding:22px;transition:border-color .2s,box-shadow .2s,transform .15s;cursor:pointer;background:var(--card)}
+.paper-card:hover{border-color:var(--primary-light);box-shadow:0 6px 24px rgba(26,58,107,.12);transform:translateY(-2px)}
+.paper-card .paper-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.paper-card .paper-title{font-size:15px;font-weight:700;color:var(--text);line-height:1.4}
+.paper-tag{background:#eef2ff;color:var(--primary-light);border-radius:8px;padding:3px 10px;font-size:12px;flex-shrink:0;margin-left:10px}
+.paper-desc{font-size:13px;color:var(--text-light);line-height:1.5;margin-bottom:14px}
+.paper-meta{display:flex;gap:14px;font-size:12px;color:var(--text-light);margin-bottom:18px;flex-wrap:wrap}
+.paper-meta span{display:flex;align-items:center;gap:4px}
+.paper-meta .dot{width:5px;height:5px;background:var(--accent);border-radius:50%;flex-shrink:0}
+.paper-btn{width:100%;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;border:none;border-radius:10px;padding:11px;font-size:15px;font-weight:600;cursor:pointer;transition:opacity .2s}
+.paper-btn:hover{opacity:.88}
 
 /* ===== 考试页面 ===== */
-.page-exam{display:flex;gap:24px;max-width:1200px;margin:0 auto;padding:24px 20px;align-items:flex-start}
-
-/* 左侧题号面板 */
-.sidebar{width:220px;flex-shrink:0;position:sticky;top:80px}
-.sidebar .card{padding:20px}
-.sidebar-title{font-size:14px;font-weight:700;color:var(--primary);margin-bottom:16px}
-.q-nav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:16px}
-.q-dot{
-  width:36px;height:36px;border-radius:8px;border:2px solid var(--border);
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:600;color:var(--text-light);
-  cursor:pointer;transition:all .15s;
-}
+.page-exam{display:flex;gap:22px;max-width:1280px;margin:0 auto;padding:24px 20px;align-items:flex-start}
+.sidebar{width:210px;flex-shrink:0;position:sticky;top:80px}
+.sidebar .card{padding:18px}
+.sidebar-title{font-size:13px;font-weight:700;color:var(--primary);margin-bottom:14px}
+.q-nav{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:14px}
+.q-dot{width:34px;height:34px;border-radius:7px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--text-light);cursor:pointer;transition:all .15s}
 .q-dot.answered{border-color:var(--primary-light);background:#eef2ff;color:var(--primary-light)}
 .q-dot.current{border-color:var(--accent);background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(201,168,76,.4)}
-.q-dot.wrong{border-color:var(--danger);background:#fef2f2;color:var(--danger)}
-.q-dot.right{border-color:var(--success);background:#f0fdf4;color:var(--success)}
-.q-legend{display:flex;flex-direction:column;gap:8px;font-size:12px;color:var(--text-light)}
-.q-legend span{display:flex;align-items:center;gap:8px}
-.q-legend .dot{width:14px;height:14px;border-radius:4px;border:2px solid}
+.q-legend{display:flex;flex-direction:column;gap:7px;font-size:11px;color:var(--text-light)}
+.timer-box{background:#fff8e8;border:1px solid #e8d090;border-radius:12px;padding:12px;margin-top:14px;text-align:center}
+.timer-label{font-size:11px;color:var(--warn);font-weight:600;margin-bottom:3px}
+.timer-num{font-size:26px;font-weight:800;color:var(--warn);font-variant-numeric:tabular-nums}
 
-.timer-box{
-  background:linear-gradient(135deg,#fff8e8,#fff3cc);border:1px solid #e8d090;
-  border-radius:12px;padding:14px;margin-top:16px;text-align:center;
-}
-.timer-box .timer-label{font-size:12px;color:var(--warn);font-weight:600;margin-bottom:4px}
-.timer-box .timer-num{font-size:28px;font-weight:800;color:var(--warn);font-variant-numeric:tabular-nums}
-
-/* 右侧答题区 */
 .exam-main{flex:1;min-width:0}
-.exam-header{
-  background:var(--card);border-radius:16px;padding:24px 28px;
-  box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid var(--border);
-  margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
-}
-.exam-header h2{font-size:18px;color:var(--primary)}
-.exam-header .exam-info{display:flex;gap:20px;font-size:14px;color:var(--text-light)}
-.exam-header .exam-info strong{color:var(--text)}
-.progress-bar{width:100%;height:6px;background:#e8edf4;border-radius:3px;overflow:hidden;margin-top:4px}
+.exam-header{background:var(--card);border-radius:16px;padding:22px 26px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid var(--border);margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.exam-header h2{font-size:17px;color:var(--primary)}
+.exam-info{display:flex;gap:18px;font-size:13px;color:var(--text-light)}
+.exam-info strong{color:var(--text)}
+.progress-bar{width:100%;height:5px;background:#e8edf4;border-radius:3px;overflow:hidden;margin-top:3px}
 .progress-bar .fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--primary-light));border-radius:3px;transition:width .4s}
 
-.question-card{
-  background:var(--card);border-radius:16px;padding:28px;
-  box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid var(--border);
-  margin-bottom:20px;
-}
-.question-card .q-type{
-  display:inline-block;background:#eef2ff;color:var(--primary-light);
-  border-radius:6px;padding:4px 12px;font-size:12px;font-weight:700;
-  margin-bottom:16px;letter-spacing:.5px;
-}
-.question-card .q-stem{font-size:16px;line-height:1.7;font-weight:600;margin-bottom:20px;color:var(--text)}
-.options{list-style:none;display:flex;flex-direction:column;gap:10px}
-.option-item{
-  display:flex;align-items:center;gap:14px;padding:14px 18px;
-  border:2px solid var(--border);border-radius:12px;cursor:pointer;
-  transition:border-color .15s,background .15s;
-}
+.question-card{background:var(--card);border-radius:16px;padding:26px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid var(--border);margin-bottom:18px}
+.q-type{display:inline-block;border-radius:6px;padding:3px 12px;font-size:12px;font-weight:700;margin-bottom:14px;letter-spacing:.5px}
+.q-stem{font-size:15px;line-height:1.7;font-weight:600;margin-bottom:18px}
+.options{list-style:none;display:flex;flex-direction:column;gap:9px}
+.option-item{display:flex;align-items:center;gap:13px;padding:12px 16px;border:2px solid var(--border);border-radius:11px;cursor:pointer;transition:border-color .15s,background .15s}
 .option-item:hover{border-color:var(--primary-light);background:#f5f7ff}
 .option-item.selected{border-color:var(--primary);background:#eef2ff}
-.option-item .opt-letter{
-  width:32px;height:32px;border-radius:50%;border:2px solid currentColor;
-  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;
-  flex-shrink:0;
-}
-.option-item .opt-text{flex:1;font-size:15px;line-height:1.5}
-.option-item input[type=radio],.option-item input[type=checkbox]{display:none}
-
-/* 多选/判断 */
-.short-area textarea{
-  width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:12px;
-  font-size:15px;line-height:1.7;resize:vertical;min-height:120px;
-  font-family:inherit;outline:none;transition:border-color .2s;
-}
+.opt-letter{width:30px;height:30px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;transition:all .15s}
+.opt-text{flex:1;font-size:14px;line-height:1.4}
+.short-area textarea{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:11px;font-size:14px;line-height:1.6;resize:vertical;min-height:110px;font-family:inherit;outline:none;transition:border-color .2s}
 .short-area textarea:focus{border-color:var(--primary-light)}
 
-.q-nav-bottom{display:flex;gap:12px;flex-wrap:wrap}
-.q-nav-bottom .btn{
-  border:none;border-radius:10px;padding:12px 24px;font-size:15px;font-weight:600;
-  cursor:pointer;transition:transform .15s,box-shadow .15s;
-}
-.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff}
-.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(26,58,107,.35)}
+.q-nav-bottom{display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:none;border-radius:10px;padding:11px 22px;font-size:14px;font-weight:600;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;box-shadow:0 3px 12px rgba(26,58,107,.3)}
+.btn-accent{background:linear-gradient(135deg,#c9a84c,#e0bc5a);color:#fff;box-shadow:0 3px 12px rgba(201,168,76,.35)}
 .btn-ghost{background:#f1f4f8;color:var(--text);border:1px solid var(--border)}
 .btn-ghost:hover{background:#e8edf4}
-.btn-accent{background:linear-gradient(135deg,#c9a84c,#e0bc5a);color:#fff}
-.btn-accent:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(201,168,76,.4)}
 .btn-danger{background:#fef2f2;color:var(--danger);border:1px solid #fecaca}
-.btn-danger:hover{background:#fee2e2}
 
-/* ===== 结果页面 ===== */
+/* ===== 结果页 ===== */
 .page-result{max-width:960px;margin:0 auto;padding:40px 20px}
+.result-hero{text-align:center;padding:56px 40px;background:linear-gradient(135deg,#1a3a6b,#0d2247);border-radius:24px;margin-bottom:36px;position:relative;overflow:hidden}
+.result-hero::before{content:'✓';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:200px;color:rgba(201,168,76,.08);line-height:1}
+.result-icon{width:76px;height:76px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:38px;margin:0 auto 18px;position:relative}
+.result-hero h1{font-size:34px;color:#fff;margin-bottom:10px;position:relative}
+.result-score{font-size:68px;font-weight:900;color:var(--accent-light);margin-bottom:6px;position:relative}
+.result-sub{font-size:15px;color:rgba(255,255,255,.65);position:relative}
 
-.result-hero{
-  text-align:center;padding:60px 40px;background:linear-gradient(135deg,#1a3a6b,#0d2247);
-  border-radius:24px;margin-bottom:40px;position:relative;overflow:hidden;
-}
-.result-hero::before{
-  content:'✓';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  font-size:220px;color:rgba(201,168,76,.08);line-height:1;
-}
-.result-hero .result-icon{
-  width:80px;height:80px;border-radius:50%;background:var(--accent);
-  display:flex;align-items:center;justify-content:center;
-  font-size:40px;margin:0 auto 20px;position:relative;
-}
-.result-hero h1{font-size:36px;color:#fff;margin-bottom:12px;position:relative}
-.result-hero .result-score{font-size:72px;font-weight:900;color:var(--accent-light);margin-bottom:8px;position:relative}
-.result-hero .result-sub{font-size:16px;color:rgba(255,255,255,.65);position:relative}
-
-.cert-box{
-  background:var(--card);border-radius:20px;border:2px solid var(--accent);
-  padding:48px 60px;text-align:center;margin-bottom:32px;position:relative;
-}
-.cert-box::before,.cert-box::after{
-  content:'★';position:absolute;top:20px;font-size:20px;color:var(--accent);
-}
-.cert-box::before{left:30px}
-.cert-box::after{right:30px}
-.cert-box .cert-title{
-  font-size:13px;letter-spacing:8px;color:var(--text-light);margin-bottom:8px;
-}
-.cert-box .cert-company{font-size:24px;font-weight:900;color:var(--primary);margin-bottom:24px;letter-spacing:2px}
-.cert-box .cert-line{border-top:1px dashed var(--border);margin:24px 0}
-.cert-box .cert-text{font-size:15px;color:var(--text-light);line-height:2}
-.cert-box .cert-name{font-size:22px;font-weight:700;color:var(--text);margin:16px 0;letter-spacing:4px}
-.cert-box .cert-score{font-size:48px;font-weight:900;color:var(--accent);margin:16px 0}
-.cert-box .cert-status{
-  display:inline-block;font-size:20px;font-weight:800;
-  padding:8px 32px;border-radius:30px;margin-top:12px;
-}
+.cert-box{background:var(--card);border-radius:20px;border:2px solid var(--accent);padding:44px 56px;text-align:center;margin-bottom:30px;position:relative}
+.cert-box::before,.cert-box::after{content:'★';position:absolute;top:18px;font-size:18px;color:var(--accent)}
+.cert-box::before{left:28px}.cert-box::after{right:28px}
+.cert-title{font-size:12px;letter-spacing:7px;color:var(--text-light);margin-bottom:6px}
+.cert-company{font-size:22px;font-weight:900;color:var(--primary);margin-bottom:22px;letter-spacing:2px}
+.cert-line{border-top:1px dashed var(--border);margin:22px 0}
+.cert-text{font-size:14px;color:var(--text-light);line-height:2}
+.cert-name{font-size:20px;font-weight:700;margin:14px 0;letter-spacing:4px}
+.cert-score{font-size:44px;font-weight:900;color:var(--accent);margin:14px 0}
+.cert-status{display:inline-block;font-size:18px;font-weight:800;padding:7px 28px;border-radius:30px;margin-top:10px}
 .cert-status.pass{background:#f0fdf4;color:var(--success);border:2px solid var(--success)}
 .cert-status.fail{background:#fef2f2;color:var(--danger);border:2px solid var(--danger)}
-.cert-box .cert-date{font-size:13px;color:var(--text-light);margin-top:20px}
-.cert-box .cert-id{font-size:12px;color:#b0bec5;margin-top:6px;font-family:monospace}
+.cert-date{font-size:13px;color:var(--text-light);margin-top:18px}
+.cert-id{font-size:12px;color:#b0bec5;margin-top:5px;font-family:monospace}
 
-.result-detail{background:var(--card);border-radius:16px;border:1px solid var(--border);overflow:hidden}
-.result-detail-header{
-  background:#f5f7ff;padding:20px 28px;font-size:16px;font-weight:700;color:var(--primary);
-  border-bottom:1px solid var(--border);
-}
-.result-detail-body{padding:24px 28px}
-.detail-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
-.detail-stat{
-  text-align:center;padding:20px;border-radius:12px;border:1px solid var(--border);
-}
-.detail-stat .stat-num{font-size:28px;font-weight:800;color:var(--primary)}
-.detail-stat .stat-label{font-size:13px;color:var(--text-light);margin-top:4px}
+.result-detail{background:var(--card);border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:30px}
+.result-detail-header{background:#f5f7ff;padding:18px 26px;font-size:15px;font-weight:700;color:var(--primary);border-bottom:1px solid var(--border)}
+.result-detail-body{padding:22px 26px}
+.detail-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.detail-stat{text-align:center;padding:18px;border-radius:12px;border:1px solid var(--border)}
+.detail-stat .stat-num{font-size:26px;font-weight:800;color:var(--primary)}
+.detail-stat .stat-label{font-size:12px;color:var(--text-light);margin-top:3px}
 .detail-stat.success{background:#f0fdf4;border-color:#bbf7d0}
 .detail-stat.success .stat-num{color:var(--success)}
 .detail-stat.danger{background:#fef2f2;border-color:#fecaca}
 .detail-stat.danger .stat-num{color:var(--danger)}
 .detail-stat.warn{background:#fff8e8;border-color:#e8d090}
 .detail-stat.warn .stat-num{color:var(--warn)}
-
-.q-list-item{
-  border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:12px;
-}
-.q-list-item .q-list-stem{font-size:15px;font-weight:600;margin-bottom:12px}
-.q-list-item .q-list-meta{display:flex;gap:16px;font-size:13px;color:var(--text-light);flex-wrap:wrap}
-.q-list-item .q-list-meta .tag{
-  padding:2px 10px;border-radius:6px;font-size:12px;font-weight:600;
-}
+.q-list-item{border:1px solid var(--border);border-radius:11px;padding:18px;margin-bottom:10px}
+.q-list-item .q-list-stem{font-size:14px;font-weight:600;margin-bottom:10px}
+.tag{padding:2px 9px;border-radius:5px;font-size:11px;font-weight:600}
 .tag-right{background:#f0fdf4;color:var(--success)}
 .tag-wrong{background:#fef2f2;color:var(--danger)}
 .tag-wait{background:#fff8e8;color:var(--warn)}
 .tag-manual{background:#f0f4ff;color:var(--primary-light)}
+.q-list-meta{display:flex;gap:14px;font-size:12px;color:var(--text-light);flex-wrap:wrap}
+.result-actions{display:flex;gap:14px;justify-content:center;margin-top:28px;flex-wrap:wrap}
 
-.result-actions{display:flex;gap:16px;justify-content:center;margin-top:32px;flex-wrap:wrap}
+/* ===== 管理员登录弹窗 ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal-box{background:#fff;border-radius:20px;padding:40px;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);position:relative;animation:fadeUp .25s ease}
+.modal-box h3{font-size:20px;color:var(--primary);margin-bottom:8px}
+.modal-box p{font-size:13px;color:var(--text-light);margin-bottom:24px;line-height:1.6}
+.modal-box input{width:100%;padding:13px 18px;border:2px solid var(--border);border-radius:12px;font-size:16px;text-align:center;outline:none;margin-bottom:16px;transition:border-color .2s}
+.modal-box input:focus{border-color:var(--primary-light)}
+.modal-box .modal-actions{display:flex;gap:10px;justify-content:center}
+.modal-close{position:absolute;top:16px;right:20px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-light);line-height:1}
+.modal-close:hover{color:var(--text)}
+.pin-dots{display:flex;gap:10px;justify-content:center;margin-bottom:20px}
+.pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border);transition:all .15s}
+.pin-dot.filled{background:var(--primary);border-color:var(--primary)}
 
-/* 提交确认弹窗 */
-.modal-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;
-  display:flex;align-items:center;justify-content:center;padding:20px;
-}
-.modal-box{
-  background:#fff;border-radius:20px;padding:40px;max-width:460px;width:100%;
-  text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);
-}
-.modal-box h3{font-size:20px;color:var(--primary);margin-bottom:16px}
-.modal-box p{color:var(--text-light);line-height:1.7;margin-bottom:28px}
-.modal-box .modal-actions{display:flex;gap:12px;justify-content:center}
+/* ===== 管理员面板 ===== */
+.admin-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:24px}
+.admin-tab{padding:11px 26px;font-size:14px;font-weight:600;color:var(--text-light);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .2s,border-color .2s}
+.admin-tab.active{color:var(--primary);border-bottom-color:var(--accent)}
+
+.admin-panel{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.admin-panel label{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.admin-panel input,.admin-panel textarea,.admin-panel select{width:100%;padding:10px 14px;border:2px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s}
+.admin-panel input:focus,.admin-panel textarea:focus,.admin-panel select:focus{border-color:var(--primary-light)}
+.admin-panel textarea{resize:vertical;min-height:260px;line-height:1.5}
+.admin-hint{font-size:12px;color:var(--text-light);background:#f5f7ff;border-radius:8px;padding:10px 14px;line-height:1.6;margin-bottom:16px}
+
+.stat-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px}
+.stat-item{flex:1;min-width:140px;background:#f5f7ff;border:1px solid var(--border);border-radius:12px;padding:18px 20px;text-align:center}
+.stat-item .si-num{font-size:28px;font-weight:800;color:var(--primary)}
+.stat-item .si-label{font-size:12px;color:var(--text-light);margin-top:3px}
+
+.q-table{width:100%;border-collapse:collapse;font-size:13px}
+.q-table th,.q-table td{border:1px solid var(--border);padding:8px 12px;text-align:left}
+.q-table th{background:#f5f7ff;font-weight:700;color:var(--primary)}
+.q-table tr:hover td{background:#f9faff}
+.q-table .type-badge{padding:2px 8px;border-radius:5px;font-size:11px;font-weight:700}
+.type-single{background:#eef2ff;color:#1a5a9a}
+.type-multi{background:#f3efff;color:#6b3fa0}
+.type-judge{background:#f0fdf4;color:#1a8a4a}
+.type-short{background:#fff8e8;color:#b06000}
+.type-scenario{background:#fef2f2;color:#8a1a4a}
+
+.btn-sm{padding:6px 14px;font-size:13px;border-radius:8px;border:none;cursor:pointer;font-weight:600;transition:opacity .2s,transform .1s}
+.btn-sm:hover{transform:translateY(-1px)}
+.btn-sm-danger{background:#fef2f2;color:var(--danger);border:1px solid #fecaca}
+.btn-sm-primary{background:#eef2ff;color:var(--primary-light);border:1px solid #c7d2fe}
+.btn-sm-accent{background:#fff8e8;color:#b06000;border:1px solid #f0c040}
+
+/* 打印考核卷 */
+.print-toolbar{display:flex;gap:14px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.print-toolbar label{font-size:13px;color:var(--text-light)}
+.print-toolbar select,.print-toolbar input{padding:8px 14px;border:2px solid var(--border);border-radius:10px;font-size:13px;outline:none}
+.print-toolbar select:focus{border-color:var(--primary-light)}
+.print-preview{background:#888;padding:24px;min-height:400px;border-radius:12px}
+.print-area{background:#fff;padding:28px 32px;font-size:13px;line-height:1.5;color:#000;max-width:210mm;margin:0 auto}
+.print-area .print-header{text-align:center;border-bottom:2px solid #000;padding-bottom:12px;margin-bottom:16px}
+.print-area .print-header h1{font-size:18px;font-weight:900;letter-spacing:2px;margin-bottom:4px}
+.print-area .print-header p{font-size:12px;color:#333}
+.print-area .info-row{display:flex;gap:20px;margin-bottom:16px;font-size:13px}
+.print-area .info-row span{white-space:nowrap}
+.print-area .info-row input{border:none;border-bottom:1px solid #000;padding:2px 4px;width:80px;font-size:13px;outline:none}
+.print-area .info-row input.wide{width:120px}
+.print-area table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+.print-area table th,.print-area table td{border:1px solid #555;padding:5px 7px;vertical-align:top;line-height:1.4}
+.print-area table th{background:#f0f0f0;font-weight:700;text-align:center}
+.print-area table td.num{text-align:center;width:22px}
+.print-area table td.opt-col{width:22px;text-align:center}
+.print-area table .q-text{font-weight:600}
+.print-area .q-extra{font-size:11px;color:#555;margin-top:2px}
+.print-area .score-col{text-align:center;width:28px;font-weight:700}
+.print-area .page-break{page-break-after:always}
+.print-area .section-title{font-size:13px;font-weight:800;background:#f0f0f0;padding:4px 8px;margin-top:10px;margin-bottom:4px}
+.print-area .answer-line{border-bottom:1px solid #555;height:16px;margin-top:4px}
 
 /* 未答提示 */
-.unanswered-alert{
-  background:#fef3cd;border:1px solid #f0c040;color:#7a5000;
-  border-radius:12px;padding:16px 20px;margin-bottom:20px;font-size:14px;
-}
+.unanswered-alert{background:#fef3cd;border:1px solid #f0c040;color:#7a5000;border-radius:11px;padding:14px 18px;margin-bottom:16px;font-size:13px}
+
+/* 提交确认弹窗 */
+.modal-submit h3{font-size:19px}.modal-submit p{font-size:14px}
 
 /* 页脚 */
-.footer{text-align:center;padding:32px 20px;font-size:12px;color:var(--text-light)}
+.footer{text-align:center;padding:28px 20px;font-size:12px;color:var(--text-light)}
 
-/* 工具提示 */
-.info-pill{
-  display:inline-flex;align-items:center;gap:6px;
-  background:#f1f4f8;border-radius:999px;padding:4px 12px;font-size:12px;color:var(--text-light);
-}
-.info-pill strong{color:var(--text)}
-
-/* 动画 */
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-.page-home,.page-exam,.page-result{animation:fadeUp .35s ease-out}
-.card,.paper-card,.question-card{transition:all .2s}
+/* 成功/错误提示 */
+.toast{position:fixed;top:80px;right:20px;background:#fff;border-radius:12px;padding:14px 20px;box-shadow:0 4px 20px rgba(0,0,0,.15);z-index:300;font-size:14px;display:none;animation:fadeUp .2s ease}
+.toast.show{display:block}
+.toast.success{border-left:4px solid var(--success)}
+.toast.error{border-left:4px solid var(--danger)}
+.toast.info{border-left:4px solid var(--primary)}
 
 /* 响应式 */
 @media(max-width:900px){
   .page-exam{flex-direction:column}
   .sidebar{width:100%;position:static}
   .q-nav{grid-template-columns:repeat(10,1fr)}
-  .hero{flex-direction:column;text-align:center;padding:40px 30px;gap:24px}
-  .hero-badge{margin-top:0}
+  .hero{flex-direction:column;text-align:center;padding:36px 28px;gap:22px}
   .detail-stats{grid-template-columns:repeat(2,1fr)}
-  .cert-box{padding:32px 24px}
+  .cert-box{padding:30px 22px}
 }
 @media(max-width:600px){
-  .topbar{padding:0 16px}
-  .topbar-info .user-icon{display:none}
+  .topbar{padding:0 14px}
+  .topbar-right .user-icon{display:none}
   .paper-grid{grid-template-columns:1fr}
-  .exam-header{flex-direction:column;align-items:flex-start}
+}
+@media print{
+  body{background:#fff}
+  .topbar,.page-exam,.page-result,.no-print,.sidebar,.print-toolbar,.footer,.modal-overlay{display:none!important}
+  .page-result{max-width:100%;padding:0}
+  .cert-box,.result-detail{box-shadow:none;border-radius:0;margin:0}
+  .print-area{display:block!important}
+  .print-area{font-size:12px;padding:1.2cm 1.5cm;max-width:100%}
+  @page{size:A4;margin:1.2cm 1.5cm}
 }
 </style>
 </head>
 <body>
 
 <!-- 顶部导航 -->
-<div class="topbar" id="topbar">
+<div class="topbar">
   <div class="topbar-logo">
     <div class="shield">🛡️</div>
     <div>
@@ -364,181 +284,185 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
       <div class="sub">在线培训考核系统</div>
     </div>
   </div>
-  <div class="topbar-info">
-    <span>📞 0731-88888888</span>
+  <div class="topbar-right">
     <span class="user-icon" id="topbar-user">👤 未登录</span>
+    <button class="btn-bar" onclick="openAdminLogin()">⚙️ 管理员</button>
   </div>
 </div>
 
 <!-- 主应用区 -->
 <div id="app"></div>
 
+<!-- 通用提示 -->
+<div class="toast" id="toast"></div>
+
 <script>
-// ===== 题库数据 =====
-const TASKS = [
-  {
-    id: 1,
-    name: "GB/T 18204 培训考核卷",
-    desc: "公共场所卫生检验方法 6 部分核心知识点，覆盖法律法规、采样技术、微生物检测与质控要点。",
-    pass_score: 80,
-    scoring_mode: "auto",
-    paper_mode: "fixed",
-    category: "专业知识",
-    subcategory: "理化检测",
-    questions: [
-      {id:1,qtype:"single",stem:"GB/T 18204 标准族共有几个部分？",options:["A. 3 个","B. 5 个","C. 6 个","D. 8 个"],answer:"C",score:2,explanation:"分为物理性、化学性、空气微生物、公共用品用具微生物、集中空调、卫生监测规范 6 部分。"},
-      {id:2,qtype:"single",stem:"室内温度、相对湿度测点的高度一般应为？",options:["A. 距地面 0.2 m","B. 距地面 0.8~1.6 m","C. 距天花板 0.5 m","D. 任意高度"],answer:"B",score:2,explanation:"代表人群呼吸带高度。"},
-      {id:3,qtype:"single",stem:"用热球式电风速计测风速时，采样员应当？",options:["A. 站在仪器正前方","B. 退到仪器下风向 0.5 m 外","C. 用手扶住探头","D. 紧贴墙壁站立"],answer:"B",score:2,explanation:"避免人体遮挡风流、制造乱流。"},
-      {id:4,qtype:"single",stem:"甲醛采样最常用的方法是？",options:["A. 酚试剂分光光度法","B. 重量法","C. 撞击法","D. 沉降法"],answer:"A",score:2,explanation:"酚试剂（MBTH）分光光度法最常用；重量法用于颗粒物。"},
-      {id:5,qtype:"single",stem:"PM2.5\"重量法\"的核心步骤是？",options:["A. 用激光数颗粒","B. 滤膜采样后恒温恒湿称重差重","C. 直接读仪器","D. 培养菌落"],answer:"B",score:2,explanation:"滤膜采集后称重，差重算浓度；光散射法为快速法。"},
-      {id:6,qtype:"single",stem:"空气细菌总数\"自然沉降法\"是指？",options:["A. 用机器把空气吹到平皿上","B. 把平皿打开让菌自然落下","C. 用拭子擦空气","D. 过滤空气"],answer:"B",score:2,explanation:"平皿暴露让微生物自然沉降；撞击法才用机器。"},
-      {id:7,qtype:"single",stem:"公共用品用具微生物采样，一件毛巾应？",options:["A. 用一支拭子擦所有毛巾","B. 一件用品用一支拭子，固定面积涂抹","C. 直接剪碎培养","D. 用嘴吹一下"],answer:"B",score:2,explanation:"一件一拭子，防止交叉污染、便于溯源。"},
-      {id:8,qtype:"single",stem:"集中空调冷却水中需重点检测、且必须在生物安全柜操作的致病微生物是？",options:["A. 大肠杆菌","B. 金黄色葡萄球菌","C. 嗜肺军团菌","D. 真菌"],answer:"C",score:2,explanation:"军团菌致病且存在气溶胶风险，需生物安全柜操作。"},
-      {id:9,qtype:"single",stem:"根据监测技术规范，布点一般按？",options:["A. 只在门口布点","B. 每 50~100 m² 设 1 个点，均匀布设","C. 随机 1 个点","D. 只在污染源旁"],answer:"B",score:2,explanation:"按面积均匀布点，保证代表性。"},
-      {id:10,qtype:"single",stem:"质控\"现场空白\"的作用是证明？",options:["A. 采样员手不抖","B. 吸收液/滤膜本身没被污染","C. 仪器很准","D. 数据好看"],answer:"B",score:2,explanation:"现场空白证\"锅干净\"；平行样证\"手不抖\"；加标证\"秤准\"。"},
-      {id:11,qtype:"multi",stem:"下列哪些属于 GB/T 18204.1 物理性指标？",options:["A. 照度","B. 噪声","C. 甲醛","D. 新风量","E. 大气压"],answer:"A,B,D,E",score:3,explanation:"甲醛属化学性指标（第2部分）。"},
-      {id:12,qtype:"multi",stem:"化学性指标采样时，下列哪些做法正确？",options:["A. 甲醛样品避光、24h内分析","B. 臭氧样品全程避光、即采即测","C. 苯系物活性炭管进气方向接反无所谓","D. 采样流量和体积要准确记录","E. 滤膜用手直接拿取"],answer:"A,B,D",score:3,explanation:"活性炭管方向不能反；滤膜应用镊子取放避免污染。"},
-      {id:13,qtype:"multi",stem:"空气微生物采样质控应包括？",options:["A. 培养基空白（不采样培养应无菌落）","B. 平行采样取平均","C. 开盖时间越长越好","D. 无菌操作"],answer:"A,B,D",score:3,explanation:"暴露过长平皿干燥、结果失真。"},
-      {id:14,qtype:"multi",stem:"公共用品用具微生物检测项目通常包括？",options:["A. 细菌总数","B. 大肠菌群","C. 金黄色葡萄球菌","D. 真菌总数"],answer:"A,B,C,D",score:3,explanation:"四项均为常规检测项目。"},
-      {id:15,qtype:"multi",stem:"通用质控\"四件套\"包括？",options:["A. 现场空白","B. 运输空白","C. 平行样","D. 加标回收","E. 随意修改数据"],answer:"A,B,C,D",score:3,explanation:"随意修改数据违反质控原则。"},
-      {id:16,qtype:"judge",stem:"GB/T 18204.2 是空气微生物指标的测定方法。",options:["对","错"],answer:"错",score:2,explanation:"第2部分是化学性指标；空气微生物是第3部分。"},
-      {id:17,qtype:"judge",stem:"测照度前，探头应遮光清零，且人不要挡住光路。",options:["对","错"],answer:"对",score:2,explanation:"正确。"},
-      {id:18,qtype:"judge",stem:"风速测量时，采样员站在仪器正前方不影响结果。",options:["对","错"],answer:"错",score:2,explanation:"人会挡风制造乱流。"},
-      {id:19,qtype:"judge",stem:"甲醛吸收液采样时，应保证气泡连续均匀，不能让液体被吸走。",options:["对","错"],answer:"对",score:2,explanation:"正确。"},
-      {id:20,qtype:"judge",stem:"空气细菌总数\"撞击法\"是用机器把空气高速撞到培养皿上。",options:["对","错"],answer:"对",score:2,explanation:"正确。"},
-      {id:21,qtype:"judge",stem:"沉降法平皿暴露时间越长结果越准，可以暴露 1 小时。",options:["对","错"],answer:"错",score:2,explanation:"暴露过长平皿干燥、结果失真。"},
-      {id:22,qtype:"judge",stem:"公共用品采样时，一支棉拭子可以连续擦拭多件不同用品以提高效率。",options:["对","错"],answer:"错",score:2,explanation:"会交叉污染，应一件一拭子。"},
-      {id:23,qtype:"judge",stem:"嗜肺军团菌检测存在生物危害，应在生物安全柜内操作。",options:["对","错"],answer:"对",score:2,explanation:"正确。"},
-      {id:24,qtype:"judge",stem:"监测布点应在场所正常营业/使用状态下进行，不能在空场造假。",options:["对","错"],answer:"对",score:2,explanation:"正确。"},
-      {id:25,qtype:"judge",stem:"平行样是为了证明\"仪器很准\"，空白样是为了证明\"手不抖\"。",options:["对","错"],answer:"错",score:2,explanation:"空白证\"锅干净\"、平行证\"手不抖\"、加标证\"秤准\"。"},
-      {id:26,qtype:"short",stem:"简述室内空气\"新风量\"的采样原理和关键注意事项。",options:[],answer:"原理：用示踪气体（如CO₂）在密闭有人房间测浓度衰减/释放，结合房间体积与人数算新风量。注意：在正常使用、门窗正常关闭状态测；房间先密闭平衡；记录体积、人数、门窗状态；重复2~3次取平均。",score:6,explanation:"",keyword:"示踪气体；密闭平衡；记录体积人数；正常使用状态；重复取平均"},
-      {id:27,qtype:"short",stem:"甲醛采样-检测全流程中，列举至少 3 个易出错点和对应正确做法。",options:[],answer:"①吸收管未垂直/气泡不均→液体被吸走，应垂直、气泡连续；②未避光/超24h才分析→甲醛分解，应避光并限时分析；③显色温度时间不准→严格控温计时；④采样前房间未按要求密闭→先密闭再采；⑤流量体积不准→校准流量计、记录体积。",score:6,explanation:"",keyword:"垂直气泡连续；避光24h内；控温计时；先密闭；流量体积准"},
-      {id:28,qtype:"short",stem:"什么是\"空气细菌总数\"的撞击法和自然沉降法？各适用于什么场景？",options:[],answer:"撞击法：用采样器将空气高速撞击到培养皿上捕菌，速度快、定量好，适合精确监测。自然沉降法：平皿打开暴露一定时间，靠重力落菌，操作简便但受暴露时间影响大，适合快速筛查。",score:6,explanation:"",keyword:"撞击法机器定量精确；沉降法暴露简便筛查"},
-      {id:29,qtype:"short",stem:"公共用品用具微生物采样\"涂抹法\"的操作要点是什么？",options:[],answer:"无菌生理盐水湿润棉拭子；在用品表面固定面积（如5×5cm²）内来回均匀涂抹；剪去手触部分放入采样液；一件一拭子、标记清楚；尽快4℃冷藏送检。",score:6,explanation:"",keyword:"无菌；固定面积；一件一拭子；标记；冷藏"},
-      {id:30,qtype:"short",stem:"集中空调通风系统卫生监测包含哪几类主要检测内容？为什么军团菌检测要特别小心？",options:[],answer:"内容：送风中细菌/真菌总数、送风中PM10、风管内表面积尘量、风管内表面微生物、冷却水/冷凝水嗜肺军团菌。原因：军团菌致病、可随空调气溶胶吸入致病，且培养操作有生物危害，须生物安全柜、个人防护。",score:6,explanation:"",keyword:"送风微生物；PM10；积尘；表面微生物；军团菌；生物安全柜"},
-      {id:31,qtype:"scenario",stem:"【场景】某检测员在商场测风速，为图方便站在风速计正前方读数，得到 0.05 m/s。请指出问题，并说明正确做法和可能造成的后果。",options:[],answer:"问题：人站在正前方会遮挡风流、制造乱流，测得的是\"人的影子\"而非真实风速。正确：采样员退到仪器下风向0.5m外，探头迎风。后果：读数偏低，可能掩盖通风不良问题，数据不可靠。",score:5,explanation:"",keyword:"遮挡风流；退到下风向0.5m外；读数偏低不可靠"},
-      {id:32,qtype:"scenario",stem:"【场景】某宾馆杯具卫生监测，一名采样员用同一支无菌棉拭子依次擦拭了 8 个茶杯内侧，混合后送检。请评价该操作，并给出规范做法。",options:[],answer:"问题：一支拭子擦多件用品会造成交叉污染，且无法定位哪件不合格。规范：一件用品一支无菌拭子，固定面积涂抹，分别标记、分别培养。混合后即使检出菌也无法追溯来源。",score:5,explanation:"",keyword:"交叉污染；一件一拭子；分别标记培养；无法溯源"},
-      {id:33,qtype:"scenario",stem:"【场景】第三方机构受委托测新装修办公室甲醛。采样员到现场发现门窗大开、空调全开，仍按标准流程采了 20 L 气体。实验室报出\"甲醛合格\"。请分析该结果是否可靠，并说明正确采样条件。",options:[],answer:"不可靠。原因：甲醛采样应在房间按标准密闭（关闭门窗一定时段、停止通风）状态下进行；门窗大开、空调全开会把甲醛吹散稀释，导致\"假合格\"。正确：采样前按标准要求密闭房间、关闭新风/空调，达到平衡后再采样。",score:5,explanation:"",keyword:"不可靠；应密闭关闭通风；假合格；平衡后采样"}
-    ]
-  }
+// ===== 内置题库（默认） =====
+const DEFAULT_QUESTIONS = [
+  {id:1,qtype:"single",stem:"GB/T 18204 标准族共有几个部分？",options:["A. 3 个","B. 5 个","C. 6 个","D. 8 个"],answer:"C",score:2,explanation:"分为物理性、化学性、空气微生物、公共用品用具微生物、集中空调、卫生监测规范 6 部分。"},
+  {id:2,qtype:"single",stem:"室内温度、相对湿度测点的高度一般应为？",options:["A. 距地面 0.2 m","B. 距地面 0.8~1.6 m","C. 距天花板 0.5 m","D. 任意高度"],answer:"B",score:2,explanation:"代表人群呼吸带高度。"},
+  {id:3,qtype:"single",stem:"用热球式电风速计测风速时，采样员应当？",options:["A. 站在仪器正前方","B. 退到仪器下风向 0.5 m 外","C. 用手扶住探头","D. 紧贴墙壁站立"],answer:"B",score:2,explanation:"避免人体遮挡风流、制造乱流。"},
+  {id:4,qtype:"single",stem:"甲醛采样最常用的方法是？",options:["A. 酚试剂分光光度法","B. 重量法","C. 撞击法","D. 沉降法"],answer:"A",score:2,explanation:"酚试剂（MBTH）分光光度法最常用；重量法用于颗粒物。"},
+  {id:5,qtype:"single",stem:"PM2.5\"重量法\"的核心步骤是？",options:["A. 用激光数颗粒","B. 滤膜采样后恒温恒湿称重差重","C. 直接读仪器","D. 培养菌落"],answer:"B",score:2,explanation:"滤膜采集后称重，差重算浓度；光散射法为快速法。"},
+  {id:6,qtype:"single",stem:"空气细菌总数\"自然沉降法\"是指？",options:["A. 用机器把空气吹到平皿上","B. 把平皿打开让菌自然落下","C. 用拭子擦空气","D. 过滤空气"],answer:"B",score:2,explanation:"平皿暴露让微生物自然沉降；撞击法才用机器。"},
+  {id:7,qtype:"single",stem:"公共用品用具微生物采样，一件毛巾应？",options:["A. 用一支拭子擦所有毛巾","B. 一件用品用一支拭子，固定面积涂抹","C. 直接剪碎培养","D. 用嘴吹一下"],answer:"B",score:2,explanation:"一件一拭子，防止交叉污染、便于溯源。"},
+  {id:8,qtype:"single",stem:"集中空调冷却水中需重点检测、且必须在生物安全柜操作的致病微生物是？",options:["A. 大肠杆菌","B. 金黄色葡萄球菌","C. 嗜肺军团菌","D. 真菌"],answer:"C",score:2,explanation:"军团菌致病且存在气溶胶风险，需生物安全柜操作。"},
+  {id:9,qtype:"single",stem:"根据监测技术规范，布点一般按？",options:["A. 只在门口布点","B. 每 50~100 m² 设 1 个点，均匀布设","C. 随机 1 个点","D. 只在污染源旁"],answer:"B",score:2,explanation:"按面积均匀布点，保证代表性。"},
+  {id:10,qtype:"single",stem:"质控\"现场空白\"的作用是证明？",options:["A. 采样员手不抖","B. 吸收液/滤膜本身没被污染","C. 仪器很准","D. 数据好看"],answer:"B",score:2,explanation:"现场空白证\"锅干净\"；平行样证\"手不抖\"；加标证\"秤准\"。"},
+  {id:11,qtype:"multi",stem:"下列哪些属于 GB/T 18204.1 物理性指标？",options:["A. 照度","B. 噪声","C. 甲醛","D. 新风量","E. 大气压"],answer:"A,B,D,E",score:3,explanation:"甲醛属化学性指标（第2部分）。"},
+  {id:12,qtype:"multi",stem:"化学性指标采样时，下列哪些做法正确？",options:["A. 甲醛样品避光、24h内分析","B. 臭氧样品全程避光、即采即测","C. 苯系物活性炭管进气方向接反无所谓","D. 采样流量和体积要准确记录","E. 滤膜用手直接拿取"],answer:"A,B,D",score:3,explanation:"活性炭管方向不能反；滤膜应用镊子取放避免污染。"},
+  {id:13,qtype:"multi",stem:"空气微生物采样质控应包括？",options:["A. 培养基空白（不采样培养应无菌落）","B. 平行采样取平均","C. 开盖时间越长越好","D. 无菌操作"],answer:"A,B,D",score:3,explanation:"暴露过长平皿干燥、结果失真。"},
+  {id:14,qtype:"multi",stem:"公共用品用具微生物检测项目通常包括？",options:["A. 细菌总数","B. 大肠菌群","C. 金黄色葡萄球菌","D. 真菌总数"],answer:"A,B,C,D",score:3,explanation:"四项均为常规检测项目。"},
+  {id:15,qtype:"multi",stem:"通用质控\"四件套\"包括？",options:["A. 现场空白","B. 运输空白","C. 平行样","D. 加标回收","E. 随意修改数据"],answer:"A,B,C,D",score:3,explanation:"随意修改数据违反质控原则。"},
+  {id:16,qtype:"judge",stem:"GB/T 18204.2 是空气微生物指标的测定方法。",options:["对","错"],answer:"错",score:2,explanation:"第2部分是化学性指标；空气微生物是第3部分。"},
+  {id:17,qtype:"judge",stem:"测照度前，探头应遮光清零，且人不要挡住光路。",options:["对","错"],answer:"对",score:2,explanation:"正确。"},
+  {id:18,qtype:"judge",stem:"风速测量时，采样员站在仪器正前方不影响结果。",options:["对","错"],answer:"错",score:2,explanation:"人会挡风制造乱流。"},
+  {id:19,qtype:"judge",stem:"甲醛吸收液采样时，应保证气泡连续均匀，不能让液体被吸走。",options:["对","错"],answer:"对",score:2,explanation:"正确。"},
+  {id:20,qtype:"judge",stem:"空气细菌总数\"撞击法\"是用机器把空气高速撞到培养皿上。",options:["对","错"],answer:"对",score:2,explanation:"正确。"},
+  {id:21,qtype:"judge",stem:"沉降法平皿暴露时间越长结果越准，可以暴露 1 小时。",options:["对","错"],answer:"错",score:2,explanation:"暴露过长平皿干燥、结果失真。"},
+  {id:22,qtype:"judge",stem:"公共用品采样时，一支棉拭子可以连续擦拭多件不同用品以提高效率。",options:["对","错"],answer:"错",score:2,explanation:"会交叉污染，应一件一拭子。"},
+  {id:23,qtype:"judge",stem:"嗜肺军团菌检测存在生物危害，应在生物安全柜内操作。",options:["对","错"],answer:"对",score:2,explanation:"正确。"},
+  {id:24,qtype:"judge",stem:"监测布点应在场所正常营业/使用状态下进行，不能在空场造假。",options:["对","错"],answer:"对",score:2,explanation:"正确。"},
+  {id:25,qtype:"judge",stem:"平行样是为了证明\"仪器很准\"，空白样是为了证明\"手不抖\"。",options:["对","错"],answer:"错",score:2,explanation:"空白证\"锅干净\"、平行证\"手不抖\"、加标证\"秤准\"。"},
+  {id:26,qtype:"short",stem:"简述室内空气\"新风量\"的采样原理和关键注意事项。",options:[],answer:"原理：用示踪气体（如CO₂）在密闭有人房间测浓度衰减/释放，结合房间体积与人数算新风量。注意：在正常使用、门窗正常关闭状态测；房间先密闭平衡；记录体积、人数、门窗状态；重复2~3次取平均。",score:6,explanation:"",keyword:"示踪气体；密闭平衡；记录体积人数；正常使用状态；重复取平均"},
+  {id:27,qtype:"short",stem:"甲醛采样-检测全流程中，列举至少 3 个易出错点和对应正确做法。",options:[],answer:"①吸收管未垂直/气泡不均→液体被吸走，应垂直、气泡连续；②未避光/超24h才分析→甲醛分解，应避光并限时分析；③显色温度时间不准→严格控温计时；④采样前房间未按要求密闭→先密闭再采；⑤流量体积不准→校准流量计、记录体积。",score:6,explanation:"",keyword:"垂直气泡连续；避光24h内；控温计时；先密闭；流量体积准"},
+  {id:28,qtype:"short",stem:"什么是\"空气细菌总数\"的撞击法和自然沉降法？各适用于什么场景？",options:[],answer:"撞击法：用采样器将空气高速撞击到培养皿上捕菌，速度快、定量好，适合精确监测。自然沉降法：平皿打开暴露一定时间，靠重力落菌，操作简便但受暴露时间影响大，适合快速筛查。",score:6,explanation:"",keyword:"撞击法机器定量精确；沉降法暴露简便筛查"},
+  {id:29,qtype:"short",stem:"公共用品用具微生物采样\"涂抹法\"的操作要点是什么？",options:[],answer:"无菌生理盐水湿润棉拭子；在用品表面固定面积（如5×5cm²）内来回均匀涂抹；剪去手触部分放入采样液；一件一拭子、标记清楚；尽快4℃冷藏送检。",score:6,explanation:"",keyword:"无菌；固定面积；一件一拭子；标记；冷藏"},
+  {id:30,qtype:"short",stem:"集中空调通风系统卫生监测包含哪几类主要检测内容？为什么军团菌检测要特别小心？",options:[],answer:"内容：送风中细菌/真菌总数、送风中PM10、风管内表面积尘量、风管内表面微生物、冷却水/冷凝水嗜肺军团菌。原因：军团菌致病、可随空调气溶胶吸入致病，且培养操作有生物危害，须生物安全柜、个人防护。",score:6,explanation:"",keyword:"送风微生物；PM10；积尘；表面微生物；军团菌；生物安全柜"},
+  {id:31,qtype:"scenario",stem:"【场景】某检测员在商场测风速，站在风速计正前方读数，得到 0.05 m/s。请指出问题，并说明正确做法和可能造成的后果。",options:[],answer:"问题：人站在正前方会遮挡风流、制造乱流，测得的是\"人的影子\"而非真实风速。正确：采样员退到仪器下风向0.5m外，探头迎风。后果：读数偏低，可能掩盖通风不良问题，数据不可靠。",score:5,explanation:"",keyword:"遮挡风流；退到下风向0.5m外；读数偏低不可靠"},
+  {id:32,qtype:"scenario",stem:"【场景】某宾馆杯具监测，采样员用同一支无菌棉拭子依次擦拭了 8 个茶杯内侧，混合后送检。请评价该操作，并给出规范做法。",options:[],answer:"问题：一支拭子擦多件用品会造成交叉污染，且无法定位哪件不合格。规范：一件用品一支无菌拭子，固定面积涂抹，分别标记、分别培养。混合后即使检出菌也无法追溯来源。",score:5,explanation:"",keyword:"交叉污染；一件一拭子；分别标记培养；无法溯源"},
+  {id:33,qtype:"scenario",stem:"【场景】测新装修办公室甲醛，采样时门窗大开、空调全开，实验室报出\"甲醛合格\"。请分析该结果是否可靠，并说明正确采样条件。",options:[],answer:"不可靠。甲醛采样应在房间密闭（关闭门窗一定时段、停止通风）状态下进行；门窗大开、空调全开会把甲醛吹散稀释，导致\"假合格\"。正确：采样前按标准要求密闭房间、关闭新风/空调，达到平衡后再采样。",score:5,explanation:"",keyword:"不可靠；应密闭关闭通风；假合格；平衡后采样"}
 ];
 
-// ===== 全局状态 =====
-let state = {
-  view: "home",
-  candName: "",
-  taskId: null,
-  questions: [],
-  answers: {},
-  currentQ: 0,
-  submitted: false,
-  score: 0,
-  passed: false
-};
+// ===== 状态管理 =====
+const ADMIN_PIN = "888888";
+let isAdmin = false;
+let questions = JSON.parse(localStorage.getItem("exam_questions")) || JSON.parse(JSON.stringify(DEFAULT_QUESTIONS));
+let state = {view:"home", candName:"", taskId:1, questions:[], answers:{}, currentQ:0, submitted:false, score:0, passed:false};
+let timerInterval = null;
 
 function $(id) { return document.getElementById(id); }
 function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
-function shuffle(arr) {
-  let a = arr.slice(), i = a.length;
-  while (i) { let j = Math.floor(Math.random() * i); [a[--i], a[j]] = [a[j], a[i]]; }
-  return a;
+function totalScore(qs) { return qs.reduce((s,q)=>s+q.score,0); }
+
+// ===== Toast 提示 =====
+function showToast(msg, type="info") {
+  let t = $("toast");
+  t.textContent = msg;
+  t.className = "toast " + type + " show";
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove("show"), 3000);
 }
 
-function buildPaper(task) {
-  if (task.paper_mode === "fixed") return task.questions.slice();
-  return shuffle(task.questions).slice(0, task.random_count || task.questions.length);
-}
-
-function calcScore(task, questions, answers) {
-  let auto = 0, manual = 0;
-  questions.forEach(q => {
-    if (["single","judge"].includes(q.qtype)) {
-      if ((answers[q.id] || "") === q.answer) auto += q.score;
-    } else if (q.qtype === "multi") {
-      let ca = q.answer.split(",").sort().join(",");
-      if ((answers[q.id] || "").split(",").sort().join(",") === ca) auto += q.score;
-    } else {
-      manual += q.score;
-    }
-  });
-  return { auto, manual };
-}
-
-function totalScore(questions) { return questions.reduce((s,q)=>s+q.score,0); }
-
-// ===== 渲染 =====
+// ===== 渲染入口 =====
 function render() {
-  document.getElementById("topbar").style.display = state.view === "home" ? "flex" : "flex";
+  $("app").innerHTML = "";
   switch(state.view) {
-    case "home": $("app").innerHTML = renderHome(); break;
-    case "exam": renderExam(); break;
-    case "result": $("app").innerHTML = renderResult(); break;
+    case "home":     $("app").innerHTML = renderHome(); break;
+    case "exam":     renderExam(); break;
+    case "result":   $("app").innerHTML = renderResult(); break;
+    case "admin":    $("app").innerHTML = renderAdmin(); break;
+    case "print":    $("app").innerHTML = renderPrint(); break;
   }
 }
 
 // ===== 首页 =====
-function renderHome() {
-  const task = TASKS[0];
-  return `
-    <div class="page-home">
-      <div class="hero">
-        <div class="hero-text">
-          <h1>在线培训考核系统</h1>
-          <p>湖南绿盾卫士检测技术有限公司官方培训平台，支持 GB/T 18204 等标准核心知识点在线学习与考核，自动评分，合格即发证。</p>
-        </div>
-        <div class="hero-badge">
-          <span class="num">${TASKS.length}</span>
-          套试卷
-        </div>
+// 管理员登录弹窗
+function openAdminLogin() {
+  let html = `<div class="modal-overlay" id="admin-login-modal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeAdminLogin()">×</button>
+      <h3>⚙️ 管理员登录</h3>
+      <p>请输入管理员 PIN 码（6位数字）</p>
+      <div class="pin-dots" id="pin-dots">
+        <div class="pin-dot"></div><div class="pin-dot"></div>
+        <div class="pin-dot"></div><div class="pin-dot"></div>
+        <div class="pin-dot"></div><div class="pin-dot"></div>
       </div>
-
-      <div class="card">
-        <div class="card-title">考生信息</div>
-        <div class="name-section">
-          <input type="text" id="candName" placeholder="请输入真实姓名（将显示在证书上）" value="${esc(state.candName)}">
-          <button class="btn-start" onclick="startExam()">进入考试 →</button>
-        </div>
+      <input type="password" id="admin-pin" maxlength="6" placeholder="请输入 PIN" autocomplete="off" oninput="onPinInput(this)">
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeAdminLogin()">取消</button>
+        <button class="btn btn-primary" onclick="verifyPin()">确认登录</button>
       </div>
-
-      <div class="card">
-        <div class="card-title">选择考试科目</div>
-        <div class="paper-grid">
-          ${TASKS.map(t => `
-            <div class="paper-card">
-              <div class="paper-header">
-                <div class="paper-title">${esc(t.name)}</div>
-                <span class="paper-tag">${esc(t.category)}</span>
-              </div>
-              <div class="paper-desc">${esc(t.desc)}</div>
-              <div class="paper-meta">
-                <span><span class="dot"></span>${t.questions.length} 题</span>
-                <span><span class="dot"></span>满分 ${totalScore(t.questions)} 分</span>
-                <span><span class="dot"></span>合格线 ${t.pass_score} 分</span>
-              </div>
-              <button class="paper-btn" onclick="startExam()">开始考试</button>
-            </div>
-          `).join("")}
-        </div>
-      </div>
-
-      <div class="footer">© 2026 湖南绿盾卫士检测技术有限公司 · 仅供内部培训使用 · 数据存储在本地浏览器</div>
+      <p style="margin-top:14px;font-size:11px;color:#b0bec5">提示：默认 PIN 为 888888</p>
     </div>
-  `;
+  </div>`;
+  document.body.insertAdjacentHTML("beforeend", html);
+  setTimeout(() => $("admin-pin")?.focus(), 100);
+}
+
+function onPinInput(el) {
+  let dots = document.querySelectorAll("#pin-dots .pin-dot");
+  dots.forEach((d,i) => d.classList.toggle("filled", i < el.value.length));
+  if (el.value.length === 6) verifyPin();
+}
+
+function verifyPin() {
+  let pin = $("admin-pin")?.value;
+  if (pin === ADMIN_PIN) {
+    closeAdminLogin();
+    isAdmin = true;
+    state.view = "admin";
+    render();
+    showToast("管理员登录成功", "success");
+  } else {
+    showToast("PIN 错误，请重试", "error");
+    $("admin-pin").value = "";
+    document.querySelectorAll("#pin-dots .pin-dot").forEach(d=>d.classList.remove("filled"));
+    $("admin-pin").focus();
+  }
+}
+
+function closeAdminLogin() {
+  document.getElementById("admin-login-modal")?.remove();
+}
+
+function renderHome() {
+  return `<div class="page">
+    <div class="hero">
+      <div class="hero-text">
+        <h1>在线培训考核系统</h1>
+        <p>湖南绿盾卫士检测技术有限公司官方培训平台，支持 GB/T 18204 等标准核心知识点在线学习与考核，自动评分，合格即发证。</p>
+      </div>
+      <div class="hero-badge"><span class="num">1</span>套试卷</div>
+    </div>
+    <div class="card">
+      <div class="card-title">考生信息</div>
+      <div class="name-section">
+        <input type="text" id="candName" placeholder="请输入真实姓名（将显示在证书上）" value="${esc(state.candName)}">
+        <button class="btn-start" onclick="startExam()">进入考试 →</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">选择考试科目</div>
+      <div class="paper-grid">
+        <div class="paper-card">
+          <div class="paper-header">
+            <div class="paper-title">GB/T 18204 培训考核卷</div>
+            <span class="paper-tag">专业知识</span>
+          </div>
+          <div class="paper-desc">公共场所卫生检验方法核心知识点，覆盖法律法规、采样技术、微生物检测与质控要点。</div>
+          <div class="paper-meta">
+            <span><span class="dot"></span>${questions.length} 题</span>
+            <span><span class="dot"></span>满分 ${totalScore(questions)} 分</span>
+            <span><span class="dot"></span>合格线 80 分</span>
+          </div>
+          <button class="paper-btn" onclick="startExam()">开始考试</button>
+        </div>
+      </div>
+    </div>
+    <div class="footer">© 2026 湖南绿盾卫士检测技术有限公司 · 仅供内部培训使用</div>
+  </div>`;
 }
 
 function startExam() {
   let nm = $("candName")?.value?.trim();
-  if (!nm) {
-    alert("请先输入考生姓名");
-    return;
-  }
+  if (!nm) { showToast("请先输入考生姓名", "error"); return; }
   state.candName = nm;
-  document.getElementById("topbar-user").textContent = "👤 " + nm;
-
-  let task = TASKS[0];
-  state.taskId = task.id;
-  state.questions = buildPaper(task);
+  $("topbar-user").textContent = "👤 " + nm;
+  state.taskId = 1;
+  state.questions = questions.slice();
   state.answers = {};
   state.currentQ = 0;
   state.submitted = false;
@@ -549,7 +473,6 @@ function startExam() {
 
 // ===== 考试页面 =====
 function renderExam() {
-  let task = TASKS.find(t => t.id === state.taskId);
   let total = totalScore(state.questions);
   let answered = state.questions.filter(q => !!state.answers[q.id]).length;
   let pct = Math.round(answered / state.questions.length * 100);
@@ -561,52 +484,45 @@ function renderExam() {
     return `<div class="${cls}" onclick="jumpTo(${i})">${i+1}</div>`;
   }).join("");
 
-  let app = $("app");
-  app.innerHTML = `
-    <div class="page-exam">
-      <!-- 左侧题号面板 -->
-      <div class="sidebar">
-        <div class="card">
-          <div class="sidebar-title">答题进度</div>
-          <div class="q-nav">${navHtml}</div>
-          <div class="q-legend">
-            <span><span class="dot" style="background:#eef2ff;border-color:var(--primary-light)"></span>未答</span>
-            <span><span class="dot" style="background:#eef2ff;border-color:var(--primary-light)"></span>已答</span>
-            <span><span class="dot" style="background:var(--accent);border-color:var(--accent)"></span>当前题</span>
-          </div>
-          <div class="timer-box">
-            <div class="timer-label">⏱ 剩余时间</div>
-            <div class="timer-num" id="timer">--:--</div>
-          </div>
+  $("app").innerHTML = `
+  <div class="page-exam">
+    <div class="sidebar">
+      <div class="card">
+        <div class="sidebar-title">答题进度</div>
+        <div class="q-nav">${navHtml}</div>
+        <div class="q-legend">
+          <span><span class="dot" style="background:#eef2ff;border-color:var(--primary-light)"></span>未答</span>
+          <span><span class="dot" style="background:#eef2ff;border-color:var(--primary-light)"></span>已答</span>
+          <span><span class="dot" style="background:var(--accent);border-color:var(--accent)"></span>当前题</span>
         </div>
-      </div>
-
-      <!-- 右侧答题区 -->
-      <div class="exam-main">
-        <div class="exam-header">
-          <div>
-            <h2>${esc(task.name)}</h2>
-            <div class="exam-info">
-              <span>考生：<strong>${esc(state.candName)}</strong></span>
-              <span>已答：<strong>${answered}/${state.questions.length}</strong></span>
-              <span>满分：<strong>${total}</strong> 分</span>
-            </div>
-            <div class="progress-bar"><div class="fill" style="width:${pct}%"></div></div>
-          </div>
-          <button class="btn btn-accent" onclick="confirmSubmit()">提交试卷</button>
-        </div>
-
-        <div class="question-card" id="q-card"></div>
-
-        <div class="q-nav-bottom">
-          <button class="btn btn-ghost" onclick="prevQ()">← 上一题</button>
-          <button class="btn btn-primary" onclick="nextQ()">下一题 →</button>
-          ${state.currentQ === state.questions.length - 1 ? `<button class="btn btn-accent" onclick="confirmSubmit()">提交试卷</button>` : ""}
-          <button class="btn btn-ghost" onclick="backHome()">退出考试</button>
+        <div class="timer-box">
+          <div class="timer-label">⏱ 剩余时间</div>
+          <div class="timer-num" id="timer">60:00</div>
         </div>
       </div>
     </div>
-  `;
+    <div class="exam-main">
+      <div class="exam-header">
+        <div>
+          <h2>GB/T 18204 培训考核卷</h2>
+          <div class="exam-info">
+            <span>考生：<strong>${esc(state.candName)}</strong></span>
+            <span>已答：<strong>${answered}/${state.questions.length}</strong></span>
+            <span>满分：<strong>${total}</strong> 分</span>
+          </div>
+          <div class="progress-bar"><div class="fill" style="width:${pct}%"></div></div>
+        </div>
+        <button class="btn btn-accent" onclick="confirmSubmit()">提交试卷</button>
+      </div>
+      <div class="question-card" id="q-card"></div>
+      <div class="q-nav-bottom">
+        <button class="btn btn-ghost" onclick="prevQ()">← 上一题</button>
+        <button class="btn btn-primary" onclick="nextQ()">下一题 →</button>
+        ${state.currentQ === state.questions.length - 1 ? `<button class="btn btn-accent" onclick="confirmSubmit()">提交试卷</button>` : ""}
+        <button class="btn btn-ghost" onclick="backHome()">退出考试</button>
+      </div>
+    </div>
+  </div>`;
 
   renderCurrentQ();
   startTimer();
@@ -614,31 +530,27 @@ function renderExam() {
 
 function renderCurrentQ() {
   let q = state.questions[state.currentQ];
-  let card = document.getElementById("q-card");
+  let card = $("q-card");
   if (!card) return;
-
-  let typeLabel = {"single":"单选题","multi":"多选题","judge":"判断题","short":"简答题","scenario":"场景分析题"}[q.qtype] || "问答题";
-  let typeColor = {"single":"#1a5a9a","multi":"#6b3fa0","judge":"#1a8a4a","short":"#c05a20","scenario":"#8a1a4a"}[q.qtype] || "#1a3a6b";
+  let typeLabel = {single:"单选题",multi:"多选题",judge:"判断题",short:"简答题",scenario:"场景分析题"}[q.qtype]||"问答题";
+  let typeColor = {single:"#1a5a9a",multi:"#6b3fa0",judge:"#1a8a4a",short:"#c05a20",scenario:"#8a1a4a"}[q.qtype]||"#1a3a6b";
 
   let optsHtml = "";
   if (q.qtype === "single" || q.qtype === "judge") {
     optsHtml = q.options.map(o => {
-      let sel = (state.answers[q.id] || "") === o[0];
-      let letter = o[0];
-      let text = o.slice(2);
-      return `<div class="option-item${sel?" selected":""}" onclick="selectOption(this,'${letter}')">
-        <span class="opt-letter" style="color:${sel?"#fff":"var(--primary-light)"};border-color:${sel?"var(--primary)":"currentColor"};background:${sel?"var(--primary)":"transparent"}">${letter}</span>
-        <span class="opt-text">${esc(text)}</span>
+      let sel = (state.answers[q.id]||"") === o[0];
+      return `<div class="option-item${sel?" selected":""}" onclick="selectOption(this,'${o[0]}')">
+        <span class="opt-letter" style="color:${sel?"#fff":typeColor};border-color:${sel?typeColor:"currentColor"};background:${sel?typeColor:"transparent"}">${o[0]}</span>
+        <span class="opt-text">${esc(o.slice(2))}</span>
       </div>`;
     }).join("");
   } else if (q.qtype === "multi") {
-    let selArr = (state.answers[q.id] || "").split(",").filter(x=>x);
+    let selArr = (state.answers[q.id]||"").split(",").filter(x=>x);
     optsHtml = q.options.map(o => {
       let sel = selArr.includes(o[0]);
-      let text = o.slice(2);
       return `<div class="option-item${sel?" selected":""}" onclick="toggleMulti(this,'${o[0]}')">
         <span class="opt-letter" style="color:${sel?"#fff":"#6b3fa0"};border-color:${sel?"#6b3fa0":"currentColor"};background:${sel?"#6b3fa0":"transparent"}">${o[0]}</span>
-        <span class="opt-text">${esc(text)}</span>
+        <span class="opt-text">${esc(o.slice(2))}</span>
       </div>`;
     }).join("");
   } else {
@@ -646,7 +558,6 @@ function renderCurrentQ() {
       <textarea id="short-answer" placeholder="请在此输入你的答案..." onchange="setShort(this.value)">${esc(state.answers[q.id]||"")}</textarea>
     </div>`;
   }
-
   card.innerHTML = `
     <span class="q-type" style="background:${typeColor}20;color:${typeColor}">${typeLabel} · ${q.score}分</span>
     <div class="q-stem">${esc(q.stem)}</div>
@@ -659,32 +570,36 @@ function selectOption(el, val) {
   state.answers[q.id] = val;
   el.parentElement.querySelectorAll(".option-item").forEach(e => {
     e.classList.remove("selected");
-    e.querySelector(".opt-letter").style.background = "transparent";
-    e.querySelector(".opt-letter").style.color = "var(--primary-light)";
-    e.querySelector(".opt-letter").style.borderColor = "currentColor";
+    let letter = e.querySelector(".opt-letter");
+    letter.style.background = "transparent";
+    letter.style.color = "";
+    letter.style.borderColor = "currentColor";
   });
   el.classList.add("selected");
-  el.querySelector(".opt-letter").style.background = "var(--primary)";
-  el.querySelector(".opt-letter").style.color = "#fff";
-  el.querySelector(".opt-letter").style.borderColor = "var(--primary)";
+  let letter = el.querySelector(".opt-letter");
+  letter.style.background = "";
+  letter.style.color = "#fff";
+  letter.style.borderColor = "";
   updateNav();
 }
 
 function toggleMulti(el, val) {
   let q = state.questions[state.currentQ];
-  let arr = (state.answers[q.id] || "").split(",").filter(x=>x);
+  let arr = (state.answers[q.id]||"").split(",").filter(x=>x);
   if (arr.includes(val)) {
     arr = arr.filter(x=>x!==val);
     el.classList.remove("selected");
-    el.querySelector(".opt-letter").style.background = "transparent";
-    el.querySelector(".opt-letter").style.color = "#6b3fa0";
-    el.querySelector(".opt-letter").style.borderColor = "currentColor";
+    let letter = el.querySelector(".opt-letter");
+    letter.style.background = "transparent";
+    letter.style.color = "#6b3fa0";
+    letter.style.borderColor = "currentColor";
   } else {
     arr.push(val);
     el.classList.add("selected");
-    el.querySelector(".opt-letter").style.background = "#6b3fa0";
-    el.querySelector(".opt-letter").style.color = "#fff";
-    el.querySelector(".opt-letter").style.borderColor = "#6b3fa0";
+    let letter = el.querySelector(".opt-letter");
+    letter.style.background = "#6b3fa0";
+    letter.style.color = "#fff";
+    letter.style.borderColor = "#6b3fa0";
   }
   state.answers[q.id] = arr.sort().join(",");
   updateNav();
@@ -698,125 +613,114 @@ function setShort(val) {
 function updateNav() {
   let nav = document.querySelector(".q-nav");
   if (!nav) return;
-  state.questions.forEach((q, i) => {
+  state.questions.forEach((q,i) => {
     let dot = nav.children[i];
     if (!dot) return;
     dot.className = "q-dot";
-    if (i === state.currentQ) dot.classList.add("current");
+    if (i===state.currentQ) dot.classList.add("current");
     else if (state.answers[q.id]) dot.classList.add("answered");
   });
-  // 更新进度
-  let answered = state.questions.filter(q => !!state.answers[q.id]).length;
-  let pct = Math.round(answered / state.questions.length * 100);
+  let answered = state.questions.filter(q=>!!state.answers[q.id]).length;
   let fill = document.querySelector(".progress-bar .fill");
-  if (fill) fill.style.width = pct + "%";
+  if (fill) fill.style.width = Math.round(answered/state.questions.length*100)+"%";
 }
 
-function jumpTo(idx) {
-  state.currentQ = idx;
-  renderCurrentQ();
-  updateNav();
-}
-function prevQ() {
-  if (state.currentQ > 0) { state.currentQ--; renderCurrentQ(); updateNav(); }
-}
-function nextQ() {
-  if (state.currentQ < state.questions.length - 1) { state.currentQ++; renderCurrentQ(); updateNav(); }
-}
+function jumpTo(idx) { state.currentQ=idx; renderCurrentQ(); updateNav(); }
+function prevQ() { if(state.currentQ>0){state.currentQ--;renderCurrentQ();updateNav()} }
+function nextQ() { if(state.currentQ<state.questions.length-1){state.currentQ++;renderCurrentQ();updateNav()} }
 
-// ===== 倒计时 =====
-let timerInterval = null;
 function startTimer() {
-  if (timerInterval) clearInterval(timerInterval);
-  let sec = 60 * 60; // 60分钟
+  if(timerInterval) clearInterval(timerInterval);
+  let sec = 60*60;
   timerInterval = setInterval(() => {
     sec--;
-    if (sec <= 0) { clearInterval(timerInterval); confirmSubmit(); return; }
-    let m = Math.floor(sec/60), s = sec%60;
-    let el = document.getElementById("timer");
-    if (el) el.textContent = String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+    if(sec<=0){clearInterval(timerInterval);confirmSubmit();return}
+    let m=Math.floor(sec/60),s=sec%60;
+    let el=document.getElementById("timer");
+    if(el) el.textContent=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
   }, 1000);
 }
 
-// ===== 提交确认 =====
 function confirmSubmit() {
-  if (timerInterval) clearInterval(timerInterval);
-  let unanswered = state.questions.filter(q => !state.answers[q.id]).length;
-  let html = `<div class="modal-overlay" onclick="closeModal(event)">
-    <div class="modal-box" onclick="event.stopPropagation()">
+  if(timerInterval){clearInterval(timerInterval);timerInterval=null}
+  let unanswered=state.questions.filter(q=>!state.answers[q.id]).length;
+  let html=`<div class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-box modal-submit" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal()">×</button>
       <h3>确认提交试卷？</h3>
-      ${unanswered > 0 ? `<p>你还有 <strong>${unanswered} 道题</strong>未作答，提交后将无法修改答案。</p>` : `<p>你已完成全部题目，确认提交吗？</p>`}
+      ${unanswered>0?`<p>你还有 <strong>${unanswered} 道题</strong>未作答，提交后将无法修改答案。</p>`:`<p>你已完成全部题目，确认提交吗？</p>`}
       <div class="modal-actions">
-        <button class="btn btn-ghost" onclick="closeModal()">继续答题</button>
+        <button class="btn btn-ghost" onclick="reopenModal()">继续答题</button>
         <button class="btn btn-accent" onclick="doSubmit()">确认提交 ✓</button>
       </div>
     </div>
   </div>`;
   document.body.insertAdjacentHTML("beforeend", html);
 }
-function closeModal(e) {
-  if (e && e.target !== e.currentTarget) return;
+
+function reopenModal() {
   document.querySelector(".modal-overlay")?.remove();
-  if (timerInterval === null) startTimer(); // 如果之前是超时提交的，不再启动
+  startTimer();
+}
+
+function closeModal(e) {
+  if(e&&e.target!==e.currentTarget) return;
+  document.querySelector(".modal-overlay")?.remove();
+  if(!timerInterval) startTimer();
 }
 
 function doSubmit() {
   document.querySelector(".modal-overlay")?.remove();
-  let task = TASKS.find(t => t.id === state.taskId);
-  let result = calcScore(task, state.questions, state.answers);
-  state.score = result.auto;
-  state.passed = state.score >= task.pass_score;
+  let result = calcScore(state.questions, state.answers);
+  state.score = result;
+  state.passed = state.score >= 80;
   state.submitted = true;
   state.view = "result";
   saveRecord();
   render();
-  scrollTo(0, 0);
+  scrollTo(0,0);
+}
+
+function calcScore(qs, answers) {
+  let auto=0;
+  qs.forEach(q => {
+    if(["single","judge"].includes(q.qtype)) {
+      if((answers[q.id]||"")===q.answer) auto+=q.score;
+    } else if(q.qtype==="multi") {
+      let ca=q.answer.split(",").sort().join(",");
+      if((answers[q.id]||"").split(",").sort().join(",")===ca) auto+=q.score;
+    }
+  });
+  return auto;
 }
 
 function backHome() {
-  if (!confirm("确定退出？考试记录将丢失。")) return;
-  if (timerInterval) clearInterval(timerInterval);
-  timerInterval = null;
-  state.view = "home";
-  state.taskId = null;
-  state.answers = {};
-  document.getElementById("topbar-user").textContent = "👤 未登录";
+  if(!confirm("确定退出？考试记录将丢失。")) return;
+  if(timerInterval){clearInterval(timerInterval);timerInterval=null}
+  state.view="home";
+  $("topbar-user").textContent="👤 未登录";
   render();
 }
 
 // ===== 结果页 =====
 function renderResult() {
-  let task = TASKS.find(t => t.id === state.taskId);
-  let total = totalScore(state.questions);
-  let auto = 0, manual = 0;
-  state.questions.forEach(q => {
-    if (["single","judge"].includes(q.qtype)) {
-      if ((state.answers[q.id]||"")===q.answer) auto+=q.score;
-    } else if (q.qtype==="multi") {
-      let ca=q.answer.split(",").sort().join(",");
-      if ((state.answers[q.id]||"").split(",").sort().join(",")===ca) auto+=q.score;
-    } else { manual+=q.score; }
-  });
-
-  let rightCount = state.questions.filter(q => {
+  let total=totalScore(state.questions);
+  let rightCount=state.questions.filter(q=>{
     if(["single","judge"].includes(q.qtype)) return (state.answers[q.id]||"")===q.answer;
     if(q.qtype==="multi") return (state.answers[q.id]||"").split(",").sort().join(",")===q.answer.split(",").sort().join(",");
     return false;
   }).length;
 
-  let qList = state.questions.map((q,i) => {
-    let isObj = ["single","multi","judge"].includes(q.qtype);
-    let ua = state.answers[q.id] || "";
-    let ok = false, tagCls="tag-wait", tagText="待阅";
-    if (isObj) {
-      if (q.qtype==="multi") ok = ua.split(",").sort().join(",")===q.answer.split(",").sort().join(",");
-      else ok = ua===q.answer;
-      tagCls = ok ? "tag-right" : "tag-wrong";
-      tagText = ok ? "✓ 正确" : "✗ 错误";
-    } else {
-      tagCls = "tag-manual";
-      tagText = "待人工阅卷";
-    }
+  let qList=state.questions.map((q,i)=>{
+    let isObj=["single","multi","judge"].includes(q.qtype);
+    let ua=state.answers[q.id]||"";
+    let ok=false,tagCls="tag-wait",tagText="待阅";
+    if(isObj){
+      if(q.qtype==="multi") ok=ua.split(",").sort().join(",")===q.answer.split(",").sort().join(",");
+      else ok=ua===q.answer;
+      tagCls=ok?"tag-right":"tag-wrong";
+      tagText=ok?"✓ 正确":"✗ 错误";
+    } else {tagCls="tag-manual";tagText="待人工阅卷";}
     return `<div class="q-list-item">
       <div class="q-list-stem">${i+1}. ${esc(q.stem)} <span class="tag ${tagCls}">${tagText}</span> <span class="tag" style="background:#f1f4f8;color:var(--text-light)">${q.score}分</span></div>
       <div class="q-list-meta">
@@ -827,76 +731,334 @@ function renderResult() {
     </div>`;
   }).join("");
 
-  let certId = "LV" + Date.now().toString(36).toUpperCase();
-  let certDate = new Date().toLocaleDateString("zh-CN",{year:"numeric",month:"long",day:"numeric"});
-  let bgIcon = state.passed ? "🏆" : "📋";
+  let certId="LV"+(+new Date()).toString(36).toUpperCase();
+  let certDate=new Date().toLocaleDateString("zh-CN",{year:"numeric",month:"long",day:"numeric"});
 
-  return `
-    <div class="page-result">
-      <div class="result-hero">
-        <div class="result-icon">${bgIcon}</div>
-        <h1>${state.passed ? "恭喜！考试合格" : "考试结束"}</h1>
-        <div class="result-score">${state.score} <span style="font-size:24px;font-weight:400;opacity:.7">/ ${total} 分</span></div>
-        <div class="result-sub">合格线 ${task.pass_score} 分 · ${state.passed?"合格":"不合格"} · ${esc(state.candName)} · ${esc(task.name)}</div>
-      </div>
-
-      <div class="cert-box">
-        <div class="cert-title">湖南绿盾卫士检测技术有限公司</div>
-        <div class="cert-company">培训考核合格证书</div>
-        <div class="cert-line"></div>
-        <div class="cert-text">经考核，成绩合格，特发此证。</div>
-        <div class="cert-name">${esc(state.candName)}</div>
-        <div class="cert-score">${state.score} 分</div>
-        <div class="cert-status ${state.passed?"pass":"fail"}">${state.passed?"✓ 合格":"✗ 不合格"}</div>
-        <div class="cert-date">考核日期：${certDate}</div>
-        <div class="cert-id">证书编号：${certId}</div>
-      </div>
-
-      <div class="result-detail">
-        <div class="result-detail-header">📊 答题详情（共 ${state.questions.length} 题）</div>
-        <div class="result-detail-body">
-          <div class="detail-stats">
-            <div class="detail-stat success">
-              <div class="stat-num">${rightCount}</div>
-              <div class="stat-label">答对题数</div>
-            </div>
-            <div class="detail-stat danger">
-              <div class="stat-num">${state.questions.length - rightCount - (state.questions.length - state.questions.filter(q=>["single","multi","judge"].includes(q.qtype)).length)}</div>
-              <div class="stat-label">答错题数</div>
-            </div>
-            <div class="detail-stat warn">
-              <div class="stat-num">${state.questions.filter(q=>["short","scenario"].includes(q.qtype)).length}</div>
-              <div class="stat-label">主观题（待阅）</div>
-            </div>
-            <div class="detail-stat">
-              <div class="stat-num">${task.pass_score}</div>
-              <div class="stat-label">合格线</div>
-            </div>
-          </div>
-          ${qList}
-        </div>
-      </div>
-
-      <div class="result-actions">
-        <button class="btn btn-primary" onclick="window.print()">🖨 打印证书</button>
-        <button class="btn btn-ghost" onclick="backHome()">返回首页</button>
-      </div>
-
-      <div class="footer">© 2026 湖南绿盾卫士检测技术有限公司 · 培训考核系统</div>
+  return `<div class="page-result">
+    <div class="result-hero">
+      <div class="result-icon">${state.passed?"🏆":"📋"}</div>
+      <h1>${state.passed?"恭喜！考试合格":"考试结束"}</h1>
+      <div class="result-score">${state.score} <span style="font-size:22px;font-weight:400;opacity:.7">/ ${total} 分</span></div>
+      <div class="result-sub">合格线 80 分 · ${state.passed?"合格":"不合格"} · ${esc(state.candName)} · GB/T 18204 培训考核卷</div>
     </div>
-  `;
+    <div class="cert-box">
+      <div class="cert-title">湖南绿盾卫士检测技术有限公司</div>
+      <div class="cert-company">培训考核合格证书</div>
+      <div class="cert-line"></div>
+      <div class="cert-text">经考核，成绩合格，特发此证。</div>
+      <div class="cert-name">${esc(state.candName)}</div>
+      <div class="cert-score">${state.score} 分</div>
+      <div class="cert-status ${state.passed?"pass":"fail"}">${state.passed?"✓ 合格":"✗ 不合格"}</div>
+      <div class="cert-date">考核日期：${certDate}</div>
+      <div class="cert-id">证书编号：${certId}</div>
+    </div>
+    <div class="result-detail">
+      <div class="result-detail-header">📊 答题详情（共 ${state.questions.length} 题）</div>
+      <div class="result-detail-body">
+        <div class="detail-stats">
+          <div class="detail-stat success"><div class="stat-num">${rightCount}</div><div class="stat-label">答对题数</div></div>
+          <div class="detail-stat danger"><div class="stat-num">${state.questions.filter(q=>["single","multi","judge"].includes(q.qtype)).length-rightCount}</div><div class="stat-label">答错题数</div></div>
+          <div class="detail-stat warn"><div class="stat-num">${state.questions.filter(q=>["short","scenario"].includes(q.qtype)).length}</div><div class="stat-label">主观题（待阅）</div></div>
+          <div class="detail-stat"><div class="stat-num">80</div><div class="stat-label">合格线</div></div>
+        </div>
+        ${qList}
+      </div>
+    </div>
+    <div class="result-actions">
+      <button class="btn btn-primary" onclick="window.print()">🖨 打印证书</button>
+      ${isAdmin?`<button class="btn btn-accent" onclick="goPrint()">📄 打印考核卷</button>`:""}
+      <button class="btn btn-ghost" onclick="backHome()">返回首页</button>
+    </div>
+    <div class="footer">© 2026 湖南绿盾卫士检测技术有限公司</div>
+  </div>`;
 }
 
-// ===== LocalStorage =====
+function goPrint() {
+  state.view="print";
+  render();
+  scrollTo(0,0);
+}
+
 function saveRecord() {
-  let task = TASKS.find(t => t.id === state.taskId);
-  let records = JSON.parse(localStorage.getItem("exam_records") || "[]");
-  records.push({time: new Date().toISOString(), name: state.candName, task: task.name, score: state.score, passed: state.passed});
-  localStorage.setItem("exam_records", JSON.stringify(records));
+  let records=JSON.parse(localStorage.getItem("exam_records")||"[]");
+  records.push({time:new Date().toISOString(),name:state.candName,score:state.score,passed:state.passed});
+  localStorage.setItem("exam_records",JSON.stringify(records));
+}
+
+// ===== 管理员面板 =====
+function renderAdmin() {
+  let total=totalScore(questions);
+  let passCount=JSON.parse(localStorage.getItem("exam_records")||"[]").length;
+  let records=JSON.parse(localStorage.getItem("exam_records")||"[]");
+  let qTable=questions.map(q=>{
+    let typeMap={single:"单选题",multi:"多选题",judge:"判断题",short:"简答题",scenario:"场景分析题"};
+    let clsMap={single:"type-single",multi:"type-multi",judge:"type-judge",short:"type-short",scenario:"type-scenario"};
+    return `<tr>
+      <td>${q.id}</td>
+      <td><span class="type-badge ${clsMap[q.qtype]}">${typeMap[q.qtype]||q.qtype}</span></td>
+      <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(q.stem)}</td>
+      <td style="text-align:center">${q.score}</td>
+      <td style="text-align:center"><button class="btn-sm btn-sm-danger" onclick="deleteQuestion(${q.id})">删除</button></td>
+    </tr>`;
+  }).join("");
+
+  let recordsHtml=records.length===0?"<p style='color:var(--text-light);font-size:13px;text-align:center;padding:20px'>暂无考试记录</p>"
+    :`<table class="q-table"><thead><tr><th>#</th><th>考生</th><th>得分</th><th>结果</th><th>时间</th></tr></thead><tbody>
+    ${records.slice().reverse().map((r,i)=>`<tr>
+      <td>${i+1}</td><td>${esc(r.name)}</td><td>${r.score} 分</td>
+      <td><span class="tag ${r.passed?'tag-right':'tag-wrong'}">${r.passed?'合格':'不合格'}</span></td>
+      <td>${new Date(r.time).toLocaleString("zh-CN")}</td>
+    </tr>`).join("")}
+    </tbody></table>`;
+
+  return `<div class="page">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="font-size:24px">⚙️</div>
+        <div>
+          <div style="font-size:18px;font-weight:700;color:var(--primary)">管理员面板</div>
+          <div style="font-size:12px;color:var(--text-light)">题库管理 · 考核卷打印 · 考试记录</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-primary" onclick="showTab('questions')">📝 题库管理</button>
+        <button class="btn btn-accent" onclick="showTab('print')">📄 打印考核卷</button>
+        <button class="btn btn-ghost" onclick="showTab('records')">📊 考试记录</button>
+        <button class="btn btn-ghost" onclick="exitAdmin()">← 返回首页</button>
+      </div>
+    </div>
+
+    <!-- 题库管理 -->
+    <div id="tab-questions">
+      <div class="stat-row">
+        <div class="stat-item"><div class="si-num">${questions.length}</div><div class="si-label">题目总数</div></div>
+        <div class="stat-item"><div class="si-num">${total}</div><div class="si-label">满分分值</div></div>
+        <div class="stat-item"><div class="si-num">${passCount}</div><div class="si-label">考试次数</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">批量导入题目（JSON 格式）</div>
+        <div class="admin-hint">
+          <strong>导入说明：</strong>将题目数组粘贴到下方，题目字段说明如下：<br>
+          <code style="background:#f0f0f0;padding:2px 6px;border-radius:4px;font-size:11px">
+            { "id":1,"qtype":"single|multi|judge|short|scenario","stem":"题目干","options":["A. 选项","B. 选项"...],<br>"answer":"答案","score":分值,"explanation":"解析（可选）" }
+          </code>
+          <br>其中 qtype：<strong>single</strong>=单选，<strong>multi</strong>=多选，<strong>judge</strong>=判断，<strong>short</strong>=简答，<strong>scenario</strong>=场景分析。
+        </div>
+        <div class="admin-panel">
+          <label>JSON 题库数据</label>
+          <textarea id="import-area" placeholder='[&#10;  {&#10;    "id": 1,&#10;    "qtype": "single",&#10;    "stem": "题目",&#10;    "options": ["A. 选项", "B. 选项", "C. 选项", "D. 选项"],&#10;    "answer": "A",&#10;    "score": 2&#10;  }&#10;]'></textarea>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:10px">
+          <button class="btn btn-primary" onclick="importQuestions()">📥 导入题库</button>
+          <button class="btn btn-accent" onclick="exportQuestions()">📤 导出题库</button>
+          <button class="btn btn-ghost" onclick="resetQuestions()">🔄 恢复默认</button>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="card-title">当前题库（共 ${questions.length} 题）</div>
+        <div style="overflow-x:auto">
+          <table class="q-table">
+            <thead><tr><th>序号</th><th>题型</th><th>题目</th><th>分值</th><th>操作</th></tr></thead>
+            <tbody>${qTable}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 打印考核卷 -->
+    <div id="tab-print" style="display:none">
+      <div class="card">
+        <div class="card-title">📄 生成打印考核卷</div>
+        <div class="print-toolbar">
+          <label>考试标题：</label>
+          <input type="text" id="print-title" value="GB/T 18204 培训考核卷" style="flex:1;min-width:200px">
+          <label>合格线：</label>
+          <input type="number" id="print-pass" value="80" style="width:80px">
+          <label>总分：</label>
+          <input type="number" id="print-total" value="${total}" style="width:80px">
+          <button class="btn btn-primary" onclick="generatePrint()">🔄 生成预览</button>
+          <button class="btn btn-accent" onclick="window.print()">🖨 打印</button>
+        </div>
+        <div class="print-preview">
+          <div class="print-area" id="print-area"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 考试记录 -->
+    <div id="tab-records" style="display:none">
+      <div class="card">
+        <div class="card-title">📊 考试记录（${records.length} 条）</div>
+        ${recordsHtml}
+      </div>
+    </div>
+  </div>`;
+}
+
+function showTab(tab) {
+  document.getElementById("tab-questions").style.display=tab==="questions"?"":"none";
+  document.getElementById("tab-print").style.display=tab==="print"?"":"none";
+  document.getElementById("tab-records").style.display=tab==="records"?"":"none";
+  if(tab==="print") generatePrint();
+}
+
+function importQuestions() {
+  let raw = $("import-area")?.value?.trim();
+  if (!raw) { showToast("请先粘贴 JSON 数据", "error"); return; }
+  try {
+    let data = JSON.parse(raw);
+    if (!Array.isArray(data)) throw new Error("不是数组");
+    data.forEach(q => {
+      if (!q.stem || !q.qtype) throw new Error("缺少必填字段 stem 或 qtype");
+    });
+    questions = data;
+    localStorage.setItem("exam_questions", JSON.stringify(questions));
+    showToast(`成功导入 ${questions.length} 道题目`, "success");
+    render();
+  } catch(e) {
+    showToast("JSON 格式错误：" + e.message, "error");
+  }
+}
+
+function exportQuestions() {
+  let blob = new Blob([JSON.stringify(questions, null, 2)], {type:"application/json"});
+  let url = URL.createObjectURL(blob);
+  let a = document.createElement("a");
+  a.href = url; a.download = "题库_" + new Date().toISOString().slice(0,10) + ".json";
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast("题库已导出", "success");
+}
+
+function resetQuestions() {
+  if (!confirm("确定恢复默认题库？当前题库将被覆盖。")) return;
+  questions = JSON.parse(JSON.stringify(DEFAULT_QUESTIONS));
+  localStorage.setItem("exam_questions", JSON.stringify(questions));
+  showToast("已恢复默认题库", "info");
+  render();
+}
+
+function deleteQuestion(id) {
+  if (!confirm("确定删除第 " + id + " 题？")) return;
+  questions = questions.filter(q => q.id !== id);
+  localStorage.setItem("exam_questions", JSON.stringify(questions));
+  showToast("已删除", "info");
+  render();
+}
+
+function exitAdmin() {
+  state.view = "home";
+  render();
+}
+
+// ===== 打印考核卷 =====
+// 分题型输出，紧凑排版，控制在2页
+function generatePrint() {
+  let title = $("print-title")?.value || "培训考核卷";
+  let passScore = parseInt($("print-pass")?.value || "80");
+  let totalScore = parseInt($("print-total")?.value || totalScore(questions));
+
+  let singles = questions.filter(q => q.qtype === "single");
+  let multis = questions.filter(q => q.qtype === "multi");
+  let judges = questions.filter(q => q.qtype === "judge");
+  let shorts = questions.filter(q => q.qtype === "short");
+  let scenarios = questions.filter(q => q.qtype === "scenario");
+
+  function buildSection(title, qs) {
+    if (!qs.length) return "";
+    let rows = qs.map((q, i) => {
+      let num = String(q.id);
+      let optHtml = "";
+      if (q.qtype === "single" || q.qtype === "judge") {
+        optHtml = q.options.map(o => `<td class="opt-col">${o[0]}</td><td>${esc(o.slice(2))}</td>`).join("");
+      } else if (q.qtype === "multi") {
+        optHtml = q.options.map(o => `<td class="opt-col">${o[0]}</td><td>${esc(o.slice(2))}</td>`).join("");
+      } else {
+        optHtml = `<td colspan="6"><div class="answer-line"></div><div class="answer-line"></div>${q.qtype==="scenario"?"":"<div class='answer-line'></div>"}</td>`;
+      }
+      return `<tr>
+        <td class="num">${num}</td>
+        <td class="q-text" style="width:50%">${esc(q.stem)}</td>
+        ${optHtml}
+        <td class="score-col">${q.score}</td>
+      </tr>`;
+    }).join("");
+
+    return `<div class="section-title">${esc(title)}（共 ${qs.length} 题，${qs.reduce((s,q)=>s+q.score,0)} 分）</div>
+    <table>
+      <thead><tr><th style="width:22px">题号</th><th>题目</th><th colspan="6">选项 / 答题区</th><th style="width:28px">分值</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+  }
+
+  let html = `
+    <div class="print-header">
+      <h1>🛡️ 湖南绿盾卫士检测技术有限公司</h1>
+      <p style="font-size:15px;font-weight:700;margin-top:4px">${esc(title)}</p>
+    </div>
+    <div class="info-row">
+      <span>姓名：<input class="wide"></span>
+      <span>单位/部门：<input class="wide"></span>
+      <span>日期：<input class="wide"></span>
+      <span>得分：<input></span>
+    </div>
+    <div style="font-size:12px;color:#555;margin-bottom:12px;background:#f8f8f8;padding:6px 10px;border-radius:6px">
+      <strong>注意事项：</strong>单选题、判断题请在选项字母上打"√"；多选题请在所有正确答案字母上打"√"；简答/分析题请在答题区内书写。
+    </div>
+    ${buildSection("一、单选题", singles)}
+    ${buildSection("二、多选题", multis)}
+    ${buildSection("三、判断题", judges)}
+    ${buildSection("四、简答题", shorts)}
+    ${buildSection("五、场景分析题", scenarios)}
+    <div style="margin-top:14px;padding:10px;background:#f8f8f8;border-radius:8px;font-size:12px;line-height:1.8">
+      <strong>答题卡：</strong>
+      ${[...Array(33)].map((_,i)=>`${i+1}：____`).join("&nbsp;&nbsp;")}
+    </div>
+  `;
+
+  $("print-area").innerHTML = html;
+}
+
+function renderPrint() {
+  return `<div class="page">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;gap:12px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="font-size:24px">📄</div>
+        <div>
+          <div style="font-size:18px;font-weight:700;color:var(--primary)">打印考核卷</div>
+          <div style="font-size:12px;color:var(--text-light)">预览 · 调整格式 · 打印（建议使用 Chrome 浏览器）</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-ghost" onclick="state.view='admin';render()">← 返回管理</button>
+        <button class="btn btn-accent" onclick="window.print()">🖨 打印</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📄 生成打印考核卷</div>
+      <div class="print-toolbar">
+        <label>考试标题：</label>
+        <input type="text" id="print-title" value="GB/T 18204 培训考核卷" style="flex:1;min-width:200px">
+        <label>合格线：</label>
+        <input type="number" id="print-pass" value="80" style="width:80px">
+        <label>总分：</label>
+        <input type="number" id="print-total" value="${totalScore(questions)}" style="width:80px">
+        <button class="btn btn-primary" onclick="generatePrint()">🔄 刷新预览</button>
+      </div>
+      <div class="print-preview" id="print-preview">
+        <div class="print-area" id="print-area" style="display:block"></div>
+      </div>
+    </div>
+  </div>`;
 }
 
 // ===== 初始化 =====
-window.onload = () => render();
+window.onload = () => {
+  render();
+  // 绑定导航标签切换
+  window.showTab = showTab;
+  window.generatePrint = generatePrint;
+};
 </script>
 </body>
 </html>
