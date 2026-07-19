@@ -91,10 +91,7 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 .auth-topbar-icon{width:38px;height:38px;background:rgba(201,168,76,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;border:1px solid rgba(201,168,76,.3)}
 .auth-topbar-title{font-size:15px;font-weight:700;color:#fff;letter-spacing:.5px}
 .auth-topbar-sub{font-size:11px;color:rgba(255,255,255,.6);letter-spacing:1px}
-.auth-topbar-links{display:flex;gap:20px;align-items:center}
-.auth-topbar-links a{font-size:13px;color:rgba(255,255,255,.75);text-decoration:none;transition:color .2s}
-.auth-topbar-links a:hover{color:#fff}
-
+.auth-topbar-copy{font-size:11px;color:rgba(255,255,255,.45);letter-spacing:.5px}
 /* 主内容 */
 .auth-main{display:flex;flex:1;max-width:1200px;width:100%;margin:0 auto;padding:40px;gap:60px;align-items:stretch}
 
@@ -150,33 +147,15 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 .af-link-ghost{font-size:13px;color:var(--text-light);text-decoration:none;cursor:pointer}
 .af-link-ghost:hover{color:var(--text)}
 
-/* 其他登录方式 */
-.auth-alt-login{border-top:1px solid var(--border);margin-top:20px;padding-top:18px;text-align:center}
-.auth-alt-title{font-size:12px;color:var(--text-light);margin-bottom:10px;letter-spacing:.5px}
-.auth-alt-icons{display:flex;justify-content:center;gap:12px;margin-bottom:8px}
-.auth-alt-icon{width:44px;height:44px;background:#f5f7ff;border:1.5px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:not-allowed;opacity:.5}
-.auth-alt-tip{font-size:11px;color:var(--text-light);line-height:1.5}
-
-/* 底部提示区 */
-.auth-footer{background:#f5f7ff;border-top:1px solid var(--border);padding:24px 40px}
-.auth-footer-inner{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
-.auth-footer-tip-title{font-size:13px;font-weight:700;color:var(--primary);margin-bottom:8px}
-.auth-footer-tip-list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
-.auth-footer-tip-list li{font-size:12px;color:var(--text-light);line-height:1.6}
-.auth-footer-copyright{font-size:11px;color:#b0bec5;text-align:center;padding-top:10px;border-top:1px solid var(--border)}
-.auth-footer-copyright a{color:var(--primary-light);text-decoration:none}
-.auth-footer-copyright a:hover{text-decoration:underline}
-
 @media(max-width:900px){
   .auth-brand{display:none}
   .auth-main{padding:20px 16px;gap:0}
   .auth-form-area{max-width:100%;width:100%}
   .auth-topbar{padding:0 16px}
-  .auth-topbar-links a:not(:last-child){display:none}
+  .auth-topbar-copy{display:none}
 }
 @media(max-width:480px){
   .auth-form-wrap{padding:24px 20px}
-  .auth-footer{padding:16px}
 }
 
 /* ===== 首页 Hero ===== */
@@ -773,11 +752,7 @@ function renderAuthPage() {
             <div class="auth-topbar-sub">在线培训考核系统</div>
           </div>
         </div>
-        <div class="auth-topbar-links">
-          <a href="http://www.cpta.com.cn/" target="_blank">人事考试网</a>
-          <a href="#" onclick="switchAuthTab('register')">新用户注册</a>
-          <a href="#" onclick="switchAuthTab('forgot')">忘记密码</a>
-        </div>
+        <div class="auth-topbar-copy">© 2026 湖南绿盾卫士检测技术有限公司 · 仅供内部培训使用</div>
       </div>
     </div>
 
@@ -828,33 +803,9 @@ function renderAuthPage() {
           ${forgotForm}
         </div>
 
-        <!-- 其他登录方式 -->
-        <div class="auth-alt-login">
-          <div class="auth-alt-title">其他登录方式</div>
-          <div class="auth-alt-icons">
-            <div class="auth-alt-icon" title="暂未开放">🔐</div>
-          </div>
-          <p class="auth-alt-tip">其他登录方式陆续开放中，请使用上方账号密码登录</p>
-        </div>
       </div>
     </div>
-
-    <!-- 底部友情提示 -->
-    <div class="auth-footer">
-      <div class="auth-footer-inner">
-        <div class="auth-footer-tips">
-          <div class="auth-footer-tip-title">📌 友情提示</div>
-          <ul class="auth-footer-tip-list">
-            <li>请使用 <strong>Chrome</strong>、<strong>Edge</strong>、<strong>Firefox</strong> 或 <strong>360 浏览器极速模式</strong> 访问；不建议使用 IE 浏览器。</li>
-            <li>首次使用请先注册账号，真实姓名将显示在培训合格证书上，请准确填写。</li>
-            <li>考试合格后可在结果页直接打印培训证书（建议 Chrome 浏览器 Ctrl+P）。</li>
-            <li>如忘记密码，请通过用户名 + 验证码 + 短信验证自助重置。</li>
-          </ul>
-        </div>
-        <div class="auth-footer-copyright">© 2026 湖南绿盾卫士检测技术有限公司 · 仅供内部培训使用 · <a href="http://www.cpta.com.cn/" target="_blank">中国人事考试网</a></div>
-      </div>
-    </div>
-  </div>`;
+  </div>
 }
 
 function switchAuthTab(tab) {
