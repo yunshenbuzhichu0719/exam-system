@@ -284,6 +284,20 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 .score-input{width:54px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-size:13px;text-align:center;outline:none}
 .score-input:focus{border-color:var(--primary-light)}
 .print-area table tfoot td{border:1px solid #555;padding:5px 7px;background:#f0f0f0}
+.paper-list{margin-top:6px}
+.paper-q{padding:11px 0;border-bottom:1px dashed #ddd}
+.paper-q:last-child{border-bottom:none}
+.paper-q-head{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.paper-num{font-weight:800;color:var(--primary);font-size:14px}
+.paper-score{margin-left:auto;font-size:12px;color:var(--text-light)}
+.paper-stem{font-weight:600;line-height:1.65;margin-bottom:7px}
+.paper-ans{display:flex;flex-direction:column;gap:4px;font-size:13px;padding-left:20px}
+.paper-row{display:flex;gap:8px;line-height:1.55}
+.paper-label{flex:0 0 60px;color:var(--text-light);font-weight:700}
+.paper-val{flex:1}
+.paper-explain{color:var(--primary-light)}
+.paper-subjinfo{color:var(--warn);font-weight:600;font-size:12px}
+.paper-total{margin-top:12px;text-align:right;font-size:14px}
 .q-list-item{border:1px solid var(--border);border-radius:11px;padding:18px;margin-bottom:10px}
 .q-list-item .q-list-stem{font-size:14px;font-weight:600;margin-bottom:10px}
 .tag{padding:2px 9px;border-radius:5px;font-size:11px;font-weight:600}
@@ -1404,13 +1418,16 @@ function renderAdmin() {
 
   let recordsHtml = records.length===0
     ? "<p style='color:var(--text-light);font-size:13px;text-align:center;padding:24px'>暂无考试记录</p>"
-    : `<table class="q-table"><thead><tr><th>#</th><th>姓名</th><th>用户名</th><th>得分</th><th>结果</th><th>时间</th></tr></thead><tbody>
+    : `<table class="q-table"><thead><tr><th>#</th><th>姓名</th><th>用户名</th><th>得分</th><th>结果</th><th>时间</th><th>操作</th></tr></thead><tbody>
     ${records.slice().reverse().map((r, di) => { let idx = records.length - 1 - di; return `<tr class="rec-row" onclick="openRecord(${idx})">
       <td>${di+1}</td><td>${esc(r.name)}</td><td>${esc(r.username||"")}</td>
       <td>${r.score} 分</td>
       <td><span class="tag ${r.passed?'tag-right':'tag-wrong'}">${r.passed?'合格':'不合格'}</span></td>
       <td>${new Date(r.time).toLocaleString("zh-CN")}</td>
-      <td><button class="btn-sm btn-sm-primary" onclick="event.stopPropagation();openRecord(${idx})">查看</button></td>
+      <td style="white-space:nowrap">
+        <button class="btn-sm btn-sm-primary" onclick="event.stopPropagation();openRecord(${idx})">查看</button>
+        <button class="btn-sm btn-sm-danger" onclick="event.stopPropagation();deleteRecord(${idx})">删除</button>
+      </td>
     </tr>`; }).join("")}
     </tbody></table>`;
 
@@ -1612,6 +1629,17 @@ function backToRecords() {
   setTimeout(() => showAdminTab("records"), 50);
 }
 
+function deleteRecord(idx) {
+  if (!confirm("确定删除这条考试记录？此操作不可恢复。")) return;
+  let records = getRecords();
+  if (idx < 0 || idx >= records.length) { showToast("记录不存在", "error"); return; }
+  records.splice(idx, 1);
+  saveRecords(records);
+  showToast("记录已删除", "info");
+  render();
+  setTimeout(() => showAdminTab("records"), 50);
+}
+
 function renderRecord() {
   let records = getRecords();
   let rec = records[state.recordIndex];
@@ -1626,23 +1654,26 @@ function renderRecord() {
   }
   let typeMap = {single:"单选题",multi:"多选题",judge:"判断题",short:"简答题",scenario:"场景分析题"};
   let clsMap = {single:"type-single",multi:"type-multi",judge:"type-judge",short:"type-short",scenario:"type-scenario"};
-  let rows = qs.map((q,i) => {
+  let blocks = qs.map((q,i) => {
     let r = questionResult(q, ans[q.id]);
     let ua = ans[q.id] || "";
     let got;
     if (r.isObj) got = r.ok ? q.score : 0;
     else if (r.isSubj) got = (r.g && r.g.total>0) ? r.g.score : (ua ? "待阅" : 0);
     else got = ua ? "待阅" : 0;
-    let rightMark = r.ok ? "<span class='tag tag-right'>✓</span>" : "<span class='tag tag-wrong'>✗</span>";
-    return `<tr>
-      <td class="num">${i+1}</td>
-      <td><span class="type-badge ${clsMap[q.qtype]}">${typeMap[q.qtype]||q.qtype}</span></td>
-      <td class="q-text">${esc(q.stem)}</td>
-      <td>${esc(ua)||"未作答"}</td>
-      <td>${r.isObj ? esc(q.answer) : (q.answer ? esc(q.answer) : "—")}</td>
-      <td style="text-align:center">${got}</td>
-      <td style="text-align:center">${rightMark}</td>
-    </tr>`;
+    let subjInfo = (r.isSubj && r.g && r.g.total>0) ? `（关键词命中 ${r.g.matched}/${r.g.total}，覆盖率 ${Math.round(r.g.ratio*100)}%）` : "";
+    let rightMark = r.ok ? "<span class='tag tag-right'>✓ 正确</span>" : "<span class='tag tag-wrong'>✗ 错误</span>";
+    let refAns = r.isObj ? q.answer : (q.answer || "—");
+    return `<div class="paper-q">
+      <div class="paper-q-head"><span class="paper-num">${i+1}.</span><span class="type-badge ${clsMap[q.qtype]}">${typeMap[q.qtype]||q.qtype}</span><span class="paper-score">${q.score} 分</span></div>
+      <div class="paper-stem">${esc(q.stem)}</div>
+      <div class="paper-ans">
+        <div class="paper-row"><span class="paper-label">你的答案</span><span class="paper-val">${esc(ua)||"未作答"}</span></div>
+        <div class="paper-row"><span class="paper-label">参考答案</span><span class="paper-val">${esc(refAns)}</span></div>
+        ${q.explanation?`<div class="paper-row"><span class="paper-label">解析</span><span class="paper-val paper-explain">${esc(q.explanation)}</span></div>`:""}
+        <div class="paper-row"><span class="paper-label">得分</span><span class="paper-val"><strong>${got}</strong> <span class="paper-subjinfo">${subjInfo}</span> ${rightMark}</span></div>
+      </div>
+    </div>`;
   }).join("");
   let subjTotal = qs.filter(q=>q.qtype==="short"||q.qtype==="scenario").reduce((s,q)=>{ let g=gradeSubjective(q, ans[q.id]); return s + (g.total>0?g.score:0); }, 0);
   return `<div class="page">
@@ -1671,11 +1702,8 @@ function renderRecord() {
         <span>总分：<input value="${rec.score}" readonly></span>
         <span>结果：<input value="${rec.passed?'合格':'不合格'}" readonly></span>
       </div>
-      <table>
-        <thead><tr><th style="width:22px">题号</th><th>题型</th><th>题目</th><th>考生答案</th><th>参考答案</th><th style="width:34px">得分</th><th style="width:30px">判分</th></tr></thead>
-        <tbody>${rows}</tbody>
-        <tfoot><tr><td colspan="5" style="text-align:right;font-weight:700">合计得分</td><td style="text-align:center;font-weight:800">${rec.score}</td><td></td></tr></tfoot>
-      </table>
+      <div class="paper-list">${blocks}</div>
+      <div class="paper-total">合计得分：<strong>${rec.score}</strong> 分 &nbsp;|&nbsp; 结果：<strong>${rec.passed?'合格':'不合格'}</strong></div>
       <div style="margin-top:10px;padding:8px;background:#f8f8f8;border-radius:6px;font-size:12px;line-height:1.8">
         <strong>说明：</strong>客观题自动判分；主观题按关键词覆盖率自动评分（满分 ${subjTotal} 分）。本成绩试卷由系统自动生成。
       </div>
