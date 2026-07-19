@@ -303,6 +303,15 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 .paper-opts-inline{margin:2px 0 0;line-height:1.6;font-size:12px}
 .paper-opt-i{display:inline;margin-right:14px}
 .paper-opt-i.chosen{background:#eef7ee;padding:0 3px;border-radius:3px}
+
+/* ===== 六大模块卡片 ===== */
+.module-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin-top:20px}
+.module-card{background:linear-gradient(135deg,#fff 0%,#f8f9fa 100%);border:1px solid var(--border);border-radius:16px;padding:28px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.module-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(26,58,107,.15);border-color:var(--primary-light)}
+.module-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:4px;background:linear-gradient(90deg,var(--primary),var(--accent))}
+.module-icon{font-size:48px;margin-bottom:16px}
+.module-title{font-size:18px;font-weight:700;color:var(--primary);margin-bottom:8px}
+.module-desc{font-size:13px;color:var(--text-light);line-height:1.5}
 .paper-section{margin-top:10px}
 .paper-section-title{font-size:13px;font-weight:800;background:#f5f5f5;padding:5px 8px;border-left:3px solid var(--primary);margin-bottom:6px}
 .paper-stem-inline{font-weight:600;line-height:1.4;flex:1}
@@ -599,43 +608,33 @@ function renderHome() {
   if (!currentUser) {
     return renderAuthPage();
   }
-  // 已登录 -> 考试入口
-  let total = totalScore(questions);
+  // 已登录 -> 六大模块入口
+  let modules = [
+    { id: "laws", icon: "⚖️", title: "法律法规", desc: "相关法律法规文件" },
+    { id: "expert", icon: "📚", title: "专业知识", desc: "专业知识学习资料" },
+    { id: "mgmt", icon: "📋", title: "管理体系文件", desc: "管理体系相关文件" },
+    { id: "library", icon: "📂", title: "资料库", desc: "标准文件、主管部门文件及通知" },
+    { id: "practice", icon: "✍️", title: "刷题模式", desc: "在线练习，即时反馈" },
+    { id: "exam", icon: "📝", title: "考试模式", desc: "在线考核，自动评分" }
+  ];
+  let moduleCards = modules.map(m => `<div class="module-card" onclick="enterModule('${m.id}')">
+    <div class="module-icon">${m.icon}</div>
+    <div class="module-title">${m.title}</div>
+    <div class="module-desc">${m.desc}</div>
+  </div>`).join("");
+  
   return `<div class="page">
     <div class="hero">
       <div class="hero-text">
         <h1>在线培训考核系统</h1>
-        <p>湖南绿盾卫士检测技术有限公司官方培训平台，支持 GB/T 18204 等标准核心知识点在线学习与考核，自动评分，合格即发证。</p>
+        <p>湖南绿盾卫士检测技术有限公司官方培训平台，支持法律法规、专业知识学习，在线刷题练习与考核评估。</p>
       </div>
-      <div class="hero-badge"><span class="num">1</span>套试卷</div>
     </div>
     <div class="card">
-      <div class="card-title">${esc(currentUser.name)}，您好！</div>
-      <div class="name-section" style="margin-bottom:16px">
-        <div style="flex:1">
-          <div class="paper-grid">
-            <div class="paper-card">
-              <div class="paper-header">
-                <div class="paper-title">GB/T 18204 培训考核卷</div>
-                <span class="paper-tag">专业知识</span>
-              </div>
-              <div class="paper-desc">公共场所卫生检验方法核心知识点，覆盖法律法规、采样技术、微生物检测与质控要点。</div>
-              <div class="paper-meta">
-                <span><span class="dot"></span>${questions.length} 题</span>
-                <span><span class="dot"></span>满分 ${total} 分</span>
-                <span><span class="dot"></span>合格线 80 分</span>
-              </div>
-              <button class="paper-btn" onclick="startExam()">开始考试</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div style="display:flex;gap:10px">
-        <button class="btn btn-ghost" onclick="logout()">退出登录</button>
-        ${isAdmin||currentUser.isAdmin?`<button class="btn btn-accent" onclick="state.view='admin';render()">⚙️ 管理后台</button>`:""}
-      </div>
+      <div class="card-title">欢迎使用，${esc(currentUser.name)}</div>
+      <div class="module-grid">${moduleCards}</div>
     </div>
-    <div class="footer">© 2026 湖南绿盾卫士检测技术有限公司 · 仅供内部培训使用</div>
+    <div class="footer">© 2026 湖南绿盾卫士检测技术有限公司</div>
   </div>`;
 }
 
@@ -996,6 +995,38 @@ function verifyAdminPin() {
 
 function closeModalForce() {
   document.getElementById("admin-login-modal")?.remove();
+}
+
+// ===== 模块入口 =====
+function enterModule(id) {
+  if (id === "exam") {
+    startExam();
+  } else if (id === "practice") {
+    startPractice();
+  } else {
+    // 资料库模块：laws/expert/mgmt/library
+    showToast("资料库模块开发中...", "info");
+  }
+}
+
+function startPractice() {
+  if (!currentUser) { showToast("请先登录", "error"); return; }
+  // 刷题模式：随机抽题，即时反馈
+  state.questions = shuffleArray(questions.slice()).slice(0, 10); // 先随机抽10题
+  state.answers = {};
+  state.currentQ = 0;
+  state.practiceMode = true;
+  state.view = "exam";
+  render();
+}
+
+function shuffleArray(arr) {
+  let a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
 // ===== 考试 =====
