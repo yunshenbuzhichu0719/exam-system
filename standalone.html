@@ -300,6 +300,9 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 .paper-opt-letter{flex:0 0 16px;font-weight:700;color:var(--primary)}
 .paper-opt-text{flex:1}
 .paper-opt-mark{margin-left:4px;color:#1a8f3c;font-weight:700;font-size:11px}
+.paper-opts-inline{margin:2px 0 0;line-height:1.6;font-size:12px}
+.paper-opt-i{display:inline;margin-right:14px}
+.paper-opt-i.chosen{background:#eef7ee;padding:0 3px;border-radius:3px}
 .paper-section{margin-top:10px}
 .paper-section-title{font-size:13px;font-weight:800;background:#f5f5f5;padding:5px 8px;border-left:3px solid var(--primary);margin-bottom:6px}
 .paper-stem-inline{font-weight:600;line-height:1.4;flex:1}
@@ -1689,13 +1692,17 @@ function renderRecord() {
         answerMark = "";
       }
       let optsHtml;
-      if (["single","multi","judge"].includes(t) && q.options && q.options.length) {
+      if (["single","multi"].includes(t) && q.options && q.options.length) {
         let chosenArr = Array.isArray(ua) ? ua : (typeof ua==="string" && ua.indexOf(",")>=0 ? ua.split(",").map(s=>s.trim()) : (ua?[ua]:[]));
-        optsHtml = '<div class="paper-opts">' + q.options.map(o => {
+        optsHtml = '<div class="paper-opts-inline">' + q.options.map(o => {
           let letter = o[0];
           let isChosen = chosenArr.includes(letter);
-          return `<div class="paper-opt${isChosen?' chosen':''}"><span class="paper-opt-letter">${letter}</span><span class="paper-opt-text">${esc(o.slice(2))}</span></div>`;
+          return `<span class="paper-opt-i${isChosen?' chosen':''}">${letter} ${esc(o.slice(2))}</span>`;
         }).join("") + '</div>';
+      } else if (t === "judge") {
+        optsHtml = "";
+      } else if (q.options && q.options.length) {
+        optsHtml = "";
       } else {
         optsHtml = `<div class="paper-subj-ans">作答：${ua ? esc(ua) : '（未作答）'}<br>得分：${got} 分 ${subjInfo} ${rightMark}</div>`;
       }
