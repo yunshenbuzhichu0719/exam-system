@@ -7,9 +7,10 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --primary:#1a3a6b;--primary-light:#2a5aaa;--accent:#c9a84c;--accent-light:#f0d080;
-  --bg:#e8edf4;--card:#fff;--text:#1a1a2e;--text-light:#5a6a7a;--border:#d0d8e4;
-  --success:#1a8a4a;--danger:#c0392b;--warn:#e67e22;
+  --primary:#1a3a6b;--primary-light:#2a5aaa;--primary-dark:#0d2247;
+  --accent:#c9a84c;--accent-light:#f0d080;--accent-dark:#a07830;
+  --bg:#e8edf4;--card:#fff;--text:#1a1a2e;--text-light:#5a6a7a;
+  --border:#d0d8e4;--success:#1a8a4a;--danger:#c0392b;--warn:#e67e22;
 }
 body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 
@@ -23,24 +24,95 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 .topbar-logo .shield{width:40px;height:40px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
 .topbar-logo .name{font-size:17px;font-weight:700;letter-spacing:.5px}
 .topbar-logo .sub{font-size:11px;opacity:.7;letter-spacing:1px}
-.topbar-right{display:flex;align-items:center;gap:12px}
-.topbar-right .user-icon{background:rgba(255,255,255,.15);padding:6px 14px;border-radius:20px;font-size:13px}
-.topbar-right .btn-bar{
-  background:rgba(201,168,76,.2);border:1px solid rgba(201,168,76,.4);
-  color:var(--accent-light);padding:6px 14px;border-radius:20px;font-size:13px;
-  cursor:pointer;transition:background .2s;
-}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.topbar-right .user-icon{background:rgba(255,255,255,.15);padding:6px 14px;border-radius:20px;font-size:13px;cursor:pointer}
+.topbar-right .btn-bar{background:rgba(201,168,76,.2);border:1px solid rgba(201,168,76,.4);color:var(--accent-light);padding:6px 14px;border-radius:20px;font-size:13px;cursor:pointer;transition:background .2s}
 .topbar-right .btn-bar:hover{background:rgba(201,168,76,.35)}
 
-/* ===== 页面通用 ===== */
+/* ===== 通用 ===== */
 .page{padding:40px 20px;max-width:1200px;margin:0 auto;animation:fadeUp .3s ease}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-
 .card{background:var(--card);border-radius:16px;padding:32px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid var(--border);margin-bottom:24px}
 .card-title{font-size:17px;font-weight:700;color:var(--primary);margin-bottom:24px;padding-bottom:14px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:10px}
 .card-title::before{content:'';width:4px;height:22px;background:var(--accent);border-radius:2px}
 
-/* ===== 首页 ===== */
+/* ===== 通用组件 ===== */
+.btn{border:none;border-radius:10px;padding:11px 22px;font-size:14px;font-weight:600;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;box-shadow:0 3px 12px rgba(26,58,107,.3)}
+.btn-accent{background:linear-gradient(135deg,#c9a84c,#e0bc5a);color:#fff;box-shadow:0 3px 12px rgba(201,168,76,.35)}
+.btn-ghost{background:#f1f4f8;color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{background:#e8edf4}
+.btn-danger{background:#fef2f2;color:var(--danger);border:1px solid #fecaca}
+.btn-sm{padding:7px 14px;font-size:13px;border-radius:8px;border:none;cursor:pointer;font-weight:600}
+.btn-sm-danger{background:#fef2f2;color:var(--danger);border:1px solid #fecaca}
+.btn-sm-primary{background:#eef2ff;color:var(--primary-light);border:1px solid #c7d2fe}
+.btn-sm-accent{background:#fff8e8;color:#b06000;border:1px solid #f0c040}
+.footer{text-align:center;padding:28px 20px;font-size:12px;color:var(--text-light)}
+
+/* ===== Toast ===== */
+.toast{position:fixed;top:80px;right:20px;background:#fff;border-radius:12px;padding:14px 20px;box-shadow:0 4px 20px rgba(0,0,0,.15);z-index:300;font-size:14px;display:none;animation:fadeUp .2s ease;min-width:200px}
+.toast.show{display:block}
+.toast.success{border-left:4px solid var(--success)}
+.toast.error{border-left:4px solid var(--danger)}
+.toast.info{border-left:4px solid var(--primary)}
+
+/* ===== 模态弹窗 ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal-box{background:#fff;border-radius:20px;padding:40px;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);position:relative;animation:fadeUp .25s ease}
+.modal-box h3{font-size:20px;color:var(--primary);margin-bottom:6px}
+.modal-box .modal-sub{font-size:13px;color:var(--text-light);margin-bottom:24px;line-height:1.6}
+.modal-close{position:absolute;top:16px;right:20px;background:none;border:none;font-size:22px;cursor:pointer;color:var(--text-light);line-height:1}
+.modal-close:hover{color:var(--text)}
+.modal-actions{display:flex;gap:10px;justify-content:center;margin-top:20px}
+.modal-row{display:flex;flex-direction:column;gap:16px}
+
+/* ===== 表单字段 ===== */
+.field{width:100%}
+.field label{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;display:block}
+.field input{width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:10px;font-size:15px;outline:none;transition:border-color .2s}
+.field input:focus{border-color:var(--primary-light)}
+.field .hint{font-size:11px;color:var(--text-light);margin-top:4px}
+
+/* ===== 验证码 ===== */
+.captcha-row{display:flex;gap:10px;align-items:flex-end}
+.captcha-row .field{flex:1}
+.captcha-canvas{border-radius:10px;border:2px solid var(--border);cursor:pointer;flex-shrink:0;height:46px;transition:border-color .2s}
+.captcha-canvas:hover{border-color:var(--primary-light)}
+
+/* ===== 登录页 ===== */
+.auth-page{
+  display:flex;align-items:center;justify-content:center;
+  min-height:calc(100vh - 64px);padding:40px 20px;
+}
+.auth-container{
+  background:var(--card);border-radius:24px;padding:48px;max-width:440px;width:100%;
+  box-shadow:0 8px 40px rgba(0,0,0,.1);border:1px solid var(--border);
+}
+.auth-header{text-align:center;margin-bottom:32px}
+.auth-header .shield-icon{width:64px;height:64px;background:linear-gradient(135deg,#1a3a6b,#1a5a9a);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 16px;box-shadow:0 4px 16px rgba(26,58,107,.3)}
+.auth-header h1{font-size:22px;font-weight:800;color:var(--primary);margin-bottom:4px}
+.auth-header p{font-size:13px;color:var(--text-light)}
+
+.auth-tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:28px}
+.auth-tab{flex:1;text-align:center;padding:12px;font-size:15px;font-weight:600;color:var(--text-light);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s}
+.auth-tab.active{color:var(--primary);border-bottom-color:var(--accent)}
+
+.auth-form{display:none;flex-direction:column;gap:16px}
+.auth-form.active{display:flex}
+
+.forgot-link{text-align:center;margin-top:8px}
+.forgot-link a{font-size:13px;color:var(--primary-light);text-decoration:none;cursor:pointer}
+.forgot-link a:hover{text-decoration:underline}
+
+.divider{text-align:center;margin:20px 0;position:relative}
+.divider::before{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:var(--border)}
+.divider span{background:#fff;padding:0 12px;position:relative;font-size:12px;color:var(--text-light)}
+
+.secure-note{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-light);background:#f5f7ff;padding:10px 14px;border-radius:8px;margin-top:8px}
+.secure-note span{color:var(--success)}
+
+/* ===== 首页 Hero ===== */
 .hero{background:linear-gradient(135deg,#1a3a6b 0%,#1a5a9a 50%,#0d2247 100%);border-radius:20px;padding:56px 50px;margin-bottom:36px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;right:-60px;top:-60px;width:280px;height:280px;background:rgba(201,168,76,.12);border-radius:50%}
 .hero-text{position:relative;z-index:1}
@@ -49,17 +121,12 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 .hero-badge{background:rgba(201,168,76,.2);border:1px solid rgba(201,168,76,.4);border-radius:16px;padding:16px 24px;text-align:center;color:var(--accent-light);position:relative;z-index:1}
 .hero-badge .num{font-size:36px;font-weight:800;display:block;color:#fff}
 
-.name-section{display:flex;gap:14px;align-items:flex-end;margin-bottom:32px;flex-wrap:wrap}
-.name-section input{flex:1;min-width:200px;padding:13px 18px;border:2px solid var(--border);border-radius:12px;font-size:16px;outline:none;transition:border-color .2s}
-.name-section input:focus{border-color:var(--primary-light)}
-.btn-start{background:linear-gradient(135deg,#1a3a6b,#1a5a9a);color:#fff;border:none;border-radius:12px;padding:13px 32px;font-size:16px;font-weight:700;cursor:pointer;white-space:nowrap;transition:transform .15s,box-shadow .15s}
-.btn-start:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(26,58,107,.4)}
-
+/* ===== 试卷选择 ===== */
 .paper-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
-.paper-card{border:2px solid var(--border);border-radius:16px;padding:22px;transition:border-color .2s,box-shadow .2s,transform .15s;cursor:pointer;background:var(--card)}
+.paper-card{border:2px solid var(--border);border-radius:16px;padding:22px;transition:all .2s;cursor:pointer;background:var(--card)}
 .paper-card:hover{border-color:var(--primary-light);box-shadow:0 6px 24px rgba(26,58,107,.12);transform:translateY(-2px)}
-.paper-card .paper-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
-.paper-card .paper-title{font-size:15px;font-weight:700;color:var(--text);line-height:1.4}
+.paper-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.paper-title{font-size:15px;font-weight:700;line-height:1.4}
 .paper-tag{background:#eef2ff;color:var(--primary-light);border-radius:8px;padding:3px 10px;font-size:12px;flex-shrink:0;margin-left:10px}
 .paper-desc{font-size:13px;color:var(--text-light);line-height:1.5;margin-bottom:14px}
 .paper-meta{display:flex;gap:14px;font-size:12px;color:var(--text-light);margin-bottom:18px;flex-wrap:wrap}
@@ -81,7 +148,6 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 .timer-box{background:#fff8e8;border:1px solid #e8d090;border-radius:12px;padding:12px;margin-top:14px;text-align:center}
 .timer-label{font-size:11px;color:var(--warn);font-weight:600;margin-bottom:3px}
 .timer-num{font-size:26px;font-weight:800;color:var(--warn);font-variant-numeric:tabular-nums}
-
 .exam-main{flex:1;min-width:0}
 .exam-header{background:var(--card);border-radius:16px;padding:22px 26px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid var(--border);margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
 .exam-header h2{font-size:17px;color:var(--primary)}
@@ -89,7 +155,6 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 .exam-info strong{color:var(--text)}
 .progress-bar{width:100%;height:5px;background:#e8edf4;border-radius:3px;overflow:hidden;margin-top:3px}
 .progress-bar .fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--primary-light));border-radius:3px;transition:width .4s}
-
 .question-card{background:var(--card);border-radius:16px;padding:26px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid var(--border);margin-bottom:18px}
 .q-type{display:inline-block;border-radius:6px;padding:3px 12px;font-size:12px;font-weight:700;margin-bottom:14px;letter-spacing:.5px}
 .q-stem{font-size:15px;line-height:1.7;font-weight:600;margin-bottom:18px}
@@ -101,15 +166,8 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 .opt-text{flex:1;font-size:14px;line-height:1.4}
 .short-area textarea{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:11px;font-size:14px;line-height:1.6;resize:vertical;min-height:110px;font-family:inherit;outline:none;transition:border-color .2s}
 .short-area textarea:focus{border-color:var(--primary-light)}
-
 .q-nav-bottom{display:flex;gap:10px;flex-wrap:wrap}
-.btn{border:none;border-radius:10px;padding:11px 22px;font-size:14px;font-weight:600;cursor:pointer;transition:transform .15s,box-shadow .15s}
-.btn:hover{transform:translateY(-1px)}
-.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;box-shadow:0 3px 12px rgba(26,58,107,.3)}
-.btn-accent{background:linear-gradient(135deg,#c9a84c,#e0bc5a);color:#fff;box-shadow:0 3px 12px rgba(201,168,76,.35)}
-.btn-ghost{background:#f1f4f8;color:var(--text);border:1px solid var(--border)}
-.btn-ghost:hover{background:#e8edf4}
-.btn-danger{background:#fef2f2;color:var(--danger);border:1px solid #fecaca}
+.unanswered-alert{background:#fef3cd;border:1px solid #f0c040;color:#7a5000;border-radius:11px;padding:14px 18px;margin-bottom:16px;font-size:13px}
 
 /* ===== 结果页 ===== */
 .page-result{max-width:960px;margin:0 auto;padding:40px 20px}
@@ -119,14 +177,12 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 .result-hero h1{font-size:34px;color:#fff;margin-bottom:10px;position:relative}
 .result-score{font-size:68px;font-weight:900;color:var(--accent-light);margin-bottom:6px;position:relative}
 .result-sub{font-size:15px;color:rgba(255,255,255,.65);position:relative}
-
 .cert-box{background:var(--card);border-radius:20px;border:2px solid var(--accent);padding:44px 56px;text-align:center;margin-bottom:30px;position:relative}
 .cert-box::before,.cert-box::after{content:'★';position:absolute;top:18px;font-size:18px;color:var(--accent)}
 .cert-box::before{left:28px}.cert-box::after{right:28px}
 .cert-title{font-size:12px;letter-spacing:7px;color:var(--text-light);margin-bottom:6px}
 .cert-company{font-size:22px;font-weight:900;color:var(--primary);margin-bottom:22px;letter-spacing:2px}
 .cert-line{border-top:1px dashed var(--border);margin:22px 0}
-.cert-text{font-size:14px;color:var(--text-light);line-height:2}
 .cert-name{font-size:20px;font-weight:700;margin:14px 0;letter-spacing:4px}
 .cert-score{font-size:44px;font-weight:900;color:var(--accent);margin:14px 0}
 .cert-status{display:inline-block;font-size:18px;font-weight:800;padding:7px 28px;border-radius:30px;margin-top:10px}
@@ -134,7 +190,6 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 .cert-status.fail{background:#fef2f2;color:var(--danger);border:2px solid var(--danger)}
 .cert-date{font-size:13px;color:var(--text-light);margin-top:18px}
 .cert-id{font-size:12px;color:#b0bec5;margin-top:5px;font-family:monospace}
-
 .result-detail{background:var(--card);border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:30px}
 .result-detail-header{background:#f5f7ff;padding:18px 26px;font-size:15px;font-weight:700;color:var(--primary);border-bottom:1px solid var(--border)}
 .result-detail-body{padding:22px 26px}
@@ -158,97 +213,66 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 .q-list-meta{display:flex;gap:14px;font-size:12px;color:var(--text-light);flex-wrap:wrap}
 .result-actions{display:flex;gap:14px;justify-content:center;margin-top:28px;flex-wrap:wrap}
 
-/* ===== 管理员登录弹窗 ===== */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
-.modal-box{background:#fff;border-radius:20px;padding:40px;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);position:relative;animation:fadeUp .25s ease}
-.modal-box h3{font-size:20px;color:var(--primary);margin-bottom:8px}
-.modal-box p{font-size:13px;color:var(--text-light);margin-bottom:24px;line-height:1.6}
-.modal-box input{width:100%;padding:13px 18px;border:2px solid var(--border);border-radius:12px;font-size:16px;text-align:center;outline:none;margin-bottom:16px;transition:border-color .2s}
-.modal-box input:focus{border-color:var(--primary-light)}
-.modal-box .modal-actions{display:flex;gap:10px;justify-content:center}
-.modal-close{position:absolute;top:16px;right:20px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-light);line-height:1}
-.modal-close:hover{color:var(--text)}
-.pin-dots{display:flex;gap:10px;justify-content:center;margin-bottom:20px}
-.pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border);transition:all .15s}
-.pin-dot.filled{background:var(--primary);border-color:var(--primary)}
-
 /* ===== 管理员面板 ===== */
 .admin-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:24px}
-.admin-tab{padding:11px 26px;font-size:14px;font-weight:600;color:var(--text-light);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .2s,border-color .2s}
+.admin-tab{padding:11px 26px;font-size:14px;font-weight:600;color:var(--text-light);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s}
 .admin-tab.active{color:var(--primary);border-bottom-color:var(--accent)}
-
-.admin-panel{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
-.admin-panel label{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
-.admin-panel input,.admin-panel textarea,.admin-panel select{width:100%;padding:10px 14px;border:2px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s}
-.admin-panel input:focus,.admin-panel textarea:focus,.admin-panel select:focus{border-color:var(--primary-light)}
-.admin-panel textarea{resize:vertical;min-height:260px;line-height:1.5}
 .admin-hint{font-size:12px;color:var(--text-light);background:#f5f7ff;border-radius:8px;padding:10px 14px;line-height:1.6;margin-bottom:16px}
-
+.admin-hint code{background:#f0f0f0;padding:2px 6px;border-radius:4px;font-size:11px;font-family:monospace}
 .stat-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px}
 .stat-item{flex:1;min-width:140px;background:#f5f7ff;border:1px solid var(--border);border-radius:12px;padding:18px 20px;text-align:center}
 .stat-item .si-num{font-size:28px;font-weight:800;color:var(--primary)}
 .stat-item .si-label{font-size:12px;color:var(--text-light);margin-top:3px}
-
+.admin-panel{display:flex;flex-direction:column;gap:12px}
+.admin-panel label{font-size:13px;font-weight:600;color:var(--text)}
+.admin-panel input,.admin-panel textarea,.admin-panel select{width:100%;padding:10px 14px;border:2px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s}
+.admin-panel input:focus,.admin-panel textarea:focus,.admin-panel select:focus{border-color:var(--primary-light)}
+.admin-panel textarea{resize:vertical;min-height:240px;line-height:1.5}
 .q-table{width:100%;border-collapse:collapse;font-size:13px}
 .q-table th,.q-table td{border:1px solid var(--border);padding:8px 12px;text-align:left}
 .q-table th{background:#f5f7ff;font-weight:700;color:var(--primary)}
 .q-table tr:hover td{background:#f9faff}
-.q-table .type-badge{padding:2px 8px;border-radius:5px;font-size:11px;font-weight:700}
+.type-badge{padding:2px 8px;border-radius:5px;font-size:11px;font-weight:700}
 .type-single{background:#eef2ff;color:#1a5a9a}
 .type-multi{background:#f3efff;color:#6b3fa0}
 .type-judge{background:#f0fdf4;color:#1a8a4a}
 .type-short{background:#fff8e8;color:#b06000}
 .type-scenario{background:#fef2f2;color:#8a1a4a}
 
-.btn-sm{padding:6px 14px;font-size:13px;border-radius:8px;border:none;cursor:pointer;font-weight:600;transition:opacity .2s,transform .1s}
-.btn-sm:hover{transform:translateY(-1px)}
-.btn-sm-danger{background:#fef2f2;color:var(--danger);border:1px solid #fecaca}
-.btn-sm-primary{background:#eef2ff;color:var(--primary-light);border:1px solid #c7d2fe}
-.btn-sm-accent{background:#fff8e8;color:#b06000;border:1px solid #f0c040}
-
 /* 打印考核卷 */
 .print-toolbar{display:flex;gap:14px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
-.print-toolbar label{font-size:13px;color:var(--text-light)}
-.print-toolbar select,.print-toolbar input{padding:8px 14px;border:2px solid var(--border);border-radius:10px;font-size:13px;outline:none}
-.print-toolbar select:focus{border-color:var(--primary-light)}
+.print-toolbar label{font-size:13px;color:var(--text-light}
+.print-toolbar input,.print-toolbar select{padding:8px 14px;border:2px solid var(--border);border-radius:10px;font-size:13px;outline:none}
+.print-toolbar input:focus,.print-toolbar select:focus{border-color:var(--primary-light)}
 .print-preview{background:#888;padding:24px;min-height:400px;border-radius:12px}
 .print-area{background:#fff;padding:28px 32px;font-size:13px;line-height:1.5;color:#000;max-width:210mm;margin:0 auto}
 .print-area .print-header{text-align:center;border-bottom:2px solid #000;padding-bottom:12px;margin-bottom:16px}
 .print-area .print-header h1{font-size:18px;font-weight:900;letter-spacing:2px;margin-bottom:4px}
-.print-area .print-header p{font-size:12px;color:#333}
 .print-area .info-row{display:flex;gap:20px;margin-bottom:16px;font-size:13px}
-.print-area .info-row span{white-space:nowrap}
 .print-area .info-row input{border:none;border-bottom:1px solid #000;padding:2px 4px;width:80px;font-size:13px;outline:none}
 .print-area .info-row input.wide{width:120px}
 .print-area table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
 .print-area table th,.print-area table td{border:1px solid #555;padding:5px 7px;vertical-align:top;line-height:1.4}
 .print-area table th{background:#f0f0f0;font-weight:700;text-align:center}
 .print-area table td.num{text-align:center;width:22px}
-.print-area table td.opt-col{width:22px;text-align:center}
+.print-area table td.opt-col{width:20px;text-align:center}
 .print-area table .q-text{font-weight:600}
-.print-area .q-extra{font-size:11px;color:#555;margin-top:2px}
-.print-area .score-col{text-align:center;width:28px;font-weight:700}
-.print-area .page-break{page-break-after:always}
-.print-area .section-title{font-size:13px;font-weight:800;background:#f0f0f0;padding:4px 8px;margin-top:10px;margin-bottom:4px}
+.print-area .section-title{font-size:13px;font-weight:800;background:#f0f0f0;padding:4px 8px;margin-top:8px;margin-bottom:3px}
 .print-area .answer-line{border-bottom:1px solid #555;height:16px;margin-top:4px}
+.print-area .page-break{page-break-after:always}
 
-/* 未答提示 */
-.unanswered-alert{background:#fef3cd;border:1px solid #f0c040;color:#7a5000;border-radius:11px;padding:14px 18px;margin-bottom:16px;font-size:13px}
+/* 密码强度指示器 */
+.pw-strength{margin-top:4px;display:flex;gap:4px;align-items:center}
+.pw-strength-bar{height:4px;flex:1;border-radius:2px;background:#e8edf4;overflow:hidden}
+.pw-strength-bar span{display:block;height:100%;transition:width .3s}
+.pw-strength-label{font-size:11px;color:var(--text-light);margin-top:3px}
 
-/* 提交确认弹窗 */
-.modal-submit h3{font-size:19px}.modal-submit p{font-size:14px}
+/* 密码眼睛 */
+.input-wrap{position:relative}
+.input-wrap input{padding-right:42px}
+.input-wrap .eye-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--text-light);padding:0}
 
-/* 页脚 */
-.footer{text-align:center;padding:28px 20px;font-size:12px;color:var(--text-light)}
-
-/* 成功/错误提示 */
-.toast{position:fixed;top:80px;right:20px;background:#fff;border-radius:12px;padding:14px 20px;box-shadow:0 4px 20px rgba(0,0,0,.15);z-index:300;font-size:14px;display:none;animation:fadeUp .2s ease}
-.toast.show{display:block}
-.toast.success{border-left:4px solid var(--success)}
-.toast.error{border-left:4px solid var(--danger)}
-.toast.info{border-left:4px solid var(--primary)}
-
-/* 响应式 */
+/* ===== 响应式 ===== */
 @media(max-width:900px){
   .page-exam{flex-direction:column}
   .sidebar{width:100%;position:static}
@@ -259,14 +283,14 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 }
 @media(max-width:600px){
   .topbar{padding:0 14px}
-  .topbar-right .user-icon{display:none}
+  .topbar-right .user-icon,.topbar-right .btn-bar .admin-label{display:none}
   .paper-grid{grid-template-columns:1fr}
+  .auth-container{padding:32px 24px}
 }
 @media print{
   body{background:#fff}
-  .topbar,.page-exam,.page-result,.no-print,.sidebar,.print-toolbar,.footer,.modal-overlay{display:none!important}
+  .topbar,.page-exam,.page-result,.no-print,.sidebar,.print-toolbar,.footer,.modal-overlay,.auth-page,.hero,.card:not(.print-card){display:none!important}
   .page-result{max-width:100%;padding:0}
-  .cert-box,.result-detail{box-shadow:none;border-radius:0;margin:0}
   .print-area{display:block!important}
   .print-area{font-size:12px;padding:1.2cm 1.5cm;max-width:100%}
   @page{size:A4;margin:1.2cm 1.5cm}
@@ -275,7 +299,6 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 </head>
 <body>
 
-<!-- 顶部导航 -->
 <div class="topbar">
   <div class="topbar-logo">
     <div class="shield">🛡️</div>
@@ -285,140 +308,205 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
     </div>
   </div>
   <div class="topbar-right">
-    <span class="user-icon" id="topbar-user">👤 未登录</span>
-    <button class="btn-bar" onclick="openAdminLogin()">⚙️ 管理员</button>
+    <span class="user-icon" id="topbar-user" onclick="if(currentUser){showUserInfo()}">👤 未登录</span>
+    <button class="btn-bar" onclick="openAdminLogin()"><span class="admin-label">⚙️ 管理员</span></button>
   </div>
 </div>
 
-<!-- 主应用区 -->
 <div id="app"></div>
-
-<!-- 通用提示 -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ===== 内置题库（默认） =====
+// ===== 默认题库 =====
 const DEFAULT_QUESTIONS = [
   {id:1,qtype:"single",stem:"GB/T 18204 标准族共有几个部分？",options:["A. 3 个","B. 5 个","C. 6 个","D. 8 个"],answer:"C",score:2,explanation:"分为物理性、化学性、空气微生物、公共用品用具微生物、集中空调、卫生监测规范 6 部分。"},
   {id:2,qtype:"single",stem:"室内温度、相对湿度测点的高度一般应为？",options:["A. 距地面 0.2 m","B. 距地面 0.8~1.6 m","C. 距天花板 0.5 m","D. 任意高度"],answer:"B",score:2,explanation:"代表人群呼吸带高度。"},
   {id:3,qtype:"single",stem:"用热球式电风速计测风速时，采样员应当？",options:["A. 站在仪器正前方","B. 退到仪器下风向 0.5 m 外","C. 用手扶住探头","D. 紧贴墙壁站立"],answer:"B",score:2,explanation:"避免人体遮挡风流、制造乱流。"},
-  {id:4,qtype:"single",stem:"甲醛采样最常用的方法是？",options:["A. 酚试剂分光光度法","B. 重量法","C. 撞击法","D. 沉降法"],answer:"A",score:2,explanation:"酚试剂（MBTH）分光光度法最常用；重量法用于颗粒物。"},
-  {id:5,qtype:"single",stem:"PM2.5\"重量法\"的核心步骤是？",options:["A. 用激光数颗粒","B. 滤膜采样后恒温恒湿称重差重","C. 直接读仪器","D. 培养菌落"],answer:"B",score:2,explanation:"滤膜采集后称重，差重算浓度；光散射法为快速法。"},
-  {id:6,qtype:"single",stem:"空气细菌总数\"自然沉降法\"是指？",options:["A. 用机器把空气吹到平皿上","B. 把平皿打开让菌自然落下","C. 用拭子擦空气","D. 过滤空气"],answer:"B",score:2,explanation:"平皿暴露让微生物自然沉降；撞击法才用机器。"},
-  {id:7,qtype:"single",stem:"公共用品用具微生物采样，一件毛巾应？",options:["A. 用一支拭子擦所有毛巾","B. 一件用品用一支拭子，固定面积涂抹","C. 直接剪碎培养","D. 用嘴吹一下"],answer:"B",score:2,explanation:"一件一拭子，防止交叉污染、便于溯源。"},
-  {id:8,qtype:"single",stem:"集中空调冷却水中需重点检测、且必须在生物安全柜操作的致病微生物是？",options:["A. 大肠杆菌","B. 金黄色葡萄球菌","C. 嗜肺军团菌","D. 真菌"],answer:"C",score:2,explanation:"军团菌致病且存在气溶胶风险，需生物安全柜操作。"},
+  {id:4,qtype:"single",stem:"甲醛采样最常用的方法是？",options:["A. 酚试剂分光光度法","B. 重量法","C. 撞击法","D. 沉降法"],answer:"A",score:2,explanation:"酚试剂（MBTH）分光光度法最常用。"},
+  {id:5,qtype:"single",stem:"PM2.5\"重量法\"的核心步骤是？",options:["A. 用激光数颗粒","B. 滤膜采样后恒温恒湿称重差重","C. 直接读仪器","D. 培养菌落"],answer:"B",score:2,explanation:"滤膜采集后称重，差重算浓度。"},
+  {id:6,qtype:"single",stem:"空气细菌总数\"自然沉降法\"是指？",options:["A. 用机器把空气吹到平皿上","B. 把平皿打开让菌自然落下","C. 用拭子擦空气","D. 过滤空气"],answer:"B",score:2,explanation:"平皿暴露让微生物自然沉降。"},
+  {id:7,qtype:"single",stem:"公共用品用具微生物采样，一件毛巾应？",options:["A. 用一支拭子擦所有毛巾","B. 一件用品用一支拭子，固定面积涂抹","C. 直接剪碎培养","D. 用嘴吹一下"],answer:"B",score:2,explanation:"一件一拭子，防止交叉污染。"},
+  {id:8,qtype:"single",stem:"集中空调冷却水中需在生物安全柜操作的致病微生物是？",options:["A. 大肠杆菌","B. 金黄色葡萄球菌","C. 嗜肺军团菌","D. 真菌"],answer:"C",score:2,explanation:"军团菌致病且存在气溶胶风险，需生物安全柜操作。"},
   {id:9,qtype:"single",stem:"根据监测技术规范，布点一般按？",options:["A. 只在门口布点","B. 每 50~100 m² 设 1 个点，均匀布设","C. 随机 1 个点","D. 只在污染源旁"],answer:"B",score:2,explanation:"按面积均匀布点，保证代表性。"},
-  {id:10,qtype:"single",stem:"质控\"现场空白\"的作用是证明？",options:["A. 采样员手不抖","B. 吸收液/滤膜本身没被污染","C. 仪器很准","D. 数据好看"],answer:"B",score:2,explanation:"现场空白证\"锅干净\"；平行样证\"手不抖\"；加标证\"秤准\"。"},
-  {id:11,qtype:"multi",stem:"下列哪些属于 GB/T 18204.1 物理性指标？",options:["A. 照度","B. 噪声","C. 甲醛","D. 新风量","E. 大气压"],answer:"A,B,D,E",score:3,explanation:"甲醛属化学性指标（第2部分）。"},
-  {id:12,qtype:"multi",stem:"化学性指标采样时，下列哪些做法正确？",options:["A. 甲醛样品避光、24h内分析","B. 臭氧样品全程避光、即采即测","C. 苯系物活性炭管进气方向接反无所谓","D. 采样流量和体积要准确记录","E. 滤膜用手直接拿取"],answer:"A,B,D",score:3,explanation:"活性炭管方向不能反；滤膜应用镊子取放避免污染。"},
-  {id:13,qtype:"multi",stem:"空气微生物采样质控应包括？",options:["A. 培养基空白（不采样培养应无菌落）","B. 平行采样取平均","C. 开盖时间越长越好","D. 无菌操作"],answer:"A,B,D",score:3,explanation:"暴露过长平皿干燥、结果失真。"},
-  {id:14,qtype:"multi",stem:"公共用品用具微生物检测项目通常包括？",options:["A. 细菌总数","B. 大肠菌群","C. 金黄色葡萄球菌","D. 真菌总数"],answer:"A,B,C,D",score:3,explanation:"四项均为常规检测项目。"},
-  {id:15,qtype:"multi",stem:"通用质控\"四件套\"包括？",options:["A. 现场空白","B. 运输空白","C. 平行样","D. 加标回收","E. 随意修改数据"],answer:"A,B,C,D",score:3,explanation:"随意修改数据违反质控原则。"},
+  {id:10,qtype:"single",stem:"质控\"现场空白\"的作用是证明？",options:["A. 采样员手不抖","B. 吸收液/滤膜本身没被污染","C. 仪器很准","D. 数据好看"],answer:"B",score:2,explanation:"现场空白证\"锅干净\"。"},
+  {id:11,qtype:"multi",stem:"下列哪些属于 GB/T 18204.1 物理性指标？",options:["A. 照度","B. 噪声","C. 甲醛","D. 新风量","E. 大气压"],answer:"A,B,D,E",score:3,explanation:"甲醛属化学性指标。"},
+  {id:12,qtype:"multi",stem:"化学性指标采样时，下列哪些做法正确？",options:["A. 甲醛样品避光、24h内分析","B. 臭氧样品全程避光、即采即测","C. 苯系物活性炭管进气方向接反无所谓","D. 采样流量和体积要准确记录","E. 滤膜用手直接拿取"],answer:"A,B,D",score:3},
+  {id:13,qtype:"multi",stem:"空气微生物采样质控应包括？",options:["A. 培养基空白","B. 平行采样取平均","C. 开盖时间越长越好","D. 无菌操作"],answer:"A,B,D",score:3},
+  {id:14,qtype:"multi",stem:"公共用品用具微生物检测项目通常包括？",options:["A. 细菌总数","B. 大肠菌群","C. 金黄色葡萄球菌","D. 真菌总数"],answer:"A,B,C,D",score:3},
+  {id:15,qtype:"multi",stem:"通用质控\"四件套\"包括？",options:["A. 现场空白","B. 运输空白","C. 平行样","D. 加标回收","E. 随意修改数据"],answer:"A,B,C,D",score:3},
   {id:16,qtype:"judge",stem:"GB/T 18204.2 是空气微生物指标的测定方法。",options:["对","错"],answer:"错",score:2,explanation:"第2部分是化学性指标；空气微生物是第3部分。"},
-  {id:17,qtype:"judge",stem:"测照度前，探头应遮光清零，且人不要挡住光路。",options:["对","错"],answer:"对",score:2,explanation:"正确。"},
+  {id:17,qtype:"judge",stem:"测照度前，探头应遮光清零，且人不要挡住光路。",options:["对","错"],answer:"对",score:2},
   {id:18,qtype:"judge",stem:"风速测量时，采样员站在仪器正前方不影响结果。",options:["对","错"],answer:"错",score:2,explanation:"人会挡风制造乱流。"},
-  {id:19,qtype:"judge",stem:"甲醛吸收液采样时，应保证气泡连续均匀，不能让液体被吸走。",options:["对","错"],answer:"对",score:2,explanation:"正确。"},
-  {id:20,qtype:"judge",stem:"空气细菌总数\"撞击法\"是用机器把空气高速撞到培养皿上。",options:["对","错"],answer:"对",score:2,explanation:"正确。"},
-  {id:21,qtype:"judge",stem:"沉降法平皿暴露时间越长结果越准，可以暴露 1 小时。",options:["对","错"],answer:"错",score:2,explanation:"暴露过长平皿干燥、结果失真。"},
-  {id:22,qtype:"judge",stem:"公共用品采样时，一支棉拭子可以连续擦拭多件不同用品以提高效率。",options:["对","错"],answer:"错",score:2,explanation:"会交叉污染，应一件一拭子。"},
-  {id:23,qtype:"judge",stem:"嗜肺军团菌检测存在生物危害，应在生物安全柜内操作。",options:["对","错"],answer:"对",score:2,explanation:"正确。"},
-  {id:24,qtype:"judge",stem:"监测布点应在场所正常营业/使用状态下进行，不能在空场造假。",options:["对","错"],answer:"对",score:2,explanation:"正确。"},
-  {id:25,qtype:"judge",stem:"平行样是为了证明\"仪器很准\"，空白样是为了证明\"手不抖\"。",options:["对","错"],answer:"错",score:2,explanation:"空白证\"锅干净\"、平行证\"手不抖\"、加标证\"秤准\"。"},
-  {id:26,qtype:"short",stem:"简述室内空气\"新风量\"的采样原理和关键注意事项。",options:[],answer:"原理：用示踪气体（如CO₂）在密闭有人房间测浓度衰减/释放，结合房间体积与人数算新风量。注意：在正常使用、门窗正常关闭状态测；房间先密闭平衡；记录体积、人数、门窗状态；重复2~3次取平均。",score:6,explanation:"",keyword:"示踪气体；密闭平衡；记录体积人数；正常使用状态；重复取平均"},
-  {id:27,qtype:"short",stem:"甲醛采样-检测全流程中，列举至少 3 个易出错点和对应正确做法。",options:[],answer:"①吸收管未垂直/气泡不均→液体被吸走，应垂直、气泡连续；②未避光/超24h才分析→甲醛分解，应避光并限时分析；③显色温度时间不准→严格控温计时；④采样前房间未按要求密闭→先密闭再采；⑤流量体积不准→校准流量计、记录体积。",score:6,explanation:"",keyword:"垂直气泡连续；避光24h内；控温计时；先密闭；流量体积准"},
-  {id:28,qtype:"short",stem:"什么是\"空气细菌总数\"的撞击法和自然沉降法？各适用于什么场景？",options:[],answer:"撞击法：用采样器将空气高速撞击到培养皿上捕菌，速度快、定量好，适合精确监测。自然沉降法：平皿打开暴露一定时间，靠重力落菌，操作简便但受暴露时间影响大，适合快速筛查。",score:6,explanation:"",keyword:"撞击法机器定量精确；沉降法暴露简便筛查"},
-  {id:29,qtype:"short",stem:"公共用品用具微生物采样\"涂抹法\"的操作要点是什么？",options:[],answer:"无菌生理盐水湿润棉拭子；在用品表面固定面积（如5×5cm²）内来回均匀涂抹；剪去手触部分放入采样液；一件一拭子、标记清楚；尽快4℃冷藏送检。",score:6,explanation:"",keyword:"无菌；固定面积；一件一拭子；标记；冷藏"},
-  {id:30,qtype:"short",stem:"集中空调通风系统卫生监测包含哪几类主要检测内容？为什么军团菌检测要特别小心？",options:[],answer:"内容：送风中细菌/真菌总数、送风中PM10、风管内表面积尘量、风管内表面微生物、冷却水/冷凝水嗜肺军团菌。原因：军团菌致病、可随空调气溶胶吸入致病，且培养操作有生物危害，须生物安全柜、个人防护。",score:6,explanation:"",keyword:"送风微生物；PM10；积尘；表面微生物；军团菌；生物安全柜"},
-  {id:31,qtype:"scenario",stem:"【场景】某检测员在商场测风速，站在风速计正前方读数，得到 0.05 m/s。请指出问题，并说明正确做法和可能造成的后果。",options:[],answer:"问题：人站在正前方会遮挡风流、制造乱流，测得的是\"人的影子\"而非真实风速。正确：采样员退到仪器下风向0.5m外，探头迎风。后果：读数偏低，可能掩盖通风不良问题，数据不可靠。",score:5,explanation:"",keyword:"遮挡风流；退到下风向0.5m外；读数偏低不可靠"},
-  {id:32,qtype:"scenario",stem:"【场景】某宾馆杯具监测，采样员用同一支无菌棉拭子依次擦拭了 8 个茶杯内侧，混合后送检。请评价该操作，并给出规范做法。",options:[],answer:"问题：一支拭子擦多件用品会造成交叉污染，且无法定位哪件不合格。规范：一件用品一支无菌拭子，固定面积涂抹，分别标记、分别培养。混合后即使检出菌也无法追溯来源。",score:5,explanation:"",keyword:"交叉污染；一件一拭子；分别标记培养；无法溯源"},
-  {id:33,qtype:"scenario",stem:"【场景】测新装修办公室甲醛，采样时门窗大开、空调全开，实验室报出\"甲醛合格\"。请分析该结果是否可靠，并说明正确采样条件。",options:[],answer:"不可靠。甲醛采样应在房间密闭（关闭门窗一定时段、停止通风）状态下进行；门窗大开、空调全开会把甲醛吹散稀释，导致\"假合格\"。正确：采样前按标准要求密闭房间、关闭新风/空调，达到平衡后再采样。",score:5,explanation:"",keyword:"不可靠；应密闭关闭通风；假合格；平衡后采样"}
+  {id:19,qtype:"judge",stem:"甲醛吸收液采样时，应保证气泡连续均匀，不能让液体被吸走。",options:["对","错"],answer:"对",score:2},
+  {id:20,qtype:"judge",stem:"空气细菌总数\"撞击法\"是用机器把空气高速撞到培养皿上。",options:["对","错"],answer:"对",score:2},
+  {id:21,qtype:"judge",stem:"沉降法平皿暴露时间越长结果越准，可以暴露 1 小时。",options:["对","错"],answer:"错",score:2},
+  {id:22,qtype:"judge",stem:"公共用品采样时，一支棉拭子可以连续擦拭多件不同用品以提高效率。",options:["对","错"],answer:"错",score:2},
+  {id:23,qtype:"judge",stem:"嗜肺军团菌检测存在生物危害，应在生物安全柜内操作。",options:["对","错"],answer:"对",score:2},
+  {id:24,qtype:"judge",stem:"监测布点应在场所正常营业/使用状态下进行，不能在空场造假。",options:["对","错"],answer:"对",score:2},
+  {id:25,qtype:"judge",stem:"平行样是为了证明\"仪器很准\"，空白样是为了证明\"手不抖\"。",options:["对","错"],answer:"错",score:2},
+  {id:26,qtype:"short",stem:"简述室内空气\"新风量\"的采样原理和关键注意事项。",options:[],answer:"原理：用示踪气体（如CO₂）在密闭有人房间测浓度衰减/释放，结合房间体积与人数算新风量。注意：在正常使用、门窗正常关闭状态测；房间先密闭平衡；记录体积、人数、门窗状态；重复2~3次取平均。",score:6,keyword:"示踪气体；密闭平衡；记录体积人数"},
+  {id:27,qtype:"short",stem:"甲醛采样-检测全流程中，列举至少 3 个易出错点和对应正确做法。",options:[],answer:"①吸收管未垂直/气泡不均→液体被吸走；②未避光/超24h才分析→甲醛分解；③显色温度时间不准→严格控温计时；④采样前房间未按要求密闭→先密闭再采。",score:6,keyword:"垂直气泡；避光24h；控温计时；先密闭"},
+  {id:28,qtype:"short",stem:"什么是\"空气细菌总数\"的撞击法和自然沉降法？各适用于什么场景？",options:[],answer:"撞击法：用采样器将空气高速撞击到培养皿上捕菌，速度快、定量好，适合精确监测。自然沉降法：平皿打开暴露一定时间，靠重力落菌，操作简便，适合快速筛查。",score:6,keyword:"撞击法定量精确；沉降法简便筛查"},
+  {id:29,qtype:"short",stem:"公共用品用具微生物采样\"涂抹法\"的操作要点是什么？",options:[],answer:"无菌生理盐水湿润棉拭子；在用品表面固定面积（如5×5cm²）内来回均匀涂抹；剪去手触部分放入采样液；一件一拭子、标记清楚；尽快4℃冷藏送检。",score:6,keyword:"无菌；固定面积；一件一拭子；标记；冷藏"},
+  {id:30,qtype:"short",stem:"集中空调通风系统卫生监测包含哪几类主要检测内容？为什么军团菌检测要特别小心？",options:[],answer:"内容：送风中细菌/真菌总数、送风中PM10、风管内表面积尘量、风管内表面微生物、冷却水嗜肺军团菌。原因：军团菌致病、可随气溶胶吸入，且操作有生物危害，须生物安全柜防护。",score:6,keyword:"送风微生物；PM10；积尘；军团菌；生物安全柜"},
+  {id:31,qtype:"scenario",stem:"【场景】某检测员在商场测风速，站在风速计正前方读数，得到 0.05 m/s。请指出问题，并说明正确做法和可能造成的后果。",options:[],answer:"问题：人站在正前方会遮挡风流、制造乱流，测得的是\"人的影子\"而非真实风速。正确：采样员退到仪器下风向0.5m外，探头迎风。后果：读数偏低，数据不可靠。",score:5,keyword:"遮挡风流；退到下风向0.5m外"},
+  {id:32,qtype:"scenario",stem:"【场景】某宾馆杯具监测，采样员用同一支无菌棉拭子依次擦拭了 8 个茶杯内侧，混合后送检。请评价该操作，并给出规范做法。",options:[],answer:"问题：一支拭子擦多件用品会造成交叉污染，且无法定位哪件不合格。规范：一件用品一支无菌拭子，固定面积涂抹，分别标记、分别培养。",score:5,keyword:"交叉污染；一件一拭子；分别标记培养"},
+  {id:33,qtype:"scenario",stem:"【场景】测新装修办公室甲醛，采样时门窗大开、空调全开，实验室报出\"甲醛合格\"。请分析该结果是否可靠，并说明正确采样条件。",options:[],answer:"不可靠。甲醛采样应在房间密闭（关闭门窗一定时段、停止通风）状态下进行；门窗大开、空调全开会稀释甲醛，导致\"假合格\"。正确：采样前按标准要求密闭房间、关闭新风/空调，达到平衡后再采样。",score:5,keyword:"不可靠；应密闭；假合格"}
 ];
 
-// ===== 状态管理 =====
-const ADMIN_PIN = "888888";
+// ===== 存储管理 =====
+const ADMIN_KEY = "exam_admin_config";
+const USERS_KEY = "exam_users";
+const QUESTIONS_KEY = "exam_questions";
+const RECORDS_KEY = "exam_records";
+const SESSION_KEY = "exam_session";
+
+function getAdminConfig() {
+  let cfg = JSON.parse(localStorage.getItem(ADMIN_KEY) || "null");
+  if (!cfg) {
+    cfg = { pin: "888888", users: [] };
+    localStorage.setItem(ADMIN_KEY, JSON.stringify(cfg));
+  }
+  return cfg;
+}
+function saveAdminConfig(cfg) { localStorage.setItem(ADMIN_KEY, JSON.stringify(cfg)); }
+function getUsers() { return JSON.parse(localStorage.getItem(USERS_KEY) || "[]"); }
+function saveUsers(u) { localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
+function getQuestions() {
+  let q = JSON.parse(localStorage.getItem(QUESTIONS_KEY) || "null");
+  return q || JSON.parse(JSON.stringify(DEFAULT_QUESTIONS));
+}
+function saveQuestions(q) { localStorage.setItem(QUESTIONS_KEY, JSON.stringify(q)); }
+function getRecords() { return JSON.parse(localStorage.getItem(RECORDS_KEY) || "[]"); }
+function saveRecords(r) { localStorage.setItem(RECORDS_KEY, JSON.stringify(r)); }
+
+// ===== 全局状态 =====
+let questions = getQuestions();
+let currentUser = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
 let isAdmin = false;
-let questions = JSON.parse(localStorage.getItem("exam_questions")) || JSON.parse(JSON.stringify(DEFAULT_QUESTIONS));
-let state = {view:"home", candName:"", taskId:1, questions:[], answers:{}, currentQ:0, submitted:false, score:0, passed:false};
+let state = { view: "auth", authTab: "login", candName: "", taskId: 1, questions: [], answers: {}, currentQ: 0, submitted: false, score: 0, passed: false };
 let timerInterval = null;
+let currentCaptcha = { code: "", ops: [] };
 
-function $(id) { return document.getElementById(id); }
-function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-
-function totalScore(qs) { return qs.reduce((s,q)=>s+q.score,0); }
-
-// ===== Toast 提示 =====
-function showToast(msg, type="info") {
+// ===== 工具函数 =====
+function $ (id) { return document.getElementById(id); }
+function esc (s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function totalScore (qs) { return (qs || questions).reduce((s,q)=>s+q.score,0); }
+function showToast (msg, type="info") {
   let t = $("toast");
-  t.textContent = msg;
-  t.className = "toast " + type + " show";
-  clearTimeout(t._t);
-  t._t = setTimeout(() => t.classList.remove("show"), 3000);
+  t.textContent = msg; t.className = "toast " + type + " show";
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove("show"), 3000);
+}
+
+// ===== 验证码系统 =====
+const CAPTCHA_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+function generateCaptcha() {
+  let ops = [], code = "";
+  for (let i = 0; i < 4; i++) {
+    let n = Math.floor(Math.random() * 10);
+    ops.push({ label: `${n} + ? = ${n + Math.floor(Math.random()*5+1)}`, answer: Math.floor(Math.random()*5+1) });
+    code += n;
+  }
+  currentCaptcha = { code, ops, index: 0, answer: null };
+  return ops;
+}
+
+function getCaptchaQ() {
+  if (!currentCaptcha.ops.length) generateCaptcha();
+  return currentCaptcha.ops[currentCaptcha.index % currentCaptcha.ops.length];
+}
+
+function renderCaptchaCanvas(canvas) {
+  if (!canvas) return;
+  let ctx = canvas.getContext("2d");
+  let W = canvas.width = 140;
+  let H = canvas.height = 46;
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = "#eef2ff";
+  ctx.fillRect(0, 0, W, H);
+  // 干扰线
+  for (let i = 0; i < 4; i++) {
+    ctx.strokeStyle = "rgba(26,58,107," + (0.1 + Math.random()*0.15) + ")";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(Math.random()*W, Math.random()*H);
+    ctx.lineTo(Math.random()*W, Math.random()*H);
+    ctx.stroke();
+  }
+  // 噪点
+  for (let i = 0; i < 30; i++) {
+    ctx.fillStyle = "rgba(26,58,107,0.15)";
+    ctx.fillRect(Math.random()*W, Math.random()*H, 2, 2);
+  }
+  let q = getCaptchaQ();
+  ctx.fillStyle = "#1a3a6b";
+  ctx.font = "bold 13px PingFang SC, Microsoft YaHei";
+  ctx.textAlign = "center";
+  ctx.fillText(q.label, W/2, H/2 + 5);
+  // 重绘按钮
+  let bx = W - 30, by = H/2 - 12;
+  ctx.fillStyle = "transparent";
+  ctx.strokeStyle = "#1a3a6b";
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(bx, by, 24, 24);
+  ctx.fillStyle = "#1a3a6b";
+  ctx.font = "10px sans-serif";
+  ctx.fillText("↻", bx+12, by+15);
+}
+
+// ===== 密码工具 =====
+function hashPin(pin) {
+  // 简单哈希，用于存储（本地存储，非高安全场景）
+  let h = 5381;
+  for (let i = 0; i < pin.length; i++) h = ((h << 5) + h) + pin.charCodeAt(i);
+  return h.toString(36);
+}
+
+function checkPinStrength(pin) {
+  let score = 0;
+  if (pin.length >= 6) score++;
+  if (/\d/.test(pin)) score++;
+  if (/[A-Za-z]/.test(pin)) score++;
+  if (/[^A-Za-z0-9]/.test(pin)) score++;
+  if (pin.length >= 10) score++;
+  return score;
 }
 
 // ===== 渲染入口 =====
 function render() {
-  $("app").innerHTML = "";
-  switch(state.view) {
-    case "home":     $("app").innerHTML = renderHome(); break;
-    case "exam":     renderExam(); break;
-    case "result":   $("app").innerHTML = renderResult(); break;
-    case "admin":    $("app").innerHTML = renderAdmin(); break;
-    case "print":    $("app").innerHTML = renderPrint(); break;
+  if (state.view === "auth" || state.view === "home") {
+    $("app").innerHTML = renderHome();
+  } else if (state.view === "exam") {
+    renderExam();
+  } else if (state.view === "result") {
+    $("app").innerHTML = renderResult();
+  } else if (state.view === "admin") {
+    $("app").innerHTML = renderAdmin();
+  } else if (state.view === "print") {
+    $("app").innerHTML = renderPrintPage();
   }
+  updateTopbar();
 }
 
-// ===== 首页 =====
-// 管理员登录弹窗
-function openAdminLogin() {
-  let html = `<div class="modal-overlay" id="admin-login-modal">
-    <div class="modal-box">
-      <button class="modal-close" onclick="closeAdminLogin()">×</button>
-      <h3>⚙️ 管理员登录</h3>
-      <p>请输入管理员 PIN 码（6位数字）</p>
-      <div class="pin-dots" id="pin-dots">
-        <div class="pin-dot"></div><div class="pin-dot"></div>
-        <div class="pin-dot"></div><div class="pin-dot"></div>
-        <div class="pin-dot"></div><div class="pin-dot"></div>
-      </div>
-      <input type="password" id="admin-pin" maxlength="6" placeholder="请输入 PIN" autocomplete="off" oninput="onPinInput(this)">
-      <div class="modal-actions">
-        <button class="btn btn-ghost" onclick="closeAdminLogin()">取消</button>
-        <button class="btn btn-primary" onclick="verifyPin()">确认登录</button>
-      </div>
-      <p style="margin-top:14px;font-size:11px;color:#b0bec5">提示：默认 PIN 为 888888</p>
-    </div>
-  </div>`;
-  document.body.insertAdjacentHTML("beforeend", html);
-  setTimeout(() => $("admin-pin")?.focus(), 100);
-}
-
-function onPinInput(el) {
-  let dots = document.querySelectorAll("#pin-dots .pin-dot");
-  dots.forEach((d,i) => d.classList.toggle("filled", i < el.value.length));
-  if (el.value.length === 6) verifyPin();
-}
-
-function verifyPin() {
-  let pin = $("admin-pin")?.value;
-  if (pin === ADMIN_PIN) {
-    closeAdminLogin();
-    isAdmin = true;
-    state.view = "admin";
-    render();
-    showToast("管理员登录成功", "success");
+function updateTopbar() {
+  let el = $("topbar-user");
+  if (currentUser) {
+    el.textContent = "👤 " + currentUser.name;
+    el.onclick = showUserInfo;
   } else {
-    showToast("PIN 错误，请重试", "error");
-    $("admin-pin").value = "";
-    document.querySelectorAll("#pin-dots .pin-dot").forEach(d=>d.classList.remove("filled"));
-    $("admin-pin").focus();
+    el.textContent = "👤 未登录";
+    el.onclick = null;
   }
 }
 
-function closeAdminLogin() {
-  document.getElementById("admin-login-modal")?.remove();
-}
-
+// ===== 首页/认证页 =====
 function renderHome() {
+  if (!currentUser) {
+    return renderAuthPage();
+  }
+  // 已登录 -> 考试入口
+  let total = totalScore(questions);
   return `<div class="page">
     <div class="hero">
       <div class="hero-text">
@@ -428,39 +516,391 @@ function renderHome() {
       <div class="hero-badge"><span class="num">1</span>套试卷</div>
     </div>
     <div class="card">
-      <div class="card-title">考生信息</div>
-      <div class="name-section">
-        <input type="text" id="candName" placeholder="请输入真实姓名（将显示在证书上）" value="${esc(state.candName)}">
-        <button class="btn-start" onclick="startExam()">进入考试 →</button>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title">选择考试科目</div>
-      <div class="paper-grid">
-        <div class="paper-card">
-          <div class="paper-header">
-            <div class="paper-title">GB/T 18204 培训考核卷</div>
-            <span class="paper-tag">专业知识</span>
+      <div class="card-title">${esc(currentUser.name)}，您好！</div>
+      <div class="name-section" style="margin-bottom:16px">
+        <div style="flex:1">
+          <div class="paper-grid">
+            <div class="paper-card">
+              <div class="paper-header">
+                <div class="paper-title">GB/T 18204 培训考核卷</div>
+                <span class="paper-tag">专业知识</span>
+              </div>
+              <div class="paper-desc">公共场所卫生检验方法核心知识点，覆盖法律法规、采样技术、微生物检测与质控要点。</div>
+              <div class="paper-meta">
+                <span><span class="dot"></span>${questions.length} 题</span>
+                <span><span class="dot"></span>满分 ${total} 分</span>
+                <span><span class="dot"></span>合格线 80 分</span>
+              </div>
+              <button class="paper-btn" onclick="startExam()">开始考试</button>
+            </div>
           </div>
-          <div class="paper-desc">公共场所卫生检验方法核心知识点，覆盖法律法规、采样技术、微生物检测与质控要点。</div>
-          <div class="paper-meta">
-            <span><span class="dot"></span>${questions.length} 题</span>
-            <span><span class="dot"></span>满分 ${totalScore(questions)} 分</span>
-            <span><span class="dot"></span>合格线 80 分</span>
-          </div>
-          <button class="paper-btn" onclick="startExam()">开始考试</button>
         </div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-ghost" onclick="logout()">退出登录</button>
+        ${isAdmin||currentUser.isAdmin?`<button class="btn btn-accent" onclick="state.view='admin';render()">⚙️ 管理后台</button>`:""}
       </div>
     </div>
     <div class="footer">© 2026 湖南绿盾卫士检测技术有限公司 · 仅供内部培训使用</div>
   </div>`;
 }
 
+// ===== 认证页面 =====
+function renderAuthPage() {
+  let regForm = `
+    <div class="auth-form" id="form-register">
+      <div class="field">
+        <label>真实姓名 *</label>
+        <input type="text" id="reg-name" placeholder="请输入真实姓名（将显示在证书上）" maxlength="20">
+      </div>
+      <div class="field">
+        <label>手机号码 *</label>
+        <input type="tel" id="reg-phone" placeholder="请输入手机号码" maxlength="11">
+      </div>
+      <div class="field">
+        <label>设置密码 *</label>
+        <div class="input-wrap">
+          <input type="password" id="reg-pw" placeholder="6位以上，包含数字和字母" maxlength="20" oninput="onPwStrength(this.value,'reg-strength')">
+        </div>
+        <div class="pw-strength" id="reg-strength"></div>
+        <div class="pw-strength-label" id="reg-strength-label"></div>
+      </div>
+      <div class="field">
+        <label>确认密码 *</label>
+        <div class="input-wrap">
+          <input type="password" id="reg-pw2" placeholder="再次输入密码" maxlength="20">
+        </div>
+      </div>
+      <div class="field">
+        <label>图形验证码 *</label>
+        <div class="captcha-row">
+          <div class="field" style="margin:0">
+            <input type="text" id="reg-captcha" placeholder="请输入下方计算结果" maxlength="6" autocomplete="off">
+          </div>
+          <canvas class="captcha-canvas" id="captcha-reg" onclick="refreshCaptcha('reg')" title="点击刷新"></canvas>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;padding:13px;font-size:16px" onclick="doRegister()">注册账号</button>
+      <div class="divider"><span>已有账号？</span></div>
+      <button class="btn btn-ghost" style="width:100%" onclick="switchAuthTab('login')">返回登录</button>
+    </div>`;
+
+  let loginForm = `
+    <div class="auth-form active" id="form-login">
+      <div class="field">
+        <label>手机号码</label>
+        <input type="tel" id="login-phone" placeholder="请输入注册手机号" maxlength="11">
+      </div>
+      <div class="field">
+        <label>密码</label>
+        <div class="input-wrap">
+          <input type="password" id="login-pw" placeholder="请输入密码" maxlength="20">
+          <button class="eye-btn" onclick="togglePw('login-pw',this)">👁</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>图形验证码 *</label>
+        <div class="captcha-row">
+          <div class="field" style="margin:0">
+            <input type="text" id="login-captcha" placeholder="请输入下方计算结果" maxlength="6" autocomplete="off">
+          </div>
+          <canvas class="captcha-canvas" id="captcha-login" onclick="refreshCaptcha('login')" title="点击刷新"></canvas>
+        </div>
+      </div>
+      <div class="forgot-link">
+        <a onclick="switchAuthTab('forgot')">忘记密码？</a>
+      </div>
+      <button class="btn btn-primary" style="width:100%;padding:13px;font-size:16px" onclick="doLogin()">登录</button>
+      <div class="divider"><span>还没有账号？</span></div>
+      <button class="btn btn-accent" style="width:100%" onclick="switchAuthTab('register')">注册新账号</button>
+    </div>`;
+
+  let forgotForm = `
+    <div class="auth-form" id="form-forgot">
+      <div class="field">
+        <label>已注册手机号码</label>
+        <input type="tel" id="fg-phone" placeholder="请输入注册手机号" maxlength="11">
+      </div>
+      <div class="field">
+        <label>图形验证码 *</label>
+        <div class="captcha-row">
+          <div class="field" style="margin:0">
+            <input type="text" id="fg-captcha" placeholder="请输入下方计算结果" maxlength="6" autocomplete="off">
+          </div>
+          <canvas class="captcha-canvas" id="captcha-forgot" onclick="refreshCaptcha('forgot')" title="点击刷新"></canvas>
+        </div>
+      </div>
+      <div class="field" id="fg-step2" style="display:none">
+        <label>短信验证码 *</label>
+        <div class="captcha-row">
+          <div class="field" style="margin:0">
+            <input type="text" id="fg-sms" placeholder="输入6位短信验证码" maxlength="6" autocomplete="off">
+          </div>
+          <button class="btn btn-ghost" id="fg-sms-btn" style="padding:11px 14px;white-space:nowrap" onclick="sendForgotSms()">发送验证码</button>
+        </div>
+        <div class="hint" style="color:var(--primary-light);margin-top:4px">提示：短信验证码为 6 位随机数字，演示期间请查看控制台（按 F12）</div>
+      </div>
+      <div id="fg-reset-section" style="display:none">
+        <div class="field">
+          <label>设置新密码 *</label>
+          <div class="input-wrap">
+            <input type="password" id="fg-new-pw" placeholder="6位以上，包含数字和字母" maxlength="20" oninput="onPwStrength(this.value,'fg-strength')">
+          </div>
+          <div class="pw-strength" id="fg-strength"></div>
+          <div class="pw-strength-label" id="fg-strength-label"></div>
+        </div>
+        <div class="field">
+          <label>确认新密码 *</label>
+          <div class="input-wrap">
+            <input type="password" id="fg-new-pw2" placeholder="再次输入新密码" maxlength="20">
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;padding:13px;font-size:16px" onclick="doForgot()">验证身份</button>
+      <div class="forgot-link">
+        <a onclick="switchAuthTab('login')">想起密码了？返回登录</a>
+      </div>
+    </div>`;
+
+  return `<div class="auth-page">
+    <div class="auth-container">
+      <div class="auth-header">
+        <div class="shield-icon">🛡️</div>
+        <h1>湖南绿盾卫士</h1>
+        <p>在线培训考核系统 · 用户登录</p>
+      </div>
+      <div class="auth-tabs" id="auth-tabs">
+        <div class="auth-tab" id="tab-login" onclick="switchAuthTab('login')">登录</div>
+        <div class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">注册</div>
+        <div class="auth-tab" id="tab-forgot" onclick="switchAuthTab('forgot')">忘记密码</div>
+      </div>
+      ${loginForm}
+      ${regForm}
+      ${forgotForm}
+      <div class="secure-note">
+        <span>🔒</span> 数据仅存储在本地浏览器，换设备需重新登录
+      </div>
+    </div>
+  </div>`;
+}
+
+function switchAuthTab(tab) {
+  state.authTab = tab;
+  ["login","register","forgot"].forEach(t => {
+    document.getElementById("form-"+t).classList.toggle("active", t===tab);
+    document.getElementById("tab-"+t).classList.toggle("active", t===tab);
+  });
+  // 刷新验证码
+  setTimeout(() => refreshCaptcha(tab), 50);
+}
+
+function refreshCaptcha(tab) {
+  let canvas = document.getElementById("captcha-"+tab);
+  if (canvas) renderCaptchaCanvas(canvas);
+}
+
+function onPwStrength(val, id) {
+  let bar = document.getElementById(id);
+  let lbl = document.getElementById(id.replace("strength","strength-label"));
+  if (!bar) return;
+  let s = checkPinStrength(val);
+  let colors = ["#e8edf4","#f0f0f0","#f0f0f0","#f0f0f0","#f0f0f0","#f0f0f0"];
+  let labels = ["","弱","中","中强","强","非常强"];
+  let color = ["#e8edf4","#c0392b","#e67e22","#e67e22","#1a8a4a","#1a8a4a"][s];
+  let pct = (s / 5) * 100;
+  bar.innerHTML = `<span style="width:${pct}%;background:${color};display:block;height:100%"></span>`;
+  if (lbl) lbl.textContent = val ? labels[s] : "";
+}
+
+function togglePw(id, btn) {
+  let inp = document.getElementById(id);
+  if (!inp) return;
+  if (inp.type === "password") { inp.type = "text"; btn.textContent = "🙈"; }
+  else { inp.type = "password"; btn.textContent = "👁"; }
+}
+
+// ===== 登录注册逻辑 =====
+function doLogin() {
+  let phone = $("login-phone")?.value?.trim();
+  let pw = $("login-pw")?.value;
+  let captcha = $("login-captcha")?.value?.trim();
+
+  if (!phone || !pw) { showToast("请填写手机号和密码", "error"); return; }
+
+  // 验证码
+  let q = getCaptchaQ();
+  if (String(captcha).trim() !== String(q.answer)) {
+    showToast("验证码错误，请重试", "error");
+    refreshCaptcha("login");
+    return;
+  }
+
+  let users = getUsers();
+  let user = users.find(u => u.phone === phone && u.pwHash === hashPin(pw));
+  if (!user) {
+    showToast("手机号或密码错误", "error");
+    return;
+  }
+
+  currentUser = { name: user.name, phone: user.phone, isAdmin: !!user.isAdmin };
+  isAdmin = !!user.isAdmin;
+  localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
+  showToast("欢迎回来，" + user.name + "！", "success");
+  state.view = "home";
+  render();
+}
+
+function doRegister() {
+  let name = $("reg-name")?.value?.trim();
+  let phone = $("reg-phone")?.value?.trim();
+  let pw = $("reg-pw")?.value;
+  let pw2 = $("reg-pw2")?.value;
+  let captcha = $("reg-captcha")?.value?.trim();
+
+  if (!name) { showToast("请输入真实姓名", "error"); return; }
+  if (!/^1[3-9]\d{9}$/.test(phone)) { showToast("请输入正确的手机号", "error"); return; }
+  if (pw.length < 6) { showToast("密码至少6位", "error"); return; }
+  if (pw !== pw2) { showToast("两次密码不一致", "error"); return; }
+
+  let q = getCaptchaQ();
+  if (String(captcha).trim() !== String(q.answer)) {
+    showToast("验证码错误，请重试", "error");
+    refreshCaptcha("register");
+    return;
+  }
+
+  let users = getUsers();
+  if (users.find(u => u.phone === phone)) {
+    showToast("该手机号已注册，请直接登录", "error");
+    switchAuthTab("login");
+    return;
+  }
+
+  users.push({ name, phone, pwHash: hashPin(pw), isAdmin: false, createdAt: new Date().toISOString() });
+  saveUsers(users);
+
+  currentUser = { name, phone, isAdmin: false };
+  isAdmin = false;
+  localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
+  showToast("注册成功！欢迎 " + name, "success");
+  state.view = "home";
+  render();
+}
+
+// ===== 忘记密码 =====
+let forgotStep = 0; // 0=验证手机 1=重置密码
+
+function doForgot() {
+  let phone = $("fg-phone")?.value?.trim();
+  let captcha = $("fg-captcha")?.value?.trim();
+
+  if (forgotStep === 0) {
+    if (!/^1[3-9]\d{9}$/.test(phone)) { showToast("请输入正确的手机号", "error"); return; }
+    let q = getCaptchaQ();
+    if (String(captcha).trim() !== String(q.answer)) {
+      showToast("验证码错误", "error"); refreshCaptcha("forgot"); return;
+    }
+    let users = getUsers();
+    if (!users.find(u => u.phone === phone)) {
+      showToast("该手机号未注册", "error"); return;
+    }
+    // 演示：显示短信验证码到控制台
+    let code = String(Math.floor(Math.random() * 900000 + 100000));
+    console.log("【演示用】忘记密码验证码：" + code);
+    window._forgotCode = code;
+    window._forgotPhone = phone;
+    document.getElementById("fg-step2").style.display = "block";
+    $("fg-sms-btn").textContent = "已发送 ✓";
+    $("fg-sms-btn").disabled = true;
+    showToast("演示验证码已输出到控制台（F12查看）", "info");
+    forgotStep = 1;
+    return;
+  }
+
+  if (forgotStep === 1) {
+    let sms = $("fg-sms")?.value?.trim();
+    if (!sms) { showToast("请输入短信验证码", "error"); return; }
+    if (String(sms) !== window._forgotCode) {
+      showToast("短信验证码错误", "error"); return;
+    }
+    document.getElementById("fg-reset-section").style.display = "block";
+    $("fg-sms-btn").textContent = "✓ 已验证";
+    showToast("身份验证通过，请设置新密码", "success");
+    forgotStep = 2;
+    return;
+  }
+
+  if (forgotStep === 2) {
+    let newPw = $("fg-new-pw")?.value;
+    let newPw2 = $("fg-new-pw2")?.value;
+    if (newPw.length < 6) { showToast("新密码至少6位", "error"); return; }
+    if (newPw !== newPw2) { showToast("两次密码不一致", "error"); return; }
+    let users = getUsers();
+    let idx = users.findIndex(u => u.phone === window._forgotPhone);
+    if (idx >= 0) {
+      users[idx].pwHash = hashPin(newPw);
+      saveUsers(users);
+    }
+    showToast("密码重置成功，请用新密码登录", "success");
+    forgotStep = 0;
+    document.getElementById("fg-step2").style.display = "none";
+    document.getElementById("fg-reset-section").style.display = "none";
+    switchAuthTab("login");
+  }
+}
+
+// ===== 管理员登录 =====
+function openAdminLogin() {
+  if (isAdmin) { state.view = "admin"; render(); return; }
+  let html = `<div class="modal-overlay" id="admin-login-modal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModalForce()">×</button>
+      <h3>⚙️ 管理员登录</h3>
+      <p style="font-size:13px;color:var(--text-light);margin-bottom:24px;line-height:1.6">请输入管理员 PIN 码</p>
+      <div class="modal-row">
+        <div class="field">
+          <label>PIN 码</label>
+          <div class="input-wrap">
+            <input type="password" id="admin-pin" placeholder="请输入 6 位 PIN" maxlength="6" onkeydown="if(event.key==='Enter')verifyAdminPin()">
+            <button class="eye-btn" onclick="togglePw('admin-pin',this)">👁</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModalForce()">取消</button>
+        <button class="btn btn-primary" onclick="verifyAdminPin()">确认登录</button>
+      </div>
+    </div>
+  </div>`;
+  document.body.insertAdjacentHTML("beforeend", html);
+  setTimeout(() => $("admin-pin")?.focus(), 100);
+}
+
+function verifyAdminPin() {
+  let pin = $("admin-pin")?.value;
+  let cfg = getAdminConfig();
+  if (pin === cfg.pin) {
+    closeModalForce();
+    isAdmin = true;
+    if (currentUser) currentUser.isAdmin = true;
+    showToast("管理员登录成功", "success");
+    state.view = "admin";
+    render();
+  } else {
+    showToast("PIN 错误", "error");
+    $("admin-pin").value = "";
+    $("admin-pin").focus();
+  }
+}
+
+function closeModalForce() {
+  document.getElementById("admin-login-modal")?.remove();
+}
+
+// ===== 考试 =====
 function startExam() {
-  let nm = $("candName")?.value?.trim();
-  if (!nm) { showToast("请先输入考生姓名", "error"); return; }
-  state.candName = nm;
-  $("topbar-user").textContent = "👤 " + nm;
+  if (!currentUser) { showToast("请先登录", "error"); switchAuthTab("login"); return; }
+  state.candName = currentUser.name;
   state.taskId = 1;
   state.questions = questions.slice();
   state.answers = {};
@@ -471,12 +911,10 @@ function startExam() {
   scrollTo(0, 0);
 }
 
-// ===== 考试页面 =====
 function renderExam() {
   let total = totalScore(state.questions);
   let answered = state.questions.filter(q => !!state.answers[q.id]).length;
   let pct = Math.round(answered / state.questions.length * 100);
-
   let navHtml = state.questions.map((q, i) => {
     let cls = "q-dot";
     if (i === state.currentQ) cls += " current";
@@ -534,13 +972,15 @@ function renderCurrentQ() {
   if (!card) return;
   let typeLabel = {single:"单选题",multi:"多选题",judge:"判断题",short:"简答题",scenario:"场景分析题"}[q.qtype]||"问答题";
   let typeColor = {single:"#1a5a9a",multi:"#6b3fa0",judge:"#1a8a4a",short:"#c05a20",scenario:"#8a1a4a"}[q.qtype]||"#1a3a6b";
-
   let optsHtml = "";
+
   if (q.qtype === "single" || q.qtype === "judge") {
     optsHtml = q.options.map(o => {
       let sel = (state.answers[q.id]||"") === o[0];
-      return `<div class="option-item${sel?" selected":""}" onclick="selectOption(this,'${o[0]}')">
-        <span class="opt-letter" style="color:${sel?"#fff":typeColor};border-color:${sel?typeColor:"currentColor"};background:${sel?typeColor:"transparent"}">${o[0]}</span>
+      let clr = sel ? typeColor : "";
+      let bg = sel ? typeColor : "transparent";
+      return `<div class="option-item${sel?" selected":""}" onclick="selectOption(this,'${o[0]}','${typeColor}')">
+        <span class="opt-letter" style="color:${clr};border-color:${sel?typeColor:"currentColor"};background:${bg}">${o[0]}</span>
         <span class="opt-text">${esc(o.slice(2))}</span>
       </div>`;
     }).join("");
@@ -548,8 +988,10 @@ function renderCurrentQ() {
     let selArr = (state.answers[q.id]||"").split(",").filter(x=>x);
     optsHtml = q.options.map(o => {
       let sel = selArr.includes(o[0]);
+      let clr = sel ? "#fff" : "#6b3fa0";
+      let bg = sel ? "#6b3fa0" : "transparent";
       return `<div class="option-item${sel?" selected":""}" onclick="toggleMulti(this,'${o[0]}')">
-        <span class="opt-letter" style="color:${sel?"#fff":"#6b3fa0"};border-color:${sel?"#6b3fa0":"currentColor"};background:${sel?"#6b3fa0":"transparent"}">${o[0]}</span>
+        <span class="opt-letter" style="color:${clr};border-color:${sel?"#6b3fa0":"currentColor"};background:${bg}">${o[0]}</span>
         <span class="opt-text">${esc(o.slice(2))}</span>
       </div>`;
     }).join("");
@@ -558,6 +1000,7 @@ function renderCurrentQ() {
       <textarea id="short-answer" placeholder="请在此输入你的答案..." onchange="setShort(this.value)">${esc(state.answers[q.id]||"")}</textarea>
     </div>`;
   }
+
   card.innerHTML = `
     <span class="q-type" style="background:${typeColor}20;color:${typeColor}">${typeLabel} · ${q.score}分</span>
     <div class="q-stem">${esc(q.stem)}</div>
@@ -565,21 +1008,17 @@ function renderCurrentQ() {
   `;
 }
 
-function selectOption(el, val) {
+function selectOption(el, val, color) {
   let q = state.questions[state.currentQ];
   state.answers[q.id] = val;
   el.parentElement.querySelectorAll(".option-item").forEach(e => {
     e.classList.remove("selected");
-    let letter = e.querySelector(".opt-letter");
-    letter.style.background = "transparent";
-    letter.style.color = "";
-    letter.style.borderColor = "currentColor";
+    let l = e.querySelector(".opt-letter");
+    l.style.background = "transparent"; l.style.color = ""; l.style.borderColor = "currentColor";
   });
   el.classList.add("selected");
-  let letter = el.querySelector(".opt-letter");
-  letter.style.background = "";
-  letter.style.color = "#fff";
-  letter.style.borderColor = "";
+  let l = el.querySelector(".opt-letter");
+  l.style.background = color; l.style.color = "#fff"; l.style.borderColor = color;
   updateNav();
 }
 
@@ -589,26 +1028,19 @@ function toggleMulti(el, val) {
   if (arr.includes(val)) {
     arr = arr.filter(x=>x!==val);
     el.classList.remove("selected");
-    let letter = el.querySelector(".opt-letter");
-    letter.style.background = "transparent";
-    letter.style.color = "#6b3fa0";
-    letter.style.borderColor = "currentColor";
+    let l = el.querySelector(".opt-letter");
+    l.style.background = "transparent"; l.style.color = "#6b3fa0"; l.style.borderColor = "currentColor";
   } else {
     arr.push(val);
     el.classList.add("selected");
-    let letter = el.querySelector(".opt-letter");
-    letter.style.background = "#6b3fa0";
-    letter.style.color = "#fff";
-    letter.style.borderColor = "#6b3fa0";
+    let l = el.querySelector(".opt-letter");
+    l.style.background = "#6b3fa0"; l.style.color = "#fff"; l.style.borderColor = "#6b3fa0";
   }
   state.answers[q.id] = arr.sort().join(",");
   updateNav();
 }
 
-function setShort(val) {
-  state.answers[state.questions[state.currentQ].id] = val;
-  updateNav();
-}
+function setShort(val) { state.answers[state.questions[state.currentQ].id] = val; updateNav(); }
 
 function updateNav() {
   let nav = document.querySelector(".q-nav");
@@ -645,12 +1077,12 @@ function confirmSubmit() {
   if(timerInterval){clearInterval(timerInterval);timerInterval=null}
   let unanswered=state.questions.filter(q=>!state.answers[q.id]).length;
   let html=`<div class="modal-overlay" onclick="closeModal(event)">
-    <div class="modal-box modal-submit" onclick="event.stopPropagation()">
-      <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="reopenSubmitModal()">×</button>
       <h3>确认提交试卷？</h3>
       ${unanswered>0?`<p>你还有 <strong>${unanswered} 道题</strong>未作答，提交后将无法修改答案。</p>`:`<p>你已完成全部题目，确认提交吗？</p>`}
       <div class="modal-actions">
-        <button class="btn btn-ghost" onclick="reopenModal()">继续答题</button>
+        <button class="btn btn-ghost" onclick="reopenSubmitModal()">继续答题</button>
         <button class="btn btn-accent" onclick="doSubmit()">确认提交 ✓</button>
       </div>
     </div>
@@ -658,9 +1090,9 @@ function confirmSubmit() {
   document.body.insertAdjacentHTML("beforeend", html);
 }
 
-function reopenModal() {
+function reopenSubmitModal() {
   document.querySelector(".modal-overlay")?.remove();
-  startTimer();
+  if(!timerInterval) startTimer();
 }
 
 function closeModal(e) {
@@ -676,7 +1108,7 @@ function doSubmit() {
   state.passed = state.score >= 80;
   state.submitted = true;
   state.view = "result";
-  saveRecord();
+  saveRecord(state.score, state.passed);
   render();
   scrollTo(0,0);
 }
@@ -698,8 +1130,13 @@ function backHome() {
   if(!confirm("确定退出？考试记录将丢失。")) return;
   if(timerInterval){clearInterval(timerInterval);timerInterval=null}
   state.view="home";
-  $("topbar-user").textContent="👤 未登录";
   render();
+}
+
+function saveRecord(score, passed) {
+  let records = getRecords();
+  records.push({time:new Date().toISOString(),name:state.candName,phone:currentUser?.phone||"",score,passed});
+  saveRecords(records);
 }
 
 // ===== 结果页 =====
@@ -744,8 +1181,7 @@ function renderResult() {
     <div class="cert-box">
       <div class="cert-title">湖南绿盾卫士检测技术有限公司</div>
       <div class="cert-company">培训考核合格证书</div>
-      <div class="cert-line"></div>
-      <div class="cert-text">经考核，成绩合格，特发此证。</div>
+      <div class="cert-line" style="border-top:1px dashed var(--border);margin:22px 0"></div>
       <div class="cert-name">${esc(state.candName)}</div>
       <div class="cert-score">${state.score} 分</div>
       <div class="cert-status ${state.passed?"pass":"fail"}">${state.passed?"✓ 合格":"✗ 不合格"}</div>
@@ -766,46 +1202,62 @@ function renderResult() {
     </div>
     <div class="result-actions">
       <button class="btn btn-primary" onclick="window.print()">🖨 打印证书</button>
-      ${isAdmin?`<button class="btn btn-accent" onclick="goPrint()">📄 打印考核卷</button>`:""}
-      <button class="btn btn-ghost" onclick="backHome()">返回首页</button>
+      ${isAdmin?`<button class="btn btn-accent" onclick="state.view='print';render()">📄 打印考核卷</button>`:""}
+      <button class="btn btn-ghost" onclick="state.view='home';render()">返回首页</button>
     </div>
     <div class="footer">© 2026 湖南绿盾卫士检测技术有限公司</div>
   </div>`;
 }
 
-function goPrint() {
-  state.view="print";
+function logout() {
+  if(!confirm("确定退出登录？")) return;
+  currentUser = null;
+  isAdmin = false;
+  localStorage.removeItem(SESSION_KEY);
+  state.view = "auth";
+  state.authTab = "login";
   render();
-  scrollTo(0,0);
+  showToast("已退出登录", "info");
 }
 
-function saveRecord() {
-  let records=JSON.parse(localStorage.getItem("exam_records")||"[]");
-  records.push({time:new Date().toISOString(),name:state.candName,score:state.score,passed:state.passed});
-  localStorage.setItem("exam_records",JSON.stringify(records));
+function showUserInfo() {
+  if (!currentUser) return;
+  let html = `<div class="modal-overlay" onclick="this.remove()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+      <h3>👤 ${esc(currentUser.name)}</h3>
+      <p class="modal-sub">手机：${esc(currentUser.phone)}</p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove()">关闭</button>
+        <button class="btn btn-danger" onclick="logout()">退出登录</button>
+      </div>
+    </div>
+  </div>`;
+  document.body.insertAdjacentHTML("beforeend", html);
 }
 
 // ===== 管理员面板 =====
 function renderAdmin() {
   let total=totalScore(questions);
-  let passCount=JSON.parse(localStorage.getItem("exam_records")||"[]").length;
-  let records=JSON.parse(localStorage.getItem("exam_records")||"[]");
+  let records=getRecords();
   let qTable=questions.map(q=>{
     let typeMap={single:"单选题",multi:"多选题",judge:"判断题",short:"简答题",scenario:"场景分析题"};
     let clsMap={single:"type-single",multi:"type-multi",judge:"type-judge",short:"type-short",scenario:"type-scenario"};
     return `<tr>
       <td>${q.id}</td>
       <td><span class="type-badge ${clsMap[q.qtype]}">${typeMap[q.qtype]||q.qtype}</span></td>
-      <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(q.stem)}</td>
+      <td style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(q.stem)}</td>
       <td style="text-align:center">${q.score}</td>
       <td style="text-align:center"><button class="btn-sm btn-sm-danger" onclick="deleteQuestion(${q.id})">删除</button></td>
     </tr>`;
   }).join("");
 
-  let recordsHtml=records.length===0?"<p style='color:var(--text-light);font-size:13px;text-align:center;padding:20px'>暂无考试记录</p>"
-    :`<table class="q-table"><thead><tr><th>#</th><th>考生</th><th>得分</th><th>结果</th><th>时间</th></tr></thead><tbody>
+  let recordsHtml = records.length===0
+    ? "<p style='color:var(--text-light);font-size:13px;text-align:center;padding:24px'>暂无考试记录</p>"
+    : `<table class="q-table"><thead><tr><th>#</th><th>姓名</th><th>手机</th><th>得分</th><th>结果</th><th>时间</th></tr></thead><tbody>
     ${records.slice().reverse().map((r,i)=>`<tr>
-      <td>${i+1}</td><td>${esc(r.name)}</td><td>${r.score} 分</td>
+      <td>${i+1}</td><td>${esc(r.name)}</td><td>${esc(r.phone||"")}</td>
+      <td>${r.score} 分</td>
       <td><span class="tag ${r.passed?'tag-right':'tag-wrong'}">${r.passed?'合格':'不合格'}</span></td>
       <td>${new Date(r.time).toLocaleString("zh-CN")}</td>
     </tr>`).join("")}
@@ -816,41 +1268,42 @@ function renderAdmin() {
       <div style="display:flex;align-items:center;gap:12px">
         <div style="font-size:24px">⚙️</div>
         <div>
-          <div style="font-size:18px;font-weight:700;color:var(--primary)">管理员面板</div>
-          <div style="font-size:12px;color:var(--text-light)">题库管理 · 考核卷打印 · 考试记录</div>
+          <div style="font-size:18px;font-weight:700;color:var(--primary)">管理后台</div>
+          <div style="font-size:12px;color:var(--text-light)">${esc(currentUser?.name||"管理员")} · 题库 · 考核卷 · 记录</div>
         </div>
       </div>
-      <div style="display:flex;gap:10px">
-        <button class="btn btn-primary" onclick="showTab('questions')">📝 题库管理</button>
-        <button class="btn btn-accent" onclick="showTab('print')">📄 打印考核卷</button>
-        <button class="btn btn-ghost" onclick="showTab('records')">📊 考试记录</button>
-        <button class="btn btn-ghost" onclick="exitAdmin()">← 返回首页</button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="showAdminTab('questions')">📝 题库</button>
+        <button class="btn btn-accent" onclick="showAdminTab('print')">📄 考核卷</button>
+        <button class="btn btn-ghost" onclick="showAdminTab('records')">📊 记录</button>
+        <button class="btn btn-ghost" onclick="showAdminTab('security')">🔐 安全</button>
+        <button class="btn btn-ghost" onclick="state.view='home';render()">← 首页</button>
       </div>
     </div>
 
-    <!-- 题库管理 -->
     <div id="tab-questions">
       <div class="stat-row">
         <div class="stat-item"><div class="si-num">${questions.length}</div><div class="si-label">题目总数</div></div>
         <div class="stat-item"><div class="si-num">${total}</div><div class="si-label">满分分值</div></div>
-        <div class="stat-item"><div class="si-num">${passCount}</div><div class="si-label">考试次数</div></div>
+        <div class="stat-item"><div class="si-num">${records.length}</div><div class="si-label">考试次数</div></div>
+        <div class="stat-item"><div class="si-num">${records.filter(r=>r.passed).length}</div><div class="si-label">合格人数</div></div>
       </div>
       <div class="card">
-        <div class="card-title">批量导入题目（JSON 格式）</div>
+        <div class="card-title">📥 批量导入题库（JSON）</div>
         <div class="admin-hint">
-          <strong>导入说明：</strong>将题目数组粘贴到下方，题目字段说明如下：<br>
-          <code style="background:#f0f0f0;padding:2px 6px;border-radius:4px;font-size:11px">
-            { "id":1,"qtype":"single|multi|judge|short|scenario","stem":"题目干","options":["A. 选项","B. 选项"...],<br>"answer":"答案","score":分值,"explanation":"解析（可选）" }
+          <strong>字段说明：</strong>
+          <code class="admin-hint" style="display:block;margin-top:6px;padding:8px;background:#f0f0f0;border-radius:6px;font-size:11px">
+{ "id":1,"qtype":"single|multi|judge|short|scenario","stem":"题目","options":["A. 选项","B. 选项"...],<br>"answer":"答案","score":2,"explanation":"解析（可选）" }
           </code>
-          <br>其中 qtype：<strong>single</strong>=单选，<strong>multi</strong>=多选，<strong>judge</strong>=判断，<strong>short</strong>=简答，<strong>scenario</strong>=场景分析。
+          <br>qtype：<strong>single</strong>=单选，<strong>multi</strong>=多选，<strong>judge</strong>=判断，<strong>short</strong>=简答，<strong>scenario</strong>=场景分析。
         </div>
         <div class="admin-panel">
           <label>JSON 题库数据</label>
-          <textarea id="import-area" placeholder='[&#10;  {&#10;    "id": 1,&#10;    "qtype": "single",&#10;    "stem": "题目",&#10;    "options": ["A. 选项", "B. 选项", "C. 选项", "D. 选项"],&#10;    "answer": "A",&#10;    "score": 2&#10;  }&#10;]'></textarea>
+          <textarea id="import-area" placeholder='[&#10;  {&#10;    "id": 1,&#10;    "qtype": "single",&#10;    "stem": "题目",&#10;    "options": ["A. 选项", "B. 选项"],&#10;    "answer": "A",&#10;    "score": 2&#10;  }&#10;]'></textarea>
         </div>
         <div style="display:flex;gap:10px;margin-top:10px">
-          <button class="btn btn-primary" onclick="importQuestions()">📥 导入题库</button>
-          <button class="btn btn-accent" onclick="exportQuestions()">📤 导出题库</button>
+          <button class="btn btn-primary" onclick="importQuestions()">📥 导入</button>
+          <button class="btn btn-accent" onclick="exportQuestions()">📤 导出</button>
           <button class="btn btn-ghost" onclick="resetQuestions()">🔄 恢复默认</button>
         </div>
       </div>
@@ -865,7 +1318,6 @@ function renderAdmin() {
       </div>
     </div>
 
-    <!-- 打印考核卷 -->
     <div id="tab-print" style="display:none">
       <div class="card">
         <div class="card-title">📄 生成打印考核卷</div>
@@ -876,30 +1328,78 @@ function renderAdmin() {
           <input type="number" id="print-pass" value="80" style="width:80px">
           <label>总分：</label>
           <input type="number" id="print-total" value="${total}" style="width:80px">
-          <button class="btn btn-primary" onclick="generatePrint()">🔄 生成预览</button>
+          <button class="btn btn-primary" onclick="generatePrint()">🔄 刷新</button>
           <button class="btn btn-accent" onclick="window.print()">🖨 打印</button>
         </div>
-        <div class="print-preview">
+        <div class="print-preview" id="print-preview">
           <div class="print-area" id="print-area"></div>
         </div>
       </div>
     </div>
 
-    <!-- 考试记录 -->
     <div id="tab-records" style="display:none">
       <div class="card">
         <div class="card-title">📊 考试记录（${records.length} 条）</div>
         ${recordsHtml}
       </div>
     </div>
+
+    <div id="tab-security" style="display:none">
+      <div class="card">
+        <div class="card-title">🔐 修改管理员 PIN</div>
+        <div class="admin-hint">
+          <strong>当前 PIN：</strong>${esc(getAdminConfig().pin)} &nbsp;|&nbsp; 
+          <strong>建议：</strong>不要设置过于简单的 PIN（如 123456）
+        </div>
+        <div class="admin-panel" style="max-width:400px">
+          <label>当前 PIN</label>
+          <div class="input-wrap">
+            <input type="password" id="cur-pin" placeholder="请输入当前 PIN" maxlength="20">
+          </div>
+          <label>新 PIN（6位数字）</label>
+          <div class="input-wrap">
+            <input type="password" id="new-pin" placeholder="设置新 PIN" maxlength="6">
+          </div>
+          <label>确认新 PIN</label>
+          <div class="input-wrap">
+            <input type="password" id="new-pin2" placeholder="再次输入新 PIN" maxlength="6">
+          </div>
+          <button class="btn btn-primary" onclick="changeAdminPin()" style="width:200px">保存新 PIN</button>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="card-title">📋 考试记录管理</div>
+        <div class="admin-hint">以下操作不可逆，请谨慎操作。</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <button class="btn btn-danger" onclick="if(confirm('确定清空所有考试记录？此操作不可恢复。')){saveRecords([]);showToast('考试记录已清空','info');render()}">🗑 清空考试记录</button>
+        </div>
+      </div>
+    </div>
   </div>`;
 }
 
-function showTab(tab) {
-  document.getElementById("tab-questions").style.display=tab==="questions"?"":"none";
-  document.getElementById("tab-print").style.display=tab==="print"?"":"none";
-  document.getElementById("tab-records").style.display=tab==="records"?"":"none";
-  if(tab==="print") generatePrint();
+function showAdminTab(tab) {
+  ["questions","print","records","security"].forEach(t => {
+    let el = document.getElementById("tab-"+t);
+    if (el) el.style.display = t===tab?"":"none";
+  });
+  if (tab==="print") setTimeout(generatePrint, 50);
+}
+
+function changeAdminPin() {
+  let cur = $("cur-pin")?.value;
+  let npin = $("new-pin")?.value;
+  let npin2 = $("new-pin2")?.value;
+  let cfg = getAdminConfig();
+  if (cur !== cfg.pin) { showToast("当前 PIN 错误", "error"); return; }
+  if (!/^\d{6}$/.test(npin)) { showToast("新 PIN 必须为 6 位数字", "error"); return; }
+  if (npin !== npin2) { showToast("两次新 PIN 不一致", "error"); return; }
+  cfg.pin = npin;
+  saveAdminConfig(cfg);
+  showToast("PIN 修改成功", "success");
+  $("cur-pin").value = "";
+  $("new-pin").value = "";
+  $("new-pin2").value = "";
 }
 
 function importQuestions() {
@@ -908,16 +1408,12 @@ function importQuestions() {
   try {
     let data = JSON.parse(raw);
     if (!Array.isArray(data)) throw new Error("不是数组");
-    data.forEach(q => {
-      if (!q.stem || !q.qtype) throw new Error("缺少必填字段 stem 或 qtype");
-    });
+    data.forEach(q => { if(!q.stem||!q.qtype) throw new Error("缺少 stem 或 qtype"); });
     questions = data;
-    localStorage.setItem("exam_questions", JSON.stringify(questions));
+    saveQuestions(questions);
     showToast(`成功导入 ${questions.length} 道题目`, "success");
     render();
-  } catch(e) {
-    showToast("JSON 格式错误：" + e.message, "error");
-  }
+  } catch(e) { showToast("JSON 格式错误：" + e.message, "error"); }
 }
 
 function exportQuestions() {
@@ -925,15 +1421,14 @@ function exportQuestions() {
   let url = URL.createObjectURL(blob);
   let a = document.createElement("a");
   a.href = url; a.download = "题库_" + new Date().toISOString().slice(0,10) + ".json";
-  a.click();
-  URL.revokeObjectURL(url);
+  a.click(); URL.revokeObjectURL(url);
   showToast("题库已导出", "success");
 }
 
 function resetQuestions() {
   if (!confirm("确定恢复默认题库？当前题库将被覆盖。")) return;
   questions = JSON.parse(JSON.stringify(DEFAULT_QUESTIONS));
-  localStorage.setItem("exam_questions", JSON.stringify(questions));
+  saveQuestions(questions);
   showToast("已恢复默认题库", "info");
   render();
 }
@@ -941,57 +1436,39 @@ function resetQuestions() {
 function deleteQuestion(id) {
   if (!confirm("确定删除第 " + id + " 题？")) return;
   questions = questions.filter(q => q.id !== id);
-  localStorage.setItem("exam_questions", JSON.stringify(questions));
+  saveQuestions(questions);
   showToast("已删除", "info");
   render();
 }
 
-function exitAdmin() {
-  state.view = "home";
-  render();
-}
-
 // ===== 打印考核卷 =====
-// 分题型输出，紧凑排版，控制在2页
 function generatePrint() {
   let title = $("print-title")?.value || "培训考核卷";
-  let passScore = parseInt($("print-pass")?.value || "80");
-  let totalScore = parseInt($("print-total")?.value || totalScore(questions));
-
   let singles = questions.filter(q => q.qtype === "single");
   let multis = questions.filter(q => q.qtype === "multi");
   let judges = questions.filter(q => q.qtype === "judge");
   let shorts = questions.filter(q => q.qtype === "short");
   let scenarios = questions.filter(q => q.qtype === "scenario");
 
-  function buildSection(title, qs) {
+  function buildSection(name, qs) {
     if (!qs.length) return "";
-    let rows = qs.map((q, i) => {
-      let num = String(q.id);
+    let rows = qs.map(q => {
       let optHtml = "";
-      if (q.qtype === "single" || q.qtype === "judge") {
-        optHtml = q.options.map(o => `<td class="opt-col">${o[0]}</td><td>${esc(o.slice(2))}</td>`).join("");
-      } else if (q.qtype === "multi") {
+      if (["single","judge","multi"].includes(q.qtype)) {
         optHtml = q.options.map(o => `<td class="opt-col">${o[0]}</td><td>${esc(o.slice(2))}</td>`).join("");
       } else {
-        optHtml = `<td colspan="6"><div class="answer-line"></div><div class="answer-line"></div>${q.qtype==="scenario"?"":"<div class='answer-line'></div>"}</td>`;
+        let lines = q.qtype==="scenario" ? "<div class='answer-line'></div><div class='answer-line'></div>" : "<div class='answer-line'></div><div class='answer-line'></div><div class='answer-line'></div>";
+        optHtml = `<td colspan="6">${lines}</td>`;
       }
-      return `<tr>
-        <td class="num">${num}</td>
-        <td class="q-text" style="width:50%">${esc(q.stem)}</td>
-        ${optHtml}
-        <td class="score-col">${q.score}</td>
-      </tr>`;
+      return `<tr><td class="num">${q.id}</td><td class="q-text" style="width:46%">${esc(q.stem)}</td>${optHtml}<td class="score-col">${q.score}</td></tr>`;
     }).join("");
-
-    return `<div class="section-title">${esc(title)}（共 ${qs.length} 题，${qs.reduce((s,q)=>s+q.score,0)} 分）</div>
-    <table>
-      <thead><tr><th style="width:22px">题号</th><th>题目</th><th colspan="6">选项 / 答题区</th><th style="width:28px">分值</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+    return `<div class="section-title">${esc(name)}（${qs.length} 题，${qs.reduce((s,q)=>s+q.score,0)} 分）</div>
+    <table><thead><tr><th style="width:22px">题号</th><th>题目</th><th colspan="6">选项 / 答题区</th><th style="width:26px">分值</th></tr></thead><tbody>${rows}</tbody></table>`;
   }
 
-  let html = `
+  let ansRow = [...Array(33)].map((_,i)=>`${i+1}：____`).join("&nbsp;&nbsp;");
+
+  $("print-area").innerHTML = `
     <div class="print-header">
       <h1>🛡️ 湖南绿盾卫士检测技术有限公司</h1>
       <p style="font-size:15px;font-weight:700;margin-top:4px">${esc(title)}</p>
@@ -1002,31 +1479,29 @@ function generatePrint() {
       <span>日期：<input class="wide"></span>
       <span>得分：<input></span>
     </div>
-    <div style="font-size:12px;color:#555;margin-bottom:12px;background:#f8f8f8;padding:6px 10px;border-radius:6px">
-      <strong>注意事项：</strong>单选题、判断题请在选项字母上打"√"；多选题请在所有正确答案字母上打"√"；简答/分析题请在答题区内书写。
+    <div style="font-size:12px;color:#555;margin-bottom:12px;background:#f8f8f8;padding:5px 10px;border-radius:6px">
+      <strong>注意事项：</strong>单选题、判断题请在选项字母上打"√"；多选题在所有正确答案上打"√"；简答/分析题在答题区书写。
     </div>
     ${buildSection("一、单选题", singles)}
     ${buildSection("二、多选题", multis)}
     ${buildSection("三、判断题", judges)}
     ${buildSection("四、简答题", shorts)}
     ${buildSection("五、场景分析题", scenarios)}
-    <div style="margin-top:14px;padding:10px;background:#f8f8f8;border-radius:8px;font-size:12px;line-height:1.8">
-      <strong>答题卡：</strong>
-      ${[...Array(33)].map((_,i)=>`${i+1}：____`).join("&nbsp;&nbsp;")}
+    <div style="margin-top:10px;padding:8px;background:#f8f8f8;border-radius:6px;font-size:12px;line-height:1.8">
+      <strong>答题卡：</strong>${ansRow}
     </div>
   `;
-
-  $("print-area").innerHTML = html;
 }
 
-function renderPrint() {
+function renderPrintPage() {
+  let total = totalScore(questions);
   return `<div class="page">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;gap:12px;flex-wrap:wrap">
       <div style="display:flex;align-items:center;gap:12px">
         <div style="font-size:24px">📄</div>
         <div>
           <div style="font-size:18px;font-weight:700;color:var(--primary)">打印考核卷</div>
-          <div style="font-size:12px;color:var(--text-light)">预览 · 调整格式 · 打印（建议使用 Chrome 浏览器）</div>
+          <div style="font-size:12px;color:var(--text-light)">预览 · 调整 · 打印（建议 Chrome 浏览器 Ctrl+P）</div>
         </div>
       </div>
       <div style="display:flex;gap:10px">
@@ -1042,10 +1517,10 @@ function renderPrint() {
         <label>合格线：</label>
         <input type="number" id="print-pass" value="80" style="width:80px">
         <label>总分：</label>
-        <input type="number" id="print-total" value="${totalScore(questions)}" style="width:80px">
+        <input type="number" id="print-total" value="${total}" style="width:80px">
         <button class="btn btn-primary" onclick="generatePrint()">🔄 刷新预览</button>
       </div>
-      <div class="print-preview" id="print-preview">
+      <div class="print-preview">
         <div class="print-area" id="print-area" style="display:block"></div>
       </div>
     </div>
@@ -1054,11 +1529,26 @@ function renderPrint() {
 
 // ===== 初始化 =====
 window.onload = () => {
+  // 如果有记住的会话，直接恢复
+  if (currentUser) {
+    let cfg = getAdminConfig();
+    if (cfg.users && cfg.users.find(u=>u.phone===currentUser.phone)) {
+      isAdmin = !!cfg.users.find(u=>u.phone===currentUser.phone && u.isAdmin);
+    }
+  }
+  state.view = currentUser ? "home" : "auth";
   render();
-  // 绑定导航标签切换
-  window.showTab = showTab;
-  window.generatePrint = generatePrint;
+  // 自动刷新验证码
+  setTimeout(() => refreshCaptcha(state.authTab), 100);
 };
+
+// 全局函数
+window.switchAuthTab = switchAuthTab;
+window.refreshCaptcha = refreshCaptcha;
+window.onPwStrength = onPwStrength;
+window.togglePw = togglePw;
+window.showAdminTab = showAdminTab;
+window.generatePrint = generatePrint;
 </script>
 </body>
 </html>
