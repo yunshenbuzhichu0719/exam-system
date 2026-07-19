@@ -105,13 +105,10 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 
 /* 右侧表单区 */
 .auth-form-area{flex:1;max-width:420px;display:flex;flex-direction:column}
-.auth-form-tabs{display:flex;align-items:center;border-bottom:2px solid var(--border);margin-bottom:0}
+.auth-form-tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:0}
 .auth-form-tab{flex:1;text-align:center;padding:14px;font-size:15px;font-weight:600;color:var(--text-light);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;letter-spacing:.5px}
 .auth-form-tab.active{color:var(--primary);border-bottom-color:var(--accent)}
 .auth-form-tab:hover:not(.active){color:var(--text)}
-.auth-form-tabs > .auth-form-tab{flex:0 0 auto}
-.auth-form-tabs .btn-bar{background:linear-gradient(135deg,var(--accent),#d4b65a);color:#fff;border:none;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:.5px;margin-left:auto;margin-right:12px;display:inline-flex;align-items:center;gap:4px}
-.auth-form-tabs .btn-bar:hover{filter:brightness(1.08)}
 .auth-form-wrap{background:var(--card);border-radius:0 0 20px 20px;padding:30px 34px;border:1px solid var(--border);border-top:none;box-shadow:0 4px 20px rgba(0,0,0,.07);flex:1}
 
 .auth-form{display:none;flex-direction:column;gap:14px}
@@ -348,7 +345,9 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
       <div class="sub">在线培训考核系统</div>
     </div>
   </div>
-  <div class="topbar-right"></div>
+  <div class="topbar-right">
+    <button class="btn-bar" onclick="openAdminLogin()"><span class="admin-label">⚙️ 管理员</span></button>
+  </div>
 </div>
 
 <div id="app"></div>
@@ -761,7 +760,6 @@ function renderAuthPage() {
       <div class="auth-form-area">
         <div class="auth-form-tabs">
           <div class="auth-form-tab active" id="tab-login" onclick="switchAuthTab('login')">登录</div>
-          <button class="btn-bar" onclick="openAdminLogin()"><span class="admin-label">⚙️ 管理员</span></button>
         </div>
         <div class="auth-form-wrap">
           ${loginForm}
