@@ -81,36 +81,103 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 .captcha-canvas:hover{border-color:var(--primary-light)}
 
 /* ===== 登录页 ===== */
-.auth-page{
-  display:flex;align-items:center;justify-content:center;
-  min-height:calc(100vh - 64px);padding:40px 20px;
-}
-.auth-container{
-  background:var(--card);border-radius:24px;padding:48px;max-width:440px;width:100%;
-  box-shadow:0 8px 40px rgba(0,0,0,.1);border:1px solid var(--border);
-}
-.auth-header{text-align:center;margin-bottom:32px}
-.auth-header .shield-icon{width:64px;height:64px;background:linear-gradient(135deg,#1a3a6b,#1a5a9a);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 16px;box-shadow:0 4px 16px rgba(26,58,107,.3)}
-.auth-header h1{font-size:22px;font-weight:800;color:var(--primary);margin-bottom:4px}
-.auth-header p{font-size:13px;color:var(--text-light)}
+/* ===== 认证页（政府事业单位风格） ===== */
+.auth-page-wrap{min-height:calc(100vh - 64px);display:flex;flex-direction:column}
 
-.auth-tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:28px}
-.auth-tab{flex:1;text-align:center;padding:12px;font-size:15px;font-weight:600;color:var(--text-light);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s}
-.auth-tab.active{color:var(--primary);border-bottom-color:var(--accent)}
+/* 顶部机构栏 */
+.auth-topbar{background:linear-gradient(135deg,#1a3a6b,#0d2247);height:56px;display:flex;align-items:center;padding:0 40px}
+.auth-topbar-inner{max-width:1200px;width:100%;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.auth-topbar-logo{display:flex;align-items:center;gap:12px}
+.auth-topbar-icon{width:38px;height:38px;background:rgba(201,168,76,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;border:1px solid rgba(201,168,76,.3)}
+.auth-topbar-title{font-size:15px;font-weight:700;color:#fff;letter-spacing:.5px}
+.auth-topbar-sub{font-size:11px;color:rgba(255,255,255,.6);letter-spacing:1px}
+.auth-topbar-links{display:flex;gap:20px;align-items:center}
+.auth-topbar-links a{font-size:13px;color:rgba(255,255,255,.75);text-decoration:none;transition:color .2s}
+.auth-topbar-links a:hover{color:#fff}
 
-.auth-form{display:none;flex-direction:column;gap:16px}
+/* 主内容 */
+.auth-main{display:flex;flex:1;max-width:1200px;width:100%;margin:0 auto;padding:40px;gap:60px;align-items:stretch}
+
+/* 左侧品牌区 */
+.auth-brand{flex:1;display:flex;align-items:center;background:linear-gradient(160deg,#1a3a6b 0%,#0d2247 60%,#1a3a8a 100%);border-radius:20px;padding:44px;position:relative;overflow:hidden;min-height:460px}
+.auth-brand::before{content:'';position:absolute;right:-40px;bottom:-40px;width:200px;height:200px;background:rgba(201,168,76,.1);border-radius:50%}
+.auth-brand::after{content:'';position:absolute;left:-30px;top:-30px;width:160px;height:160px;background:rgba(201,168,76,.07);border-radius:50%}
+.auth-brand-inner{position:relative;z-index:1}
+.auth-brand-logo{font-size:52px;margin-bottom:20px}
+.auth-brand-title{font-size:26px;font-weight:900;color:#fff;line-height:1.35;margin-bottom:16px;letter-spacing:1px}
+.auth-brand-desc{font-size:14px;color:rgba(255,255,255,.7);line-height:1.8;margin-bottom:32px}
+.auth-brand-features{display:flex;flex-direction:column;gap:14px}
+.auth-brand-feat{display:flex;align-items:flex-start;gap:14px;background:rgba(255,255,255,.07);border-radius:12px;padding:14px 16px;border:1px solid rgba(255,255,255,.1)}
+.auth-brand-feat-icon{font-size:24px;flex-shrink:0}
+.auth-brand-feat-t{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px}
+.auth-brand-feat-d{font-size:12px;color:rgba(255,255,255,.6);line-height:1.5}
+
+/* 右侧表单区 */
+.auth-form-area{flex:1;max-width:420px;display:flex;flex-direction:column}
+.auth-form-tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:0}
+.auth-form-tab{flex:1;text-align:center;padding:14px;font-size:15px;font-weight:600;color:var(--text-light);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;letter-spacing:.5px}
+.auth-form-tab.active{color:var(--primary);border-bottom-color:var(--accent)}
+.auth-form-tab:hover:not(.active){color:var(--text)}
+.auth-form-wrap{background:var(--card);border-radius:0 0 20px 20px;padding:30px 34px;border:1px solid var(--border);border-top:none;box-shadow:0 4px 20px rgba(0,0,0,.07);flex:1}
+
+.auth-form{display:none;flex-direction:column;gap:14px}
 .auth-form.active{display:flex}
 
-.forgot-link{text-align:center;margin-top:8px}
-.forgot-link a{font-size:13px;color:var(--primary-light);text-decoration:none;cursor:pointer}
-.forgot-link a:hover{text-decoration:underline}
+/* 表单行 */
+.af-row{display:flex;align-items:flex-start;gap:0}
+.af-icon{width:36px;height:36px;background:#f0f4ff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;margin-top:26px;border:1px solid #dde4ff}
+.af-field{flex:1;padding-left:12px}
+.af-label{font-size:12px;font-weight:600;color:var(--text-light);margin-bottom:6px;padding-left:4px;letter-spacing:.5px}
+.af-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;outline:none;transition:border-color .2s;background:#fff}
+.af-input:focus{border-color:var(--primary-light);background:#f8faff}
+.af-pw-wrap{position:relative}
+.af-pw-wrap .af-input{padding-right:42px}
+.af-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--text-light);padding:4px}
+.af-captcha-row{display:flex;gap:8px;align-items:flex-end}
+.af-cap-in{flex:1}
+.af-canvas{border-radius:8px;border:1.5px solid var(--border);cursor:pointer;flex-shrink:0;height:44px;background:#f8faff;transition:border-color .2s}
+.af-canvas:hover{border-color:var(--primary-light)}
+.af-sms-btn{background:#fff;border:1.5px solid var(--primary);color:var(--primary);padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .2s}
+.af-sms-btn:hover{background:var(--primary);color:#fff}
+.af-hint{font-size:11px;color:var(--text-light);margin-top:5px;line-height:1.5}
+.af-submit-btn{width:100%;padding:13px;font-size:16px;font-weight:700;color:#fff;background:linear-gradient(135deg,#1a3a6b,#1a5a9a);border:none;border-radius:10px;cursor:pointer;letter-spacing:2px;margin-top:4px;transition:opacity .2s,transform .15s;box-shadow:0 4px 14px rgba(26,58,107,.3)}
+.af-submit-btn:hover{opacity:.88;transform:translateY(-1px)}
+.af-reg-btn{background:linear-gradient(135deg,#c9a84c,#e0bc5a);box-shadow:0 4px 14px rgba(201,168,76,.3)}
+.af-links{text-align:center;margin-top:10px;display:flex;justify-content:center;gap:8px;align-items:center}
+.af-link-sep{color:var(--border);font-size:12px}
+.af-link-primary{font-size:13px;color:var(--primary);font-weight:600;text-decoration:none;cursor:pointer}
+.af-link-primary:hover{text-decoration:underline}
+.af-link-ghost{font-size:13px;color:var(--text-light);text-decoration:none;cursor:pointer}
+.af-link-ghost:hover{color:var(--text)}
 
-.divider{text-align:center;margin:20px 0;position:relative}
-.divider::before{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:var(--border)}
-.divider span{background:#fff;padding:0 12px;position:relative;font-size:12px;color:var(--text-light)}
+/* 其他登录方式 */
+.auth-alt-login{border-top:1px solid var(--border);margin-top:20px;padding-top:18px;text-align:center}
+.auth-alt-title{font-size:12px;color:var(--text-light);margin-bottom:10px;letter-spacing:.5px}
+.auth-alt-icons{display:flex;justify-content:center;gap:12px;margin-bottom:8px}
+.auth-alt-icon{width:44px;height:44px;background:#f5f7ff;border:1.5px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:not-allowed;opacity:.5}
+.auth-alt-tip{font-size:11px;color:var(--text-light);line-height:1.5}
 
-.secure-note{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-light);background:#f5f7ff;padding:10px 14px;border-radius:8px;margin-top:8px}
-.secure-note span{color:var(--success)}
+/* 底部提示区 */
+.auth-footer{background:#f5f7ff;border-top:1px solid var(--border);padding:24px 40px}
+.auth-footer-inner{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.auth-footer-tip-title{font-size:13px;font-weight:700;color:var(--primary);margin-bottom:8px}
+.auth-footer-tip-list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.auth-footer-tip-list li{font-size:12px;color:var(--text-light);line-height:1.6}
+.auth-footer-copyright{font-size:11px;color:#b0bec5;text-align:center;padding-top:10px;border-top:1px solid var(--border)}
+.auth-footer-copyright a{color:var(--primary-light);text-decoration:none}
+.auth-footer-copyright a:hover{text-decoration:underline}
+
+@media(max-width:900px){
+  .auth-brand{display:none}
+  .auth-main{padding:20px 16px;gap:0}
+  .auth-form-area{max-width:100%;width:100%}
+  .auth-topbar{padding:0 16px}
+  .auth-topbar-links a:not(:last-child){display:none}
+}
+@media(max-width:480px){
+  .auth-form-wrap{padding:24px 20px}
+  .auth-footer{padding:16px}
+}
 
 /* ===== 首页 Hero ===== */
 .hero{background:linear-gradient(135deg,#1a3a6b 0%,#1a5a9a 50%,#0d2247 100%);border-radius:20px;padding:56px 50px;margin-bottom:36px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden}
@@ -545,140 +612,246 @@ function renderHome() {
   </div>`;
 }
 
-// ===== 认证页面 =====
+// ===== 认证页面（政府事业单位风格） =====
 function renderAuthPage() {
-  let regForm = `
-    <div class="auth-form" id="form-register">
-      <div class="field">
-        <label>真实姓名 *</label>
-        <input type="text" id="reg-name" placeholder="请输入真实姓名（将显示在证书上）" maxlength="20">
-      </div>
-      <div class="field">
-        <label>手机号码 *</label>
-        <input type="tel" id="reg-phone" placeholder="请输入手机号码" maxlength="11">
-      </div>
-      <div class="field">
-        <label>设置密码 *</label>
-        <div class="input-wrap">
-          <input type="password" id="reg-pw" placeholder="6位以上，包含数字和字母" maxlength="20" oninput="onPwStrength(this.value,'reg-strength')">
-        </div>
-        <div class="pw-strength" id="reg-strength"></div>
-        <div class="pw-strength-label" id="reg-strength-label"></div>
-      </div>
-      <div class="field">
-        <label>确认密码 *</label>
-        <div class="input-wrap">
-          <input type="password" id="reg-pw2" placeholder="再次输入密码" maxlength="20">
-        </div>
-      </div>
-      <div class="field">
-        <label>图形验证码 *</label>
-        <div class="captcha-row">
-          <div class="field" style="margin:0">
-            <input type="text" id="reg-captcha" placeholder="请输入下方计算结果" maxlength="6" autocomplete="off">
-          </div>
-          <canvas class="captcha-canvas" id="captcha-reg" onclick="refreshCaptcha('reg')" title="点击刷新"></canvas>
-        </div>
-      </div>
-      <button class="btn btn-primary" style="width:100%;padding:13px;font-size:16px" onclick="doRegister()">注册账号</button>
-      <div class="divider"><span>已有账号？</span></div>
-      <button class="btn btn-ghost" style="width:100%" onclick="switchAuthTab('login')">返回登录</button>
-    </div>`;
-
   let loginForm = `
     <div class="auth-form active" id="form-login">
-      <div class="field">
-        <label>手机号码</label>
-        <input type="tel" id="login-phone" placeholder="请输入注册手机号" maxlength="11">
-      </div>
-      <div class="field">
-        <label>密码</label>
-        <div class="input-wrap">
-          <input type="password" id="login-pw" placeholder="请输入密码" maxlength="20">
-          <button class="eye-btn" onclick="togglePw('login-pw',this)">👁</button>
+      <div class="af-row">
+        <div class="af-icon">👤</div>
+        <div class="af-field">
+          <div class="af-label">用户名</div>
+          <input class="af-input" type="text" id="login-username" placeholder="请输入用户名" maxlength="20" autocomplete="off">
         </div>
       </div>
-      <div class="field">
-        <label>图形验证码 *</label>
-        <div class="captcha-row">
-          <div class="field" style="margin:0">
-            <input type="text" id="login-captcha" placeholder="请输入下方计算结果" maxlength="6" autocomplete="off">
+      <div class="af-row">
+        <div class="af-icon">🔒</div>
+        <div class="af-field">
+          <div class="af-label">密码</div>
+          <div class="af-pw-wrap">
+            <input class="af-input" type="password" id="login-pw" placeholder="请输入密码" maxlength="20" onkeydown="if(event.key==='Enter')doLogin()">
+            <button class="af-eye" onclick="togglePw('login-pw',this)">👁</button>
           </div>
-          <canvas class="captcha-canvas" id="captcha-login" onclick="refreshCaptcha('login')" title="点击刷新"></canvas>
         </div>
       </div>
-      <div class="forgot-link">
-        <a onclick="switchAuthTab('forgot')">忘记密码？</a>
+      <div class="af-row">
+        <div class="af-icon">🔢</div>
+        <div class="af-field">
+          <div class="af-label">验证码</div>
+          <div class="af-captcha-row">
+            <input class="af-input af-cap-in" type="text" id="login-captcha" placeholder="请输入答案" maxlength="6" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()">
+            <canvas class="af-canvas" id="captcha-login" onclick="refreshCaptcha('login')" title="点击刷新验证码"></canvas>
+          </div>
+        </div>
       </div>
-      <button class="btn btn-primary" style="width:100%;padding:13px;font-size:16px" onclick="doLogin()">登录</button>
-      <div class="divider"><span>还没有账号？</span></div>
-      <button class="btn btn-accent" style="width:100%" onclick="switchAuthTab('register')">注册新账号</button>
+      <button class="af-submit-btn" onclick="doLogin()">登 录</button>
+      <div class="af-links">
+        <a class="af-link-primary" onclick="switchAuthTab('register')">新用户注册</a>
+        <span class="af-link-sep">|</span>
+        <a class="af-link-ghost" onclick="switchAuthTab('forgot')">忘记密码</a>
+      </div>
+    </div>`;
+
+  let regForm = `
+    <div class="auth-form" id="form-register">
+      <div class="af-row">
+        <div class="af-icon">👤</div>
+        <div class="af-field">
+          <div class="af-label">真实姓名</div>
+          <input class="af-input" type="text" id="reg-name" placeholder="请输入真实姓名（将显示在证书上）" maxlength="20">
+        </div>
+      </div>
+      <div class="af-row">
+        <div class="af-icon">🏷</div>
+        <div class="af-field">
+          <div class="af-label">用户名</div>
+          <input class="af-input" type="text" id="reg-username" placeholder="设置登录用户名（至少2位）" maxlength="20" autocomplete="off">
+        </div>
+      </div>
+      <div class="af-row">
+        <div class="af-icon">🔒</div>
+        <div class="af-field">
+          <div class="af-label">设置密码</div>
+          <input class="af-input" type="password" id="reg-pw" placeholder="6位以上，包含数字和字母" maxlength="20" oninput="onPwStrength(this.value,'reg-strength')">
+          <div class="pw-strength-bar" id="reg-strength"></div>
+          <div class="pw-strength-label" id="reg-strength-label"></div>
+        </div>
+      </div>
+      <div class="af-row">
+        <div class="af-icon">🔒</div>
+        <div class="af-field">
+          <div class="af-label">确认密码</div>
+          <div class="af-pw-wrap">
+            <input class="af-input" type="password" id="reg-pw2" placeholder="再次输入密码" maxlength="20">
+            <button class="af-eye" onclick="togglePw('reg-pw2',this)">👁</button>
+          </div>
+        </div>
+      </div>
+      <div class="af-row">
+        <div class="af-icon">🔢</div>
+        <div class="af-field">
+          <div class="af-label">验证码</div>
+          <div class="af-captcha-row">
+            <input class="af-input af-cap-in" type="text" id="reg-captcha" placeholder="请输入答案" maxlength="6" autocomplete="off">
+            <canvas class="af-canvas" id="captcha-reg" onclick="refreshCaptcha('reg')" title="点击刷新验证码"></canvas>
+          </div>
+        </div>
+      </div>
+      <button class="af-submit-btn af-reg-btn" onclick="doRegister()">立即注册</button>
+      <div class="af-links">
+        <a class="af-link-primary" onclick="switchAuthTab('login')">已有账号，直接登录</a>
+      </div>
     </div>`;
 
   let forgotForm = `
     <div class="auth-form" id="form-forgot">
-      <div class="field">
-        <label>已注册手机号码</label>
-        <input type="tel" id="fg-phone" placeholder="请输入注册手机号" maxlength="11">
-      </div>
-      <div class="field">
-        <label>图形验证码 *</label>
-        <div class="captcha-row">
-          <div class="field" style="margin:0">
-            <input type="text" id="fg-captcha" placeholder="请输入下方计算结果" maxlength="6" autocomplete="off">
-          </div>
-          <canvas class="captcha-canvas" id="captcha-forgot" onclick="refreshCaptcha('forgot')" title="点击刷新"></canvas>
+      <div class="af-row">
+        <div class="af-icon">🏷</div>
+        <div class="af-field">
+          <div class="af-label">用户名</div>
+          <input class="af-input" type="text" id="fg-username" placeholder="请输入注册的用户名" maxlength="20" autocomplete="off">
         </div>
       </div>
-      <div class="field" id="fg-step2" style="display:none">
-        <label>短信验证码 *</label>
-        <div class="captcha-row">
-          <div class="field" style="margin:0">
-            <input type="text" id="fg-sms" placeholder="输入6位短信验证码" maxlength="6" autocomplete="off">
+      <div class="af-row">
+        <div class="af-icon">🔢</div>
+        <div class="af-field">
+          <div class="af-label">验证码</div>
+          <div class="af-captcha-row">
+            <input class="af-input af-cap-in" type="text" id="fg-captcha" placeholder="请输入答案" maxlength="6" autocomplete="off">
+            <canvas class="af-canvas" id="captcha-forgot" onclick="refreshCaptcha('forgot')" title="点击刷新验证码"></canvas>
           </div>
-          <button class="btn btn-ghost" id="fg-sms-btn" style="padding:11px 14px;white-space:nowrap" onclick="sendForgotSms()">发送验证码</button>
         </div>
-        <div class="hint" style="color:var(--primary-light);margin-top:4px">提示：短信验证码为 6 位随机数字，演示期间请查看控制台（按 F12）</div>
+      </div>
+      <div id="fg-step2" style="display:none">
+        <div class="af-row">
+          <div class="af-icon">📱</div>
+          <div class="af-field">
+            <div class="af-label">短信验证码</div>
+            <div class="af-captcha-row">
+              <input class="af-input af-cap-in" type="text" id="fg-sms" placeholder="6位验证码" maxlength="6" autocomplete="off">
+              <button class="af-sms-btn" id="fg-sms-btn" onclick="doForgot()">发送验证码</button>
+            </div>
+            <div class="af-hint">演示期间请按 F12 查看控制台获取验证码</div>
+          </div>
+        </div>
       </div>
       <div id="fg-reset-section" style="display:none">
-        <div class="field">
-          <label>设置新密码 *</label>
-          <div class="input-wrap">
-            <input type="password" id="fg-new-pw" placeholder="6位以上，包含数字和字母" maxlength="20" oninput="onPwStrength(this.value,'fg-strength')">
+        <div class="af-row">
+          <div class="af-icon">🔒</div>
+          <div class="af-field">
+            <div class="af-label">新密码</div>
+            <input class="af-input" type="password" id="fg-new-pw" placeholder="6位以上，包含数字和字母" maxlength="20" oninput="onPwStrength(this.value,'fg-strength')">
+            <div class="pw-strength-bar" id="fg-strength"></div>
+            <div class="pw-strength-label" id="fg-strength-label"></div>
+            <div class="pw-strength-label" id="fg-strength-label"></div>
           </div>
-          <div class="pw-strength" id="fg-strength"></div>
-          <div class="pw-strength-label" id="fg-strength-label"></div>
         </div>
-        <div class="field">
-          <label>确认新密码 *</label>
-          <div class="input-wrap">
-            <input type="password" id="fg-new-pw2" placeholder="再次输入新密码" maxlength="20">
+        <div class="af-row">
+          <div class="af-icon">🔒</div>
+          <div class="af-field">
+            <div class="af-label">确认新密码</div>
+            <div class="af-pw-wrap">
+              <input class="af-input" type="password" id="fg-new-pw2" placeholder="再次输入新密码" maxlength="20">
+              <button class="af-eye" onclick="togglePw('fg-new-pw2',this)">👁</button>
+            </div>
           </div>
         </div>
       </div>
-      <button class="btn btn-primary" style="width:100%;padding:13px;font-size:16px" onclick="doForgot()">验证身份</button>
-      <div class="forgot-link">
-        <a onclick="switchAuthTab('login')">想起密码了？返回登录</a>
+      <button class="af-submit-btn" id="fg-btn" onclick="doForgot()">验证身份</button>
+      <div class="af-links">
+        <a class="af-link-primary" onclick="switchAuthTab('login')">想起密码了？返回登录</a>
       </div>
     </div>`;
 
-  return `<div class="auth-page">
-    <div class="auth-container">
-      <div class="auth-header">
-        <div class="shield-icon">🛡️</div>
-        <h1>湖南绿盾卫士</h1>
-        <p>在线培训考核系统 · 用户登录</p>
+  return `<div class="auth-page-wrap">
+    <!-- 顶部机构标识 -->
+    <div class="auth-topbar">
+      <div class="auth-topbar-inner">
+        <div class="auth-topbar-logo">
+          <div class="auth-topbar-icon">🛡️</div>
+          <div>
+            <div class="auth-topbar-title">湖南绿盾卫士检测技术有限公司</div>
+            <div class="auth-topbar-sub">在线培训考核系统</div>
+          </div>
+        </div>
+        <div class="auth-topbar-links">
+          <a href="http://www.cpta.com.cn/" target="_blank">人事考试网</a>
+          <a href="#" onclick="switchAuthTab('register')">新用户注册</a>
+          <a href="#" onclick="switchAuthTab('forgot')">忘记密码</a>
+        </div>
       </div>
-      <div class="auth-tabs" id="auth-tabs">
-        <div class="auth-tab" id="tab-login" onclick="switchAuthTab('login')">登录</div>
-        <div class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">注册</div>
-        <div class="auth-tab" id="tab-forgot" onclick="switchAuthTab('forgot')">忘记密码</div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="auth-main">
+      <!-- 左侧品牌区 -->
+      <div class="auth-brand">
+        <div class="auth-brand-inner">
+          <div class="auth-brand-logo">🛡️</div>
+          <h1 class="auth-brand-title">湖南绿盾卫士<br>在线培训考核系统</h1>
+          <p class="auth-brand-desc">依据 GB/T 18204 等国家标准的专业培训与考核平台，支持学员在线学习、模拟考试、自动评分、合格发证全流程管理。</p>
+          <div class="auth-brand-features">
+            <div class="auth-brand-feat">
+              <div class="auth-brand-feat-icon">📋</div>
+              <div>
+                <div class="auth-brand-feat-t">专业题库</div>
+                <div class="auth-brand-feat-d">覆盖公共场所卫生监测全知识点</div>
+              </div>
+            </div>
+            <div class="auth-brand-feat">
+              <div class="auth-brand-feat-icon">⏱</div>
+              <div>
+                <div class="auth-brand-feat-t">在线考核</div>
+                <div class="auth-brand-feat-d">随时随地开考，自动计时判分</div>
+              </div>
+            </div>
+            <div class="auth-brand-feat">
+              <div class="auth-brand-feat-icon">🏆</div>
+              <div>
+                <div class="auth-brand-feat-t">合格发证</div>
+                <div class="auth-brand-feat-d">80分合格，即时生成培训证书</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      ${loginForm}
-      ${regForm}
-      ${forgotForm}
-      <div class="secure-note">
-        <span>🔒</span> 数据仅存储在本地浏览器，换设备需重新登录
+
+      <!-- 右侧登录表单 -->
+      <div class="auth-form-area">
+        <div class="auth-form-tabs">
+          <div class="auth-form-tab active" id="tab-login" onclick="switchAuthTab('login')">登录</div>
+          <div class="auth-form-tab" id="tab-register" onclick="switchAuthTab('register')">注册</div>
+          <div class="auth-form-tab" id="tab-forgot" onclick="switchAuthTab('forgot')">忘记密码</div>
+        </div>
+        <div class="auth-form-wrap">
+          ${loginForm}
+          ${regForm}
+          ${forgotForm}
+        </div>
+
+        <!-- 其他登录方式 -->
+        <div class="auth-alt-login">
+          <div class="auth-alt-title">其他登录方式</div>
+          <div class="auth-alt-icons">
+            <div class="auth-alt-icon" title="暂未开放">🔐</div>
+          </div>
+          <p class="auth-alt-tip">其他登录方式陆续开放中，请使用上方账号密码登录</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部友情提示 -->
+    <div class="auth-footer">
+      <div class="auth-footer-inner">
+        <div class="auth-footer-tips">
+          <div class="auth-footer-tip-title">📌 友情提示</div>
+          <ul class="auth-footer-tip-list">
+            <li>请使用 <strong>Chrome</strong>、<strong>Edge</strong>、<strong>Firefox</strong> 或 <strong>360 浏览器极速模式</strong> 访问；不建议使用 IE 浏览器。</li>
+            <li>首次使用请先注册账号，真实姓名将显示在培训合格证书上，请准确填写。</li>
+            <li>考试合格后可在结果页直接打印培训证书（建议 Chrome 浏览器 Ctrl+P）。</li>
+            <li>如忘记密码，请通过用户名 + 验证码 + 短信验证自助重置。</li>
+          </ul>
+        </div>
+        <div class="auth-footer-copyright">© 2026 湖南绿盾卫士检测技术有限公司 · 仅供内部培训使用 · <a href="http://www.cpta.com.cn/" target="_blank">中国人事考试网</a></div>
       </div>
     </div>
   </div>`;
@@ -721,11 +894,11 @@ function togglePw(id, btn) {
 
 // ===== 登录注册逻辑 =====
 function doLogin() {
-  let phone = $("login-phone")?.value?.trim();
+  let username = $("login-username")?.value?.trim();
   let pw = $("login-pw")?.value;
   let captcha = $("login-captcha")?.value?.trim();
 
-  if (!phone || !pw) { showToast("请填写手机号和密码", "error"); return; }
+  if (!username || !pw) { showToast("请填写用户名和密码", "error"); return; }
 
   // 验证码
   let q = getCaptchaQ();
@@ -736,13 +909,13 @@ function doLogin() {
   }
 
   let users = getUsers();
-  let user = users.find(u => u.phone === phone && u.pwHash === hashPin(pw));
+  let user = users.find(u => u.username === username && u.pwHash === hashPin(pw));
   if (!user) {
-    showToast("手机号或密码错误", "error");
+    showToast("用户名或密码错误", "error");
     return;
   }
 
-  currentUser = { name: user.name, phone: user.phone, isAdmin: !!user.isAdmin };
+  currentUser = { name: user.name, username: user.username, isAdmin: !!user.isAdmin };
   isAdmin = !!user.isAdmin;
   localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
   showToast("欢迎回来，" + user.name + "！", "success");
@@ -752,13 +925,13 @@ function doLogin() {
 
 function doRegister() {
   let name = $("reg-name")?.value?.trim();
-  let phone = $("reg-phone")?.value?.trim();
+  let username = $("reg-username")?.value?.trim();
   let pw = $("reg-pw")?.value;
   let pw2 = $("reg-pw2")?.value;
   let captcha = $("reg-captcha")?.value?.trim();
 
   if (!name) { showToast("请输入真实姓名", "error"); return; }
-  if (!/^1[3-9]\d{9}$/.test(phone)) { showToast("请输入正确的手机号", "error"); return; }
+  if (!username || username.length < 2) { showToast("请输入正确的用户名（至少2位）", "error"); return; }
   if (pw.length < 6) { showToast("密码至少6位", "error"); return; }
   if (pw !== pw2) { showToast("两次密码不一致", "error"); return; }
 
@@ -770,16 +943,16 @@ function doRegister() {
   }
 
   let users = getUsers();
-  if (users.find(u => u.phone === phone)) {
-    showToast("该手机号已注册，请直接登录", "error");
+  if (users.find(u => u.username === username)) {
+    showToast("该用户名已注册，请直接登录", "error");
     switchAuthTab("login");
     return;
   }
 
-  users.push({ name, phone, pwHash: hashPin(pw), isAdmin: false, createdAt: new Date().toISOString() });
+  users.push({ name, username, pwHash: hashPin(pw), isAdmin: false, createdAt: new Date().toISOString() });
   saveUsers(users);
 
-  currentUser = { name, phone, isAdmin: false };
+  currentUser = { name, username, isAdmin: false };
   isAdmin = false;
   localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
   showToast("注册成功！欢迎 " + name, "success");
@@ -791,24 +964,24 @@ function doRegister() {
 let forgotStep = 0; // 0=验证手机 1=重置密码
 
 function doForgot() {
-  let phone = $("fg-phone")?.value?.trim();
+  let username = $("fg-username")?.value?.trim();
   let captcha = $("fg-captcha")?.value?.trim();
 
   if (forgotStep === 0) {
-    if (!/^1[3-9]\d{9}$/.test(phone)) { showToast("请输入正确的手机号", "error"); return; }
+    if (!username || username.length < 2) { showToast("请输入正确的用户名", "error"); return; }
     let q = getCaptchaQ();
     if (String(captcha).trim() !== String(q.answer)) {
       showToast("验证码错误", "error"); refreshCaptcha("forgot"); return;
     }
     let users = getUsers();
-    if (!users.find(u => u.phone === phone)) {
-      showToast("该手机号未注册", "error"); return;
+    if (!users.find(u => u.username === username)) {
+      showToast("该用户名未注册", "error"); return;
     }
     // 演示：显示短信验证码到控制台
     let code = String(Math.floor(Math.random() * 900000 + 100000));
     console.log("【演示用】忘记密码验证码：" + code);
     window._forgotCode = code;
-    window._forgotPhone = phone;
+    window._forgotUsername = username;
     document.getElementById("fg-step2").style.display = "block";
     $("fg-sms-btn").textContent = "已发送 ✓";
     $("fg-sms-btn").disabled = true;
@@ -836,7 +1009,7 @@ function doForgot() {
     if (newPw.length < 6) { showToast("新密码至少6位", "error"); return; }
     if (newPw !== newPw2) { showToast("两次密码不一致", "error"); return; }
     let users = getUsers();
-    let idx = users.findIndex(u => u.phone === window._forgotPhone);
+    let idx = users.findIndex(u => u.username === window._forgotUsername);
     if (idx >= 0) {
       users[idx].pwHash = hashPin(newPw);
       saveUsers(users);
@@ -1135,7 +1308,7 @@ function backHome() {
 
 function saveRecord(score, passed) {
   let records = getRecords();
-  records.push({time:new Date().toISOString(),name:state.candName,phone:currentUser?.phone||"",score,passed});
+  records.push({time:new Date().toISOString(),name:state.candName,username:currentUser?.username||"",score,passed});
   saveRecords(records);
 }
 
@@ -1226,7 +1399,7 @@ function showUserInfo() {
     <div class="modal-box" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
       <h3>👤 ${esc(currentUser.name)}</h3>
-      <p class="modal-sub">手机：${esc(currentUser.phone)}</p>
+      <p class="modal-sub">用户名：${esc(currentUser.username)}</p>
       <div class="modal-actions">
         <button class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove()">关闭</button>
         <button class="btn btn-danger" onclick="logout()">退出登录</button>
@@ -1254,9 +1427,9 @@ function renderAdmin() {
 
   let recordsHtml = records.length===0
     ? "<p style='color:var(--text-light);font-size:13px;text-align:center;padding:24px'>暂无考试记录</p>"
-    : `<table class="q-table"><thead><tr><th>#</th><th>姓名</th><th>手机</th><th>得分</th><th>结果</th><th>时间</th></tr></thead><tbody>
+    : `<table class="q-table"><thead><tr><th>#</th><th>姓名</th><th>用户名</th><th>得分</th><th>结果</th><th>时间</th></tr></thead><tbody>
     ${records.slice().reverse().map((r,i)=>`<tr>
-      <td>${i+1}</td><td>${esc(r.name)}</td><td>${esc(r.phone||"")}</td>
+      <td>${i+1}</td><td>${esc(r.name)}</td><td>${esc(r.username||"")}</td>
       <td>${r.score} 分</td>
       <td><span class="tag ${r.passed?'tag-right':'tag-wrong'}">${r.passed?'合格':'不合格'}</span></td>
       <td>${new Date(r.time).toLocaleString("zh-CN")}</td>
@@ -1532,8 +1705,8 @@ window.onload = () => {
   // 如果有记住的会话，直接恢复
   if (currentUser) {
     let cfg = getAdminConfig();
-    if (cfg.users && cfg.users.find(u=>u.phone===currentUser.phone)) {
-      isAdmin = !!cfg.users.find(u=>u.phone===currentUser.phone && u.isAdmin);
+    if (cfg.users && cfg.users.find(u=>u.username===currentUser.username)) {
+      isAdmin = !!cfg.users.find(u=>u.username===currentUser.username && u.isAdmin);
     }
   }
   state.view = currentUser ? "home" : "auth";
