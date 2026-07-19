@@ -294,10 +294,17 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 .paper-ans{display:flex;flex-direction:column;gap:4px;font-size:13px;padding-left:20px}
 .paper-row{display:flex;gap:8px;line-height:1.55}
 .paper-label{flex:0 0 60px;color:var(--text-light);font-weight:700}
-.paper-val{flex:1}
+.paper-val{flex:1;white-space:pre-wrap;word-break:break-word}
 .paper-explain{color:var(--primary-light)}
 .paper-subjinfo{color:var(--warn);font-weight:600;font-size:12px}
 .paper-total{margin-top:12px;text-align:right;font-size:14px}
+.paper-opts{margin:4px 0 7px;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.paper-opt{display:flex;align-items:flex-start;gap:8px;font-size:13px;line-height:1.5;padding:3px 6px;border-radius:6px}
+.paper-opt.chosen{background:#eef7ee;border:1px solid #bfe3bf}
+.paper-opt-letter{flex:0 0 18px;font-weight:700;color:var(--primary)}
+.paper-opt-text{flex:1}
+.paper-opt-mark{margin-left:8px;color:#1a8f3c;font-weight:700;font-size:12px;white-space:nowrap}
+.paper-subj-box{margin:4px 0 7px;padding:8px 10px;background:#f8f8f8;border:1px solid #eee;border-radius:6px;font-size:13px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
 .q-list-item{border:1px solid var(--border);border-radius:11px;padding:18px;margin-bottom:10px}
 .q-list-item .q-list-stem{font-size:14px;font-weight:600;margin-bottom:10px}
 .tag{padding:2px 9px;border-radius:5px;font-size:11px;font-weight:600}
@@ -1663,15 +1670,24 @@ function renderRecord() {
     else got = ua ? "待阅" : 0;
     let subjInfo = (r.isSubj && r.g && r.g.total>0) ? `（关键词命中 ${r.g.matched}/${r.g.total}，覆盖率 ${Math.round(r.g.ratio*100)}%）` : "";
     let rightMark = r.ok ? "<span class='tag tag-right'>✓ 正确</span>" : "<span class='tag tag-wrong'>✗ 错误</span>";
-    let refAns = r.isObj ? q.answer : (q.answer || "—");
+    let optsHtml;
+    if (["single","multi","judge"].includes(q.qtype) && q.options && q.options.length) {
+      let chosenArr = Array.isArray(ua) ? ua : (typeof ua==="string" && ua.indexOf(",")>=0 ? ua.split(",").map(s=>s.trim()) : (ua?[ua]:[]));
+      optsHtml = '<div class="paper-opts">' + q.options.map(o => {
+        let letter = o[0];
+        let isChosen = chosenArr.includes(letter);
+        return `<div class="paper-opt${isChosen?' chosen':''}"><span class="paper-opt-letter">${letter}</span><span class="paper-opt-text">${esc(o.slice(2))}</span>${isChosen?'<span class="paper-opt-mark">✔ 你的选择</span>':''}</div>`;
+      }).join("") + '</div>';
+    } else {
+      optsHtml = "";
+    }
     return `<div class="paper-q">
       <div class="paper-q-head"><span class="paper-num">${i+1}.</span><span class="type-badge ${clsMap[q.qtype]}">${typeMap[q.qtype]||q.qtype}</span><span class="paper-score">${q.score} 分</span></div>
       <div class="paper-stem">${esc(q.stem)}</div>
+      ${optsHtml}
       <div class="paper-ans">
-        <div class="paper-row"><span class="paper-label">你的答案</span><span class="paper-val">${esc(ua)||"未作答"}</span></div>
-        <div class="paper-row"><span class="paper-label">参考答案</span><span class="paper-val">${esc(refAns)}</span></div>
-        ${q.explanation?`<div class="paper-row"><span class="paper-label">解析</span><span class="paper-val paper-explain">${esc(q.explanation)}</span></div>`:""}
-        <div class="paper-row"><span class="paper-label">得分</span><span class="paper-val"><strong>${got}</strong> <span class="paper-subjinfo">${subjInfo}</span> ${rightMark}</span></div>
+        <div class="paper-row"><span class="paper-label">答题情况</span><span class="paper-val">${esc(ua)||"未作答"}</span></div>
+        <div class="paper-row"><span class="paper-label">得分情况</span><span class="paper-val"><strong>${got}</strong> 分 <span class="paper-subjinfo">${subjInfo}</span> ${rightMark}</span></div>
       </div>
     </div>`;
   }).join("");
