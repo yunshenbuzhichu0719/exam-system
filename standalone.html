@@ -2030,7 +2030,7 @@ function renderPractice() {
     { id:"scenario", label:"场景题", filter:function(q){return q.qtype==='scenario';}, count: questions.filter(function(q){return q.qtype==='scenario';}).length, icon:"🔴" }
   ];
   var cards = typeGroups.map(function(g){
-    return '<div class="paper-card" onclick="doStartPractice(\'' + g.id + '')">'
+    return '<div class="paper-card" onclick="doStartPractice(\'' + g.id + '\)">'
       + '<div class="paper-header"><div class="paper-title">' + g.icon + ' ' + g.label + '</div></div>'
       + '<div class="paper-desc">共 ' + g.count + ' 道题目，即时反馈答案与解析</div>'
       + '<button class="paper-btn">开始练习</button></div>';
