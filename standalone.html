@@ -306,6 +306,15 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 
 /* ===== 六大模块卡片 ===== */
 .module-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin-top:20px}
+.lib-sub-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:8px}
+.lib-sub-card{display:flex;align-items:center;gap:14px;padding:16px 18px;background:linear-gradient(135deg,#f8faff 0%,#eef4ff 100%);border:1px solid #d6e4ff;border-radius:10px;cursor:pointer;transition:all 0.2s}
+.lib-sub-card:hover{background:linear-gradient(135deg,#eef4ff 0%,#d6e4ff 100%);transform:translateX(4px);box-shadow:0 4px 12px rgba(28,80,160,0.12)}
+.lib-sub-icon{font-size:32px;flex-shrink:0;width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.06)}
+.lib-sub-info{flex:1;min-width:0}
+.lib-sub-title{font-size:15px;font-weight:700;color:var(--primary);margin-bottom:4px}
+.lib-sub-desc{font-size:12px;color:var(--text-light);line-height:1.5;margin-bottom:4px}
+.lib-sub-meta{font-size:11px;color:#6b8bb0}
+.lib-sub-arrow{font-size:28px;color:#9bb0cc;font-weight:300;flex-shrink:0}
 .module-card{background:linear-gradient(135deg,#fff 0%,#f8f9fa 100%);border:1px solid var(--border);border-radius:16px;padding:28px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
 .module-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(26,58,107,.15);border-color:var(--primary-light)}
 .module-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:4px;background:linear-gradient(90deg,var(--primary),var(--accent))}
@@ -787,10 +796,7 @@ function renderHome() {
   }
   // 已登录 -> 六大模块入口
   let modules = [
-    { id: "laws", icon: "⚖️", title: "法律法规", desc: "相关法律法规文件" },
-    { id: "expert", icon: "📚", title: "专业知识", desc: "专业知识学习资料" },
-    { id: "mgmt", icon: "📋", title: "管理体系文件", desc: "管理体系相关文件" },
-    { id: "library", icon: "📂", title: "资料库", desc: "标准文件、主管部门文件及通知" },
+    { id: "library", icon: "📂", title: "资料库", desc: "法律法规、专业知识、管理体系及标准文件" },
     { id: "practice", icon: "✍️", title: "刷题模式", desc: "在线练习，即时反馈" },
     { id: "exam", icon: "📝", title: "考试模式", desc: "在线考核，自动评分" }
   ];
@@ -1194,9 +1200,15 @@ function enterModule(id) {
     startExam();
   } else if (id === "practice") {
     startPractice();
-  } else {
-    // 资料库模块：laws/expert/mgmt/library
-    showToast("资料库模块开发中...", "info");
+  } else if (id === "library") {
+    state.view = "library";
+    render();
+  } else if (id === "laws" || id === "expert" || id === "mgmt") {
+    state.currentModule = id;
+    state.currentChapter = 0;
+    state.view = "module-content";
+    render();
+    scrollTo(0, 0);
   }
 }
 
@@ -2472,6 +2484,24 @@ function renderPracticeResult() {
 // ===== 资料库模块 =====
 function renderLibrary() {
   var files = MODULE_DATA.libraryFiles || [];
+  // 学习资料子模块
+  var subModules = [
+    { id: "laws",   icon: "⚖️", title: "法律法规",     desc: "公共场所卫生管理条例等法规文件", count: (MODULE_DATA.laws.chapters || []).length },
+    { id: "expert", icon: "📚", title: "专业知识",     desc: "GB/T 18204 教室环境卫生检测",  count: (MODULE_DATA.expert.chapters || []).length },
+    { id: "mgmt",   icon: "📋", title: "管理体系文件", desc: "ISO/IEC 17025 等管理体系",     count: (MODULE_DATA.mgmt.chapters || []).length }
+  ];
+  var subModuleCards = '<div class="lib-sub-grid">' + subModules.map(function(m) {
+    return '<div class="lib-sub-card" onclick="enterModule(\'' + m.id + '\')">'
+      + '<div class="lib-sub-icon">' + m.icon + '</div>'
+      + '<div class="lib-sub-info">'
+      + '<div class="lib-sub-title">' + m.title + '</div>'
+      + '<div class="lib-sub-desc">' + m.desc + '</div>'
+      + '<div class="lib-sub-meta">📑 ' + m.count + ' 章</div>'
+      + '</div>'
+      + '<div class="lib-sub-arrow">›</div>'
+      + '</div>';
+  }).join('') + '</div>';
+
   var isAdm = currentUser && getAdminConfig().users && getAdminConfig().users.some(function(u){ return u.username === currentUser.username && u.isAdmin; });
   var fileCards = files.length === 0
     ? '<div style="text-align:center;padding:40px;color:var(--text-light)">📭 暂无资料，请管理员上传</div>'
@@ -2492,6 +2522,9 @@ function renderLibrary() {
     + '<span style="font-size:22px">📂</span>'
     + '<span style="font-size:18px;font-weight:700;color:var(--primary)">资料库</span>'
     + adminBtn + '</div>'
+    + '<div class="card"><div class="card-title">📖 学习资料</div>'
+    + '<p style="color:var(--text-light);font-size:13px;margin-bottom:16px">点击下方分类进入学习章节。</p>'
+    + subModuleCards + '</div>'
     + '<div class="card"><div class="card-title">标准文件 · 通知公告</div>'
     + '<p style="color:var(--text-light);font-size:13px;margin-bottom:16px">涵盖 GB/T 18204、GB 7793 等教室卫生相关标准文件，以及主管部门发布的最新通知。</p>'
     + fileCards + '</div>'
