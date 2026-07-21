@@ -1254,6 +1254,11 @@ function startExam() {
     if (picked.indexOf(q) === -1) picked.push(q);
   }
   picked = picked.slice(0, needCount);
+  // 按题型排序：单选→多选→判断→简答→场景，保证题号连续
+  var typeOrder = {single:1, multi:2, judge:3, short:4, scenario:5};
+  picked.sort(function(a, b) {
+    return (typeOrder[a.qtype] || 99) - (typeOrder[b.qtype] || 99);
+  });
   // 确保每题2分
   picked.forEach(function(q) { q.score = perScore; });
   state.questions = picked;
@@ -1282,16 +1287,16 @@ function renderExam() {
   });
   let navHtml = order.map((t, typeIdx) => {
     let idxs = groups[t];
-    // 组内序号从1开始
-    let groupStart = 1;
-    let groupEnd = idxs.length;
-    let rangeTxt = idxs.length > 1 ? (groupStart + "-" + groupEnd + "题") : (groupStart + "题");
+    // 全局连续编号：i 是 state.questions 数组的索引（按题型排序后即为题号-1）
+    let start = idxs[0] + 1;
+    let end = idxs[idxs.length - 1] + 1;
+    let rangeTxt = idxs.length > 1 ? (start + "-" + end + "题") : (start + "题");
     let dots = idxs.map((i, idxInGroup) => {
       let cls = "q-dot";
       if (i === state.currentQ) cls += " current";
       else if (state.answers[state.questions[i].id]) cls += " answered";
-      // 显示组内序号（1,2,3...）而不是全局序号
-      return `<div class="${cls}" data-idx="${i}" onclick="jumpTo(${i})">${idxInGroup+1}</div>`;
+      // 显示全局题号（因为已按题型排序，索引即为题号-1）
+      return `<div class="${cls}" data-idx="${i}" onclick="jumpTo(${i})">${i+1}</div>`;
     }).join("");
     let lbl = typeLabel[t] || "其他";
     let col = typeColor[t] || "#1a3a6b";
