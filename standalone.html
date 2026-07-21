@@ -1280,15 +1280,18 @@ function renderExam() {
     if (!groups[t]) { groups[t] = []; order.push(t); }
     groups[t].push(i);
   });
-  let navHtml = order.map(t => {
+  let navHtml = order.map((t, typeIdx) => {
     let idxs = groups[t];
-    let start = idxs[0] + 1, end = idxs[idxs.length - 1] + 1;
-    let rangeTxt = idxs.length > 1 ? (start + "-" + end + "题") : (start + "题");
-    let dots = idxs.map(i => {
+    // 组内序号从1开始
+    let groupStart = 1;
+    let groupEnd = idxs.length;
+    let rangeTxt = idxs.length > 1 ? (groupStart + "-" + groupEnd + "题") : (groupStart + "题");
+    let dots = idxs.map((i, idxInGroup) => {
       let cls = "q-dot";
       if (i === state.currentQ) cls += " current";
       else if (state.answers[state.questions[i].id]) cls += " answered";
-      return `<div class="${cls}" data-idx="${i}" onclick="jumpTo(${i})">${i+1}</div>`;
+      // 显示组内序号（1,2,3...）而不是全局序号
+      return `<div class="${cls}" data-idx="${i}" onclick="jumpTo(${i})">${idxInGroup+1}</div>`;
     }).join("");
     let lbl = typeLabel[t] || "其他";
     let col = typeColor[t] || "#1a3a6b";
