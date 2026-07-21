@@ -1302,7 +1302,7 @@ function renderExam() {
   <div class="page-exam">
     <div class="sidebar">
       <div class="card">
-        <div class="sidebar-title">答题进度</div>
+        <div class="sidebar-title">答题进度 <span style="font-weight:400;font-size:12px;color:var(--text-light)">共${state.questions.length}题</span></div>
         <div class="q-nav">${navHtml}</div>
         <div class="q-legend">
           <span><span class="dot" style="background:#eef2ff;border-color:var(--primary-light)"></span>未答</span>
@@ -2307,16 +2307,17 @@ function renderPracticeExam() {
   }).join('');
 
   var answeredCount = Object.keys(state.pAnswers).length;
-  var pct = Math.round(answeredCount / total * 100);
+  var qTotal = state.questions.length;
+  var pct = Math.round(answeredCount / qTotal * 100);
 
   return '<div class="page page-exam">'
     + '<div class="sidebar"><div class="card">'
-    + '<div class="sidebar-title">刷题进度</div>'
+    + '<div class="sidebar-title">刷题进度<span style="font-weight:400;font-size:12px;color:var(--text-light)"> 共' + qTotal + '题</span></div>'
     + '<div class="q-legend" style="margin-bottom:14px">'
-    + '<span>已答 ' + answeredCount + '/' + total + '</span>'
+    + '<span>已答 ' + answeredCount + '/' + qTotal + '</span>'
     + '<div class="progress-bar"><div class="fill" style="width:' + pct + '%"></div></div></div>'
     + '<div class="q-group-dots-practice">' + dots + '</div>'
-    + '<div class="timer-box" style="margin-top:14px"><div class="timer-label">当前</div><div style="font-size:22px;font-weight:800;color:var(--primary)">' + num + '/' + total + '</div></div>'
+    + '<div class="timer-box" style="margin-top:14px"><div class="timer-label">当前</div><div style="font-size:22px;font-weight:800;color:var(--primary)">' + num + '/' + qTotal + '</div></div>'
     + '</div></div>'
     + '<div class="exam-main">'
     + '<div class="question-card">'
