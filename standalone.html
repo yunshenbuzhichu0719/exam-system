@@ -1985,6 +1985,7 @@ function renderExam() {
       // 显示组内相对题号（从1开始）
       return `<div class="${cls}" data-idx="${i}" onclick="jumpTo(${i})">${idxInGroup + 1}</div>`;
     }).join("");
+    let rangeTxt = idxs.length + "题";
     let lbl = typeLabel[t] || "其他";
     let col = typeColor[t] || "#1a3a6b";
     return `<div class="q-group">
