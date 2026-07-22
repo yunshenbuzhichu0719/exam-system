@@ -1915,51 +1915,62 @@ function startExam() {
   if (!currentUser) { showToast("请先登录", "error"); switchAuthTab("login"); return; }
   state.candName = currentUser.name;
   state.taskId = 1;
-  // 百分制：从题库随机抽题，每题2分，共50题=100分
-  var pool = questions.slice();
-  shuffleArray(pool);
+
+  // 按五大题型比例固定组卷（满分100分）
+  // 单选题25题×1分=25分，多选题10题×2分=20分，判断题10题×1分=10分，简答题3题×5分=15分，场景分析题3题×10分=30分
+  var layout = [
+    {type:"single",   need:25, score:1},
+    {type:"multi",    need:10, score:2},
+    {type:"judge",    need:10, score:1},
+    {type:"short",    need:3,  score:5},
+    {type:"scenario", need:3,  score:10}
+  ];
+
+  // 按题型分类收集
+  var pools = {};
+  questions.forEach(function(q) {
+    var t = q.qtype || "other";
+    if (!pools[t]) pools[t] = [];
+    pools[t].push(q);
+  });
+
+  // 每类随机打乱，按需抽取
   var picked = [];
-  var totalScore = 0;
-  var targetScore = 100;
-  var perScore = 2;
-  var needCount = targetScore / perScore; // 50题
-  // 优先覆盖各分类
-  var byCat = {};
-  pool.forEach(function(q) {
-    var c = q.category || "其他";
-    if (!byCat[c]) byCat[c] = [];
-    byCat[c].push(q);
+  var unmet = [];
+  layout.forEach(function(item) {
+    var pool = pools[item.type] || [];
+    shuffleArray(pool);
+    var count = Math.min(item.need, pool.length);
+    for (var i = 0; i < count; i++) {
+      var q = pool[i];
+      q.score = item.score;
+      picked.push(q);
+    }
+    if (count < item.need) unmet.push(item.type + "需要" + item.need + "题，仅有" + pool.length + "题");
   });
-  var cats = Object.keys(byCat);
-  // 每类按比例抽取
-  var perCat = Math.max(1, Math.floor(needCount / cats.length));
-  cats.forEach(function(c) {
-    shuffleArray(byCat[c]);
-    byCat[c].slice(0, perCat).forEach(function(q) { picked.push(q); });
-  });
-  // 不足补足
-  shuffleArray(pool);
-  while (picked.length < needCount && pool.length > 0) {
-    var q = pool.shift();
-    if (picked.indexOf(q) === -1) picked.push(q);
-  }
-  picked = picked.slice(0, needCount);
-  // 按题型排序：单选→多选→判断→简答→场景，保证题号连续
+
+  // 再次打乱所有题目，打乱后按题型排序
+  shuffleArray(picked);
   var typeOrder = {single:1, multi:2, judge:3, short:4, scenario:5};
   picked.sort(function(a, b) {
     return (typeOrder[a.qtype] || 99) - (typeOrder[b.qtype] || 99);
   });
-  // 确保每题2分
-  picked.forEach(function(q) { q.score = perScore; });
+
+  if (picked.length < 20) {
+    showToast("题库题目不足，当前仅" + picked.length + "题", "error");
+    return;
+  }
+  if (unmet.length) showToast("以下题型题数不足：" + unmet.join("；"), "warn");
+
   state.questions = picked;
-  state.totalScore = targetScore;
+  state.totalScore = 100;
   state.answers = {};
   state.currentQ = 0;
   state.submitted = false;
   state.view = "exam";
   render();
   scrollTo(0, 0);
-  showToast("本次考核共 " + picked.length + " 题，总分 " + targetScore + " 分", "info");
+  showToast("本次考核共 " + picked.length + " 题，总分 " + state.totalScore + " 分", "info");
 }
 
 function renderExam() {
