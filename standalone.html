@@ -1977,16 +1977,13 @@ function renderExam() {
   });
   let navHtml = order.map((t, typeIdx) => {
     let idxs = groups[t];
-    // 全局连续编号：i 是 state.questions 数组的索引（按题型排序后即为题号-1）
-    let start = idxs[0] + 1;
-    let end = idxs[idxs.length - 1] + 1;
-    let rangeTxt = idxs.length > 1 ? (start + "-" + end + "题") : (start + "题");
+    // 组内相对编号：1, 2, 3...
     let dots = idxs.map((i, idxInGroup) => {
       let cls = "q-dot";
       if (i === state.currentQ) cls += " current";
       else if (state.answers[state.questions[i].id]) cls += " answered";
-      // 显示全局题号（因为已按题型排序，索引即为题号-1）
-      return `<div class="${cls}" data-idx="${i}" onclick="jumpTo(${i})">${i+1}</div>`;
+      // 显示组内相对题号（从1开始）
+      return `<div class="${cls}" data-idx="${i}" onclick="jumpTo(${i})">${idxInGroup + 1}</div>`;
     }).join("");
     let lbl = typeLabel[t] || "其他";
     let col = typeColor[t] || "#1a3a6b";
