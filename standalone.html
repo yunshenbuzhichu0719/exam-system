@@ -3161,12 +3161,11 @@ function renderPracticeResult() {
 
 // ===== 资料库模块 =====
 function renderLibrary() {
-  var files = MODULE_DATA.libraryFiles || [];
   // 学习资料子模块
   var subModules = [
-    { id: "laws",   icon: "⚖️", title: "法律法规",     desc: "公共场所卫生管理条例等法规文件", count: (MODULE_DATA.laws.chapters || []).length },
-    { id: "expert", icon: "📚", title: "专业知识",     desc: "GB/T 18204 教室环境卫生检测",  count: (MODULE_DATA.expert.chapters || []).length },
-    { id: "mgmt",   icon: "📋", title: "管理体系文件", desc: "ISO/IEC 17025 等管理体系",     count: (MODULE_DATA.mgmt.chapters || []).length }
+    { id: "laws",   icon: "\u2696\ufe0f", title: "\u6cd5\u5f8b\u6cd5\u89c4",     desc: "\u516c\u5171\u573a\u6240\u536b\u751f\u7ba1\u7406\u6761\u4f8b\u7b49\u6cd5\u89c4\u6587\u4ef6", count: (MODULE_DATA.laws.chapters || []).length },
+    { id: "expert", icon: "\ud83d\udcda", title: "\u4e13\u4e1a\u77e5\u8bc6",     desc: "GB/T 18204 \u6559\u5ba4\u73af\u5883\u536b\u751f\u68c0\u6d4b",  count: (MODULE_DATA.expert.chapters || []).length },
+    { id: "mgmt",   icon: "\ud83d\udccb", title: "\u7ba1\u7406\u4f53\u7cfb\u6587\u4ef6", desc: "ISO/IEC 17025 \u7b49\u7ba1\u7406\u4f53\u7cfb",     count: (MODULE_DATA.mgmt.chapters || []).length }
   ];
   var subModuleCards = '<div class="lib-sub-grid">' + subModules.map(function(m) {
     return '<div class="lib-sub-card" onclick="enterModule(\'' + m.id + '\')">'
@@ -3174,102 +3173,242 @@ function renderLibrary() {
       + '<div class="lib-sub-info">'
       + '<div class="lib-sub-title">' + m.title + '</div>'
       + '<div class="lib-sub-desc">' + m.desc + '</div>'
-      + '<div class="lib-sub-meta">📑 ' + m.count + ' 章</div>'
+      + '<div class="lib-sub-meta">\ud83d\udcd1 ' + m.count + ' \u7ae0</div>'
       + '</div>'
-      + '<div class="lib-sub-arrow">›</div>'
+      + '<div class="lib-sub-arrow">\u203a</div>'
       + '</div>';
   }).join('') + '</div>';
 
   var isAdm = currentUser && getAdminConfig().users && getAdminConfig().users.some(function(u){ return u.username === currentUser.username && u.isAdmin; });
-  var fileCards = files.length === 0
-    ? '<div style="text-align:center;padding:40px;color:var(--text-light)">📭 暂无资料，请管理员上传</div>'
-    : files.map(function(f) {
-      return '<div class="file-card">'
-        + '<div class="file-icon">' + (f.type === 'pdf' ? '📄' : '🔗') + '</div>'
-        + '<div class="file-info"><div class="file-name">' + esc(f.name) + '</div>'
-        + '<div class="file-meta">' + esc(f.desc || '') + (f.code ? ' | 下载码：' + esc(f.code) : '') + '</div></div>'
-        + '<div class="file-actions">'
-        + (f.url ? '<button class="btn btn-sm btn-sm-primary" onclick="window.open(\'' + esc(f.url) + '\')">🔍 预览</button>' : '')
-        + (f.code ? '<button class="btn btn-sm btn-sm-accent" onclick="copyText(\'' + esc(f.code) + '\')">📋 复制码</button>' : '')
-        + '</div></div>';
-    }).join('');
-  var adminBtn = isAdm ? '<button class="btn btn-primary btn-sm" onclick="state.view=\'library-admin\';render()" style="margin-left:auto">⚙ 管理</button>' : '';
+  var adminBtn = isAdm ? '<button class="btn btn-primary btn-sm" onclick="state.view=\'library-admin\';render()" style="margin-left:auto">\u2699 \u7ba1\u7406\u4e0a\u4f20</button>' : '';
+
+  // \u5f02\u6b65\u52a0\u8f7d\u5df2\u4e0a\u4f20\u6587\u4ef6
+  setTimeout(loadLibraryFiles, 0);
+
   return '<div class="page">'
     + '<div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap">'
-    + '<button class="btn btn-ghost btn-sm" onclick="backToHome()" style="font-size:13px">← 返回首页</button>'
-    + '<span style="font-size:22px">📂</span>'
-    + '<span style="font-size:18px;font-weight:700;color:var(--primary)">资料库</span>'
+    + '<button class="btn btn-ghost btn-sm" onclick="backToHome()" style="font-size:13px">\u2190 \u8fd4\u56de\u9996\u9875</button>'
+    + '<span style="font-size:22px">\ud83d\udcc2</span>'
+    + '<span style="font-size:18px;font-weight:700;color:var(--primary)">\u8d44\u6599\u5e93</span>'
     + adminBtn + '</div>'
-    + '<div class="card"><div class="card-title">📖 学习资料</div>'
-    + '<p style="color:var(--text-light);font-size:13px;margin-bottom:16px">点击下方分类进入学习章节。</p>'
+    + '<div class="card"><div class="card-title">\ud83d\udcd6 \u5b66\u4e60\u8d44\u6599</div>'
+    + '<p style="color:var(--text-light);font-size:13px;margin-bottom:16px">\u70b9\u51fb\u4e0b\u65b9\u5206\u7c7b\u8fdb\u5165\u5b66\u4e60\u7ae0\u8282\u3002</p>'
     + subModuleCards + '</div>'
-    + '<div class="card"><div class="card-title">标准文件 · 通知公告</div>'
-    + '<p style="color:var(--text-light);font-size:13px;margin-bottom:16px">涵盖 GB/T 18204、GB 7793 等教室卫生相关标准文件，以及主管部门发布的最新通知。</p>'
-    + fileCards + '</div>'
-    + '<div class="footer">© 2026 湖南绿盾卫士检测技术有限公司</div></div>';
+    + '<div class="card"><div class="card-title">\ud83d\udcc4 \u6807\u51c6\u6587\u4ef6\u4e0b\u8f7d</div>'
+    + '<p style="color:var(--text-light);font-size:13px;margin-bottom:16px">\u4ee5\u4e0b\u4e3a\u7ba1\u7406\u5458\u4e0a\u4f20\u7684 PDF / WORD \u8d44\u6599\uff0c\u53ef\u5728\u7ebf\u9884\u89c8\u6216\u4e0b\u8f7d\u3002</p>'
+    + '<div id="lib-file-list"><div style="text-align:center;padding:40px;color:var(--text-light)">\u23f3 \u52a0\u8f7d\u4e2d...</div></div>'
+    + '</div>'
+    + '<div class="footer">\u00a9 2026 \u6e56\u5357\u7eff\u76fe\u536b\u58eb\u68c0\u6d4b\u6280\u672f\u6709\u9650\u516c\u53f8</div></div>';
 }
 
 window.copyText = function(text) {
-  if (navigator.clipboard) { navigator.clipboard.writeText(text).then(function(){ showToast('已复制到剪贴板', 'success'); }); }
-  else { showToast('复制内容：' + text, 'info'); }
+  if (navigator.clipboard) { navigator.clipboard.writeText(text).then(function(){ showToast('\u5df2\u590d\u5236\u5230\u526a\u8d34\u677f', 'success'); }); }
+  else { showToast('\u590d\u5236\u5185\u5bb9\uff1a' + text, 'info'); }
 };
 
-function renderLibraryAdmin() {
-  return '<div class="page">'
-    + '<div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">'
-    + '<button class="btn btn-ghost btn-sm" onclick="state.view=\'library\';render()">← 返回</button>'
-    + '<span style="font-size:22px">⚙</span>'
-    + '<span style="font-size:18px;font-weight:700;color:var(--primary)">资料库管理</span></div>'
-    + '<div class="card"><div class="card-title">添加资料</div>'
-    + '<p class="admin-hint">支持添加 PDF 文件链接或外部网址链接，生成下载码供学员使用微云客户端下载。</p>'
-    + '<div class="admin-panel" style="gap:12px">'
-    + '<div><label>资料名称</label><input type="text" id="lib-name" placeholder="例：GB/T 18204-2014 公共场所卫生检验方法"></div>'
-    + '<div><label>类型</label><select id="lib-type" onchange="toggleLibFields()"><option value="pdf">PDF 文档</option><option value="link">外部链接</option></select></div>'
-    + '<div id="lib-url-field" style="display:none"><label>链接地址</label><input type="url" id="lib-url" placeholder="https://..."></div>'
-    + '<div id="lib-code-field"><label>下载码（微云）</label><input type="text" id="lib-code" placeholder="例：GB18204"></div>'
-    + '<div><label>说明</label><input type="text" id="lib-desc" placeholder="简要说明（可选）"></div>'
-    + '<button class="btn btn-primary" onclick="doAddLibItem()">添加资料</button></div></div>'
-    + '<div class="footer">© 2026 湖南绿盾卫士检测技术有限公司</div></div>';
+// ===== IndexedDB \u8d44\u6599\u5e93\u5b58\u50a8 =====
+var LIB_DB_NAME = 'examLibraryDB';
+var LIB_STORE = 'files';
+function libOpenDB() {
+  return new Promise(function(resolve, reject) {
+    var req = indexedDB.open(LIB_DB_NAME, 1);
+    req.onupgradeneeded = function(e) {
+      var db = e.target.result;
+      if (!db.objectStoreNames.contains(LIB_STORE)) {
+        db.createObjectStore(LIB_STORE, { keyPath: 'id' });
+      }
+    };
+    req.onsuccess = function(e) { resolve(e.target.result); };
+    req.onerror = function(e) { reject(e.target.error); };
+  });
+}
+function libGetAll() {
+  return libOpenDB().then(function(db) {
+    return new Promise(function(resolve, reject) {
+      var tx = db.transaction(LIB_STORE, 'readonly');
+      var req = tx.objectStore(LIB_STORE).getAll();
+      req.onsuccess = function() { resolve(req.result || []); };
+      req.onerror = function() { reject(req.error); };
+    });
+  });
+}
+function libPut(record) {
+  return libOpenDB().then(function(db) {
+    return new Promise(function(resolve, reject) {
+      var tx = db.transaction(LIB_STORE, 'readwrite');
+      tx.objectStore(LIB_STORE).put(record);
+      tx.oncomplete = function() { resolve(); };
+      tx.onerror = function() { reject(tx.error); };
+    });
+  });
+}
+function libDelete(id) {
+  return libOpenDB().then(function(db) {
+    return new Promise(function(resolve, reject) {
+      var tx = db.transaction(LIB_STORE, 'readwrite');
+      tx.objectStore(LIB_STORE).delete(id);
+      tx.oncomplete = function() { resolve(); };
+      tx.onerror = function() { reject(tx.error); };
+    });
+  });
+}
+function libClearAll() {
+  return libOpenDB().then(function(db) {
+    return new Promise(function(resolve, reject) {
+      var tx = db.transaction(LIB_STORE, 'readwrite');
+      tx.objectStore(LIB_STORE).clear();
+      tx.oncomplete = function() { resolve(); };
+      tx.onerror = function() { reject(tx.error); };
+    });
+  });
 }
 
-window.toggleLibFields = function() {
-  var t = document.getElementById('lib-type').value;
-  document.getElementById('lib-url-field').style.display = t === 'link' ? 'block' : 'none';
-  document.getElementById('lib-code-field').style.display = t === 'pdf' ? 'block' : 'none';
+// ===== \u5b66\u5458\u7aef\uff1a\u52a0\u8f7d\u3001\u9884\u89c8\u3001\u4e0b\u8f7d =====
+window.loadLibraryFiles = function() {
+  libGetAll().then(function(files) {
+    var el = document.getElementById('lib-file-list');
+    if (!el) return;
+    if (!files.length) { el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-light)">\ud83d\udced \u6682\u65e0\u8d44\u6599\uff0c\u8bf7\u7ba1\u7406\u5458\u4e0a\u4f20</div>'; return; }
+    files.sort(function(a,b){ return b.id - a.id; });
+    el.innerHTML = files.map(function(f) {
+      var icon = f.type === 'word' ? '\ud83d\udcdd' : '\ud83d\udcc4';
+      var sizeStr = (f.size/1024/1024).toFixed(2) + ' MB';
+      return '<div class="file-card">'
+        + '<div class="file-icon">' + icon + '</div>'
+        + '<div class="file-info"><div class="file-name">' + esc(f.name) + '</div>'
+        + '<div class="file-meta">' + (f.desc ? esc(f.desc) + ' \u00b7 ' : '') + sizeStr + ' \u00b7 ' + esc(f.date) + '</div></div>'
+        + '<div class="file-actions">'
+        + (f.type === 'pdf' ? '<button class="btn btn-sm btn-sm-primary" onclick="libPreview(' + f.id + ')">\ud83d\udd0d \u9884\u89c8</button>' : '')
+        + '<button class="btn btn-sm btn-sm-accent" onclick="libDownload(' + f.id + ')">\u2b07 \u4e0b\u8f7d</button>'
+        + '</div></div>';
+    }).join('');
+  }).catch(function(e){
+    var el = document.getElementById('lib-file-list');
+    if (el) el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--danger)">\u52a0\u8f7d\u5931\u8d25\uff1a' + e + '</div>';
+  });
+};
+window.libPreview = function(id) {
+  libGetAll().then(function(files){
+    var f = null; for (var i=0;i<files.length;i++){ if(files[i].id===id){f=files[i];break;} }
+    if (!f) { showToast('\u6587\u4ef6\u4e0d\u5b58\u5728', 'error'); return; }
+    var blob = f.blob instanceof Blob ? f.blob : new Blob([f.blob], { type: f.mime || 'application/pdf' });
+    var url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 60000);
+  });
+};
+window.libDownload = function(id) {
+  libGetAll().then(function(files){
+    var f = null; for (var i=0;i<files.length;i++){ if(files[i].id===id){f=files[i];break;} }
+    if (!f) { showToast('\u6587\u4ef6\u4e0d\u5b58\u5728', 'error'); return; }
+    var blob = f.blob instanceof Blob ? f.blob : new Blob([f.blob], { type: f.mime || 'application/octet-stream' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = f.fileName || f.name;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+  });
 };
 
-window.doAddLibItem = function() {
-  var name = (document.getElementById('lib-name')||{value:''}).value.trim();
-  if (!name) { showToast('请输入资料名称', 'error'); return; }
-  var type = (document.getElementById('lib-type')||{value:'pdf'}).value;
-  var url = (document.getElementById('lib-url')||{value:''}).value.trim();
-  var code = (document.getElementById('lib-code')||{value:''}).value.trim();
-  var desc = (document.getElementById('lib-desc')||{value:''}).value.trim();
-  if (type === 'link' && !url) { showToast('外部链接类型请填写链接地址', 'error'); return; }
-  MODULE_DATA.libraryFiles = MODULE_DATA.libraryFiles || [];
-  MODULE_DATA.libraryFiles.push({ id: ++MODULE_DATA.libraryMaxId, name: name, type: type, url: url, code: code, desc: desc, date: new Date().toISOString().slice(0,10) });
-  localStorage.setItem('exam_library', JSON.stringify(MODULE_DATA.libraryFiles));
-  showToast('资料已添加', 'success');
-  state.view = 'library'; render();
+// ===== \u7ba1\u7406\u5458\u7aef\uff1a\u4e0a\u4f20\u901a\u9053 =====
+function renderLibraryAdmin() {
+  setTimeout(loadAdminLibFiles, 0);
+  return '<div class="page">'
+    + '<div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">'
+    + '<button class="btn btn-ghost btn-sm" onclick="state.view=\'library\';render()">\u2190 \u8fd4\u56de</button>'
+    + '<span style="font-size:22px">\u2699</span>'
+    + '<span style="font-size:18px;font-weight:700;color:var(--primary)">\u8d44\u6599\u5e93\u7ba1\u7406</span></div>'
+    + '<div class="card"><div class="card-title">\ud83d\udce4 \u4e0a\u4f20\u8d44\u6599</div>'
+    + '<p class="admin-hint">\u652f\u6301\u4e0a\u4f20 PDF\u3001WORD\uff08.doc / .docx\uff09\u6587\u6863\u3002\u6587\u4ef6\u4fdd\u5b58\u5728\u672c\u673a\u6d4f\u89c8\u5668\u4e2d\uff0c\u4f9b\u5b66\u5458\u5728\u7ebf\u9884\u89c8\u548c\u4e0b\u8f7d\u3002\u5355\u4e2a\u6587\u4ef6\u5efa\u8bae\u4e0d\u8d85\u8fc7 50MB\u3002</p>'
+    + '<div class="admin-panel" style="gap:12px">'
+    + '<div><label>\u9009\u62e9\u6587\u4ef6</label><input type="file" id="lib-file" accept=".pdf,.doc,.docx" onchange="onLibFileSelected()"></div>'
+    + '<div><label>\u8d44\u6599\u540d\u79f0</label><input type="text" id="lib-name" placeholder="\u7559\u7a7a\u5219\u4f7f\u7528\u6587\u4ef6\u540d"></div>'
+    + '<div><label>\u8bf4\u660e\uff08\u53ef\u9009\uff09</label><input type="text" id="lib-desc" placeholder="\u7b80\u8981\u8bf4\u660e"></div>'
+    + '<button class="btn btn-primary" id="lib-upload-btn" onclick="doUploadLibFile()">\ud83d\udce4 \u4e0a\u4f20</button></div></div>'
+    + '<div class="card"><div class="card-title">\ud83d\udcda \u5df2\u4e0a\u4f20\u8d44\u6599<button class="btn btn-sm btn-sm-danger" style="margin-left:auto" onclick="doClearLibrary()">\ud83d\uddd1 \u6e05\u7a7a\u5168\u90e8</button></div>'
+    + '<div id="lib-admin-list"><div style="text-align:center;padding:30px;color:var(--text-light)">\u23f3 \u52a0\u8f7d\u4e2d...</div></div></div>'
+    + '<div class="footer">\u00a9 2026 \u6e56\u5357\u7eff\u76fe\u536b\u58eb\u68c0\u6d4b\u6280\u672f\u6709\u9650\u516c\u53f8</div></div>';
+}
+
+window.onLibFileSelected = function() {
+  var fi = document.getElementById('lib-file');
+  var nameEl = document.getElementById('lib-name');
+  if (fi && fi.files.length && nameEl && !nameEl.value.trim()) {
+    nameEl.value = fi.files[0].name.replace(/\.(pdf|docx?)$/i, '');
+  }
+};
+window.doUploadLibFile = function() {
+  var fi = document.getElementById('lib-file');
+  if (!fi || !fi.files.length) { showToast('\u8bf7\u9009\u62e9\u6587\u4ef6', 'error'); return; }
+  var file = fi.files[0];
+  var ext = (file.name.split('.').pop() || '').toLowerCase();
+  if (['pdf','doc','docx'].indexOf(ext) === -1) { showToast('\u4ec5\u652f\u6301 PDF / WORD \u6587\u6863', 'error'); return; }
+  if (file.size > 60 * 1024 * 1024) { showToast('\u6587\u4ef6\u8fc7\u5927\uff08\u8d85\u8fc7 60MB\uff09', 'error'); return; }
+  var type = ext === 'pdf' ? 'pdf' : 'word';
+  var name = (document.getElementById('lib-name') || {value:''}).value.trim() || file.name;
+  var desc = (document.getElementById('lib-desc') || {value:''}).value.trim();
+  var btn = document.getElementById('lib-upload-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '\u4e0a\u4f20\u4e2d...'; }
+  var record = {
+    id: Date.now(),
+    name: name, desc: desc, type: type,
+    fileName: file.name, mime: file.type || (type === 'pdf' ? 'application/pdf' : 'application/msword'),
+    size: file.size, blob: file,
+    date: new Date().toISOString().slice(0,10)
+  };
+  libPut(record).then(function() {
+    showToast('\u8d44\u6599\u4e0a\u4f20\u6210\u529f', 'success');
+    if (btn) { btn.disabled = false; btn.textContent = '\ud83d\udce4 \u4e0a\u4f20'; }
+    fi.value = '';
+    var n = document.getElementById('lib-name'); if (n) n.value = '';
+    var d = document.getElementById('lib-desc'); if (d) d.value = '';
+    loadAdminLibFiles();
+  }).catch(function(e) {
+    showToast('\u4e0a\u4f20\u5931\u8d25\uff1a' + e, 'error');
+    if (btn) { btn.disabled = false; btn.textContent = '\ud83d\udce4 \u4e0a\u4f20'; }
+  });
+};
+window.loadAdminLibFiles = function() {
+  libGetAll().then(function(files) {
+    var el = document.getElementById('lib-admin-list');
+    if (!el) return;
+    if (!files.length) { el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-light)">\ud83d\udced \u6682\u65e0\u8d44\u6599</div>'; return; }
+    files.sort(function(a,b){ return b.id - a.id; });
+    el.innerHTML = files.map(function(f) {
+      var icon = f.type === 'word' ? '\ud83d\udcdd' : '\ud83d\udcc4';
+      var sizeStr = (f.size/1024/1024).toFixed(2) + ' MB';
+      return '<div class="file-card">'
+        + '<div class="file-icon">' + icon + '</div>'
+        + '<div class="file-info"><div class="file-name">' + esc(f.name) + '</div>'
+        + '<div class="file-meta">' + esc(f.fileName) + ' \u00b7 ' + sizeStr + ' \u00b7 ' + esc(f.date) + '</div></div>'
+        + '<div class="file-actions">'
+        + '<button class="btn btn-sm btn-sm-primary" onclick="' + (f.type === 'pdf' ? 'libPreview' : 'libDownload') + '(' + f.id + ')">\ud83d\udc41 \u67e5\u770b</button>'
+        + '<button class="btn btn-sm btn-sm-danger" onclick="doDeleteLibFile(' + f.id + ')">\ud83d\uddd1 \u5220\u9664</button>'
+        + '</div></div>';
+    }).join('');
+  });
+};
+window.doDeleteLibFile = function(id) {
+  if (!confirm('\u786e\u8ba4\u5220\u9664\u6b64\u8d44\u6599\uff1f')) return;
+  libDelete(id).then(function(){ showToast('\u5df2\u5220\u9664', 'success'); loadAdminLibFiles(); });
+};
+window.doClearLibrary = function() {
+  if (!confirm('\u786e\u8ba4\u6e05\u7a7a\u5168\u90e8\u8d44\u6599\uff1f\u6b64\u64cd\u4f5c\u4e0d\u53ef\u6062\u590d\uff01')) return;
+  libClearAll().then(function(){ showToast('\u8d44\u6599\u5e93\u5df2\u6e05\u7a7a', 'success'); loadAdminLibFiles(); });
 };
 
 function renderLibraryContent() {
   return '<div class="page">'
     + '<div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">'
-    + '<button class="btn btn-ghost btn-sm" onclick="state.view=\'library\';render()">← 返回资料库</button></div>'
-    + '<div class="card"><div class="card-title">文件预览</div><p style="color:var(--text-light)">功能完善中，可使用资料库提供的下载码或链接访问。</p></div>'
-    + '<div class="footer">© 2026 湖南绿盾卫士检测技术有限公司</div></div>';
+    + '<button class="btn btn-ghost btn-sm" onclick="state.view=\'library\';render()">\u2190 \u8fd4\u56de\u8d44\u6599\u5e93</button></div>'
+    + '<div class="card"><div class="card-title">\u6587\u4ef6\u9884\u89c8</div><p style="color:var(--text-light)">\u8bf7\u5728\u8d44\u6599\u5e93\u5217\u8868\u4e2d\u9009\u62e9\u6587\u4ef6\u9884\u89c8\u6216\u4e0b\u8f7d\u3002</p></div>'
+    + '<div class="footer">\u00a9 2026 \u6e56\u5357\u7eff\u76fe\u536b\u58eb\u68c0\u6d4b\u6280\u672f\u6709\u9650\u516c\u53f8</div></div>';
 }
 
-// 初始化资料库
-(function initLibrary() {
-  try {
-    var stored = localStorage.getItem('exam_library');
-    if (stored) {
-      var data = JSON.parse(stored);
-      MODULE_DATA.libraryFiles = data.libraryFiles || data;
-    }
-  } catch(e) {}
+// \u6e05\u7406\u65e7\u7248\u57fa\u4e8e localStorage \u7684\u94fe\u63a5\u5f0f\u8d44\u6599\u6570\u636e
+(function cleanupOldLibrary() {
+  try { localStorage.removeItem('exam_library'); } catch(e) {}
+  MODULE_DATA.libraryFiles = [];
 })();
 
 </script>
