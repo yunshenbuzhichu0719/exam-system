@@ -2419,22 +2419,39 @@ function renderAdmin() {
         <div class="stat-item"><div class="si-num">${records.filter(r=>r.passed).length}</div><div class="si-label">合格人数</div></div>
       </div>
       <div class="card">
-        <div class="card-title">📥 批量导入题库（JSON）</div>
+        <div class="card-title">📤 上传 WORD 题库</div>
         <div class="admin-hint">
-          <strong>字段说明：</strong>
-          <code class="admin-hint" style="display:block;margin-top:6px;padding:8px;background:#f0f0f0;border-radius:6px;font-size:11px">
-{ "id":1,"qtype":"single|multi|judge|short|scenario","stem":"题目","options":["A. 选项","B. 选项"...],<br>"answer":"答案","score":2,"explanation":"解析（可选）" }
-          </code>
-          <br>qtype：<strong>single</strong>=单选，<strong>multi</strong>=多选，<strong>judge</strong>=判断，<strong>short</strong>=简答，<strong>scenario</strong>=场景分析。
+          <strong>支持格式：</strong>WORD 文档（.doc / .docx），系统将自动解析题目并导入。
+          <div style="margin-top:10px;padding:10px;background:#f0f0f0;border-radius:6px;font-size:12px">
+            <strong>题目格式示例：</strong><br>
+            1. 单选题题干...<br>
+            A. 选项A<br>
+            B. 选项B<br>
+            C. 选项C<br>
+            D. 选项D<br>
+            答案：A<br><br>
+            2. 多选题题干...<br>
+            A. 选项A<br>
+            B. 选项B<br>
+            C. 选项C<br>
+            D. 选项D<br>
+            答案：ABC<br><br>
+            3. 判断题题干...<br>
+            答案：正确<br><br>
+            4. 简答题题干...<br>
+            答案：参考答案内容
+          </div>
         </div>
         <div class="admin-panel">
-          <label>JSON 题库数据</label>
-          <textarea id="import-area" placeholder='[&#10;  {&#10;    "id": 1,&#10;    "qtype": "single",&#10;    "stem": "题目",&#10;    "options": ["A. 选项", "B. 选项"],&#10;    "answer": "A",&#10;    "score": 2&#10;  }&#10;]'></textarea>
+          <label>选择 WORD 文件</label>
+          <input type="file" id="word-questions-file" accept=".doc,.docx" onchange="onWordQuestionsFileSelected()">
+          <label>题目分类（可选）</label>
+          <input type="text" id="word-questions-category" placeholder="如：物理因素参数">
         </div>
         <div style="display:flex;gap:10px;margin-top:10px">
-          <button class="btn btn-primary" onclick="importQuestions()">📥 导入</button>
-          <button class="btn btn-accent" onclick="exportQuestions()">📤 导出</button>
-          <button class="btn btn-ghost" onclick="resetQuestions()">🔄 恢复默认</button>
+          <button class="btn btn-primary" id="word-import-btn" onclick="importWordQuestions()">📥 导入题库</button>
+          <button class="btn btn-accent" onclick="exportQuestions()">📤 导出 JSON</button>
+          <button class="btn btn-ghost" onclick="resetQuestions()">恢复默认题库</button>
         </div>
       </div>
       <div class="card" style="margin-top:16px">
@@ -2532,19 +2549,172 @@ function changeAdminPin() {
   $("new-pin2").value = "";
 }
 
-function importQuestions() {
-  let raw = $("import-area")?.value?.trim();
-  if (!raw) { showToast("请先粘贴 JSON 数据", "error"); return; }
-  try {
-    let data = JSON.parse(raw);
-    if (!Array.isArray(data)) throw new Error("不是数组");
-    data.forEach(q => { if(!q.stem||!q.qtype) throw new Error("缺少 stem 或 qtype"); });
-    questions = data;
-    saveQuestions(questions);
-    showToast(`成功导入 ${questions.length} 道题目`, "success");
-    render();
-  } catch(e) { showToast("JSON 格式错误：" + e.message, "error"); }
+function onWordQuestionsFileSelected() {
+  var fi = document.getElementById('word-questions-file');
+  if (fi && fi.files.length) {
+    // File selected, ready for import
+    showToast('已选择文件: ' + fi.files[0].name, 'info');
+  }
 }
+
+function importWordQuestions() {
+  var fi = document.getElementById('word-questions-file');
+  if (!fi || !fi.files.length) { showToast('请选择 WORD 文件', 'error'); return; }
+  var file = fi.files[0];
+  var ext = (file.name.split('.').pop() || '').toLowerCase();
+  if (ext !== 'doc' && ext !== 'docx') { showToast('仅支持 .doc / .docx 文件', 'error'); return; }
+
+  var btn = document.getElementById('word-import-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '解析中...'; }
+
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var arrayBuffer = e.target.result;
+    // Use mammoth.js to extract text from DOCX
+    if (typeof mammoth === 'undefined') {
+      showToast('正在加载文档解析库...', 'info');
+      var script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js';
+      script.onload = function() { parseWordContent(arrayBuffer, file.name); };
+      script.onerror = function() {
+        showToast('文档解析库加载失败', 'error');
+        if (btn) { btn.disabled = false; btn.textContent = '📥 导入题库'; }
+      };
+      document.head.appendChild(script);
+    } else {
+      parseWordContent(arrayBuffer, file.name);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function parseWordContent(arrayBuffer, fileName) {
+  var btn = document.getElementById('word-import-btn');
+  mammoth.extractRawText({ arrayBuffer: arrayBuffer }).then(function(result) {
+    var text = result.value;
+    var category = (document.getElementById('word-questions-category') || {value:''}).value.trim() || '未分类';
+    var parsed = parseQuestionsFromText(text, category);
+    if (!parsed.length) {
+      showToast('未识别到有效题目，请检查文档格式', 'error');
+      if (btn) { btn.disabled = false; btn.textContent = '📥 导入题库'; }
+      return;
+    }
+    // Generate new IDs starting after existing questions
+    var maxId = 0;
+    for (var i = 0; i < questions.length; i++) { if (questions[i].id > maxId) maxId = questions[i].id; }
+    for (var j = 0; j < parsed.length; j++) {
+      parsed[j].id = ++maxId;
+      questions.push(parsed[j]);
+    }
+    saveQuestions();
+    showToast('成功导入 ' + parsed.length + ' 道题目', 'success');
+    if (btn) { btn.disabled = false; btn.textContent = '📥 导入题库'; }
+    render();
+  }).catch(function(err) {
+    showToast('文档解析失败: ' + err, 'error');
+    if (btn) { btn.disabled = false; btn.textContent = '📥 导入题库'; }
+  });
+}
+
+function parseQuestionsFromText(text, category) {
+  var result = [];
+  // Split by question number pattern: 1. 2. 3. etc
+  var lines = text.split(/\r?\n/);
+  var currentQ = null;
+  var currentType = 'single';
+  var currentStem = '';
+  var currentOptions = [];
+  var currentAnswer = '';
+
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i].trim();
+    if (!line) continue;
+
+    // Detect question start: number followed by . or 、
+    var qMatch = line.match(/^(\d+)[\.、．]\s*(.*)/);
+    if (qMatch) {
+      // Save previous question
+      if (currentStem) {
+        result.push(finalizeQuestion(currentStem, currentOptions, currentAnswer, category));
+      }
+      // Start new question
+      currentStem = qMatch[2];
+      currentOptions = [];
+      currentAnswer = '';
+      currentType = 'single';
+      continue;
+    }
+
+    // Detect option line: A. B. C. D. or A、B、 etc
+    var optMatch = line.match(/^([A-Da-d])[\.、．]\s*(.*)/);
+    if (optMatch) {
+      currentOptions.push(optMatch[1].toUpperCase() + '. ' + optMatch[2]);
+      continue;
+    }
+
+    // Detect answer line
+    var ansMatch = line.match(/^(?:答案|正确答案)[：:]*\s*(.*)/i);
+    if (ansMatch) {
+      var ans = ansMatch[1].trim();
+      // Determine question type
+      if (ans === '正确' || ans === '错误' || ans === '对' || ans === '错') {
+        currentType = 'judge';
+        currentAnswer = (ans === '正确' || ans === '对') ? '正确' : '错误';
+        currentOptions = ['正确', '错误'];
+      } else if (/^[A-Da-d]+$/.test(ans)) {
+        // Multiple choice (single or multi)
+        currentAnswer = ans.toUpperCase();
+        if (currentAnswer.length > 1) currentType = 'multi';
+      } else {
+        // Short answer
+        currentType = 'short';
+        currentAnswer = ans;
+        currentOptions = [];
+      }
+      continue;
+    }
+
+    // If no pattern matched and we have a stem, it's part of stem
+    if (currentStem && !currentAnswer) {
+      currentStem += ' ' + line;
+    }
+  }
+
+  // Save last question
+  if (currentStem) {
+    result.push(finalizeQuestion(currentStem, currentOptions, currentAnswer, category));
+  }
+
+  return result;
+}
+
+function finalizeQuestion(stem, options, answer, category) {
+  var type = 'single';
+  if (!options || !options.length) {
+    type = 'short';
+  } else if (options.length === 2 && (options[0] === '正确' || options[0] === '错误')) {
+    type = 'judge';
+  } else if (answer && answer.length > 1) {
+    type = 'multi';
+  }
+  return {
+    qtype: type,
+    stem: stem,
+    options: options,
+    answer: answer || '',
+    keyword: '',
+    explanation: '',
+    score: type === 'short' ? 5 : 2,
+    category: category
+  };
+}
+
+function importQuestions() {
+  // Keep for backward compatibility but show message
+  showToast('请使用 WORD 文件导入功能', 'info');
+}
+
+
 
 function exportQuestions() {
   let blob = new Blob([JSON.stringify(questions, null, 2)], {type:"application/json"});
