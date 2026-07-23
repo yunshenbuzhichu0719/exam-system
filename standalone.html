@@ -1332,7 +1332,7 @@ const DEFAULT_QUESTIONS = [
   {id:860,qtype:'scenario',stem:'池水尿素测出4.0mg/L，pH7.9，浑浊度0.8NTU。哪些指标不合格？',options:[],answer:'尿素≤3.5mg/L，4.0mg/L超标，反映人体代谢产物污染、需换水；pH应7.0~7.8，7.9略超；浑浊度≤1NTU合格。应换水/补充新水降低尿素并调pH至达标。',keyword:'尿素,pH,泳池',explanation:'尿素≤3.5mg/L，4.0mg/L超标，反映人体代谢产物污染、需换水；pH应7.0~7.8，7.9略超；浑浊度≤1NTU合格。应换水/补充新水降低尿素并调pH至达标。',score:10,category:'游泳池水',role:'技术负责人'},
   {id:861,qtype:'scenario',stem:'浸脚池余氯仅2mg/L，部分泳客直接跨过未通过。卫生隐患是什么？',options:[],answer:'浸脚消毒池游离余氯应5~10mg/L，2mg/L不足且泳客不经浸脚直接入池，脚部携带的病原微生物进入池水，增加交叉感染风险。应提高余氯并引导强制通过。',keyword:'浸脚池,余氯,卫生设施',explanation:'浸脚消毒池游离余氯应5~10mg/L，2mg/L不足且泳客不经浸脚直接入池，脚部携带的病原微生物进入池水，增加交叉感染风险。应提高余氯并引导强制通过。',score:10,category:'游泳池水',role:'监督员'},
   {id:862,qtype:'scenario',stem:'泳池开放期间仅开业时测一次余氯即公示合格，后续未监测。是否符合要求？',options:[],answer:'不符合。开放期间应对余氯、pH、ORP等关键指标持续监测(可现场DPD试纸快速检测)，并定期公示结果；仅测一次无法反映动态变化，遇客流大时余氯消耗快，存在安全隐患。',keyword:'检测频次,水质公示,泳池',explanation:'不符合。开放期间应对余氯、pH、ORP等关键指标持续监测(可现场DPD试纸快速检测)，并定期公示结果；仅测一次无法反映动态变化，遇客流大时余氯消耗快，存在安全隐患。',score:10,category:'游泳池水',role:'授权签字人'}
-];;;;;
+];
 
 // ===== 存储管理 =====
 const ADMIN_KEY = "exam_admin_config";
@@ -1342,27 +1342,73 @@ const RECORDS_KEY = "exam_records";
 const SESSION_KEY = "exam_session";
 
 function getAdminConfig() {
-  let cfg = JSON.parse(localStorage.getItem(ADMIN_KEY) || "null");
-  if (!cfg) {
-    cfg = { pin: "888888", users: [] };
-    localStorage.setItem(ADMIN_KEY, JSON.stringify(cfg));
+  try {
+    let raw = localStorage.getItem(ADMIN_KEY);
+    if (raw) {
+      let cfg = JSON.parse(raw);
+      if (cfg && typeof cfg.pin !== 'undefined') return cfg;
+    }
+  } catch(e) {
+    console.warn('管理员配置损坏，已重置:', e.message);
+    localStorage.removeItem(ADMIN_KEY);
   }
+  let cfg = { pin: "888888", users: [] };
+  localStorage.setItem(ADMIN_KEY, JSON.stringify(cfg));
   return cfg;
 }
 function saveAdminConfig(cfg) { localStorage.setItem(ADMIN_KEY, JSON.stringify(cfg)); }
-function getUsers() { return JSON.parse(localStorage.getItem(USERS_KEY) || "[]"); }
+function getUsers() {
+  try {
+    let raw = localStorage.getItem(USERS_KEY);
+    if (raw) {
+      let u = JSON.parse(raw);
+      if (Array.isArray(u)) return u;
+    }
+  } catch(e) {
+    localStorage.removeItem(USERS_KEY);
+  }
+  return [];
+}
 function saveUsers(u) { localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
 function getQuestions() {
-  let q = JSON.parse(localStorage.getItem(QUESTIONS_KEY) || "null");
-  return q || JSON.parse(JSON.stringify(DEFAULT_QUESTIONS));
+  try {
+    let raw = localStorage.getItem(QUESTIONS_KEY);
+    if (raw) {
+      let q = JSON.parse(raw);
+      if (q && Array.isArray(q) && q.length > 0) return q;
+    }
+  } catch(e) {
+    console.warn('题库数据损坏，已清除:', e.message);
+    localStorage.removeItem(QUESTIONS_KEY);
+  }
+  return JSON.parse(JSON.stringify(DEFAULT_QUESTIONS));
 }
 function saveQuestions(q) { localStorage.setItem(QUESTIONS_KEY, JSON.stringify(q)); }
-function getRecords() { return JSON.parse(localStorage.getItem(RECORDS_KEY) || "[]"); }
+function getRecords() {
+  try {
+    let raw = localStorage.getItem(RECORDS_KEY);
+    if (raw) {
+      let r = JSON.parse(raw);
+      if (Array.isArray(r)) return r;
+    }
+  } catch(e) {
+    localStorage.removeItem(RECORDS_KEY);
+  }
+  return [];
+}
 function saveRecords(r) { localStorage.setItem(RECORDS_KEY, JSON.stringify(r)); }
 
 // ===== 全局状态 =====
 let questions = getQuestions();
-let currentUser = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+let currentUser = (function(){
+  try {
+    let raw = localStorage.getItem(SESSION_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {
+    localStorage.removeItem(SESSION_KEY);
+  }
+  return null;
+})();
 let isAdmin = false;
 let state = { view: "auth", authTab: "login", candName: "", taskId: 1, questions: [], answers: {}, currentQ: 0, submitted: false, score: 0, passed: false, resultFilter: "all", recordIndex: -1 };
 let timerInterval = null;
@@ -3180,8 +3226,8 @@ window.loadRoleList = function(rid, roleName) {
     rqs.slice().reverse().slice(0, 50).map(function(q) {
       return '<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid #f0f0f0;font-size:12px">'
         + '<span style="background:#e8f0ff;color:#2c5aa0;padding:1px 6px;border-radius:3px;font-size:11px">' + (typeMap[q.qtype] || q.qtype) + '</span>'
-        + '<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(q.stem) + '</span>'
-        + '<button class="btn-sm btn-sm-danger" onclick="deleteQuestion(' + q.id + ');loadRoleList(\'' + rid + "\'" + "," + "\'" + roleName + "\'");">删除</button>"
+        + '<button class="btn-sm btn-sm-danger" onclick="deleteQuestion(' + q.id + ');loadRoleList(\'' + rid + '\',\'' + roleName + '\')">删除</button>'
+        + '<button class="btn-sm btn-sm-danger" onclick="deleteQuestion(' + q.id + ');loadRoleList(\'' + rid + '\',\'' + roleName + '\')">删除</button>'
         + "</div>";
     }).join("") + "</div>";
 };
