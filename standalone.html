@@ -2988,15 +2988,25 @@ function renderPrintPage() {
 
 // ===== 初始化 =====
 window.onload = () => {
-  // 如果有记住的会话，直接恢复
-  if (currentUser) {
-    let cfg = getAdminConfig();
-    if (cfg.users && cfg.users.find(u=>u.username===currentUser.username)) {
-      isAdmin = !!cfg.users.find(u=>u.username===currentUser.username && u.isAdmin);
+  try {
+    // 清除可能损坏的数据
+    if (!localStorage.getItem('exam_questions')) {
+      console.log('题库为空，将在首次使用时加载');
     }
+    if (currentUser) {
+      let cfg = getAdminConfig();
+      if (cfg && cfg.users && cfg.users.find(u=>u.username===currentUser.username)) {
+        isAdmin = !!cfg.users.find(u=>u.username===currentUser.username && u.isAdmin);
+      }
+    }
+    state.view = currentUser ? "home" : "auth";
+    render();
+  } catch(e) {
+    console.error('初始化错误:', e);
+    // 显示登录页面作为后备
+    state.view = 'auth';
+    $('app').innerHTML = '<div style="text-align:center;padding:60px 20px;color:#666"><p>页面加载遇到问题，请刷新或清除浏览器缓存。</p><button onclick="location.reload()" style="padding:10px 24px;background:#1a3a6b;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-top:16px">刷新页面</button></div>';
   }
-  state.view = currentUser ? "home" : "auth";
-  render();
 };
 
 // 全局函数
@@ -3171,7 +3181,7 @@ window.loadRoleList = function(rid, roleName) {
       return '<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid #f0f0f0;font-size:12px">'
         + '<span style="background:#e8f0ff;color:#2c5aa0;padding:1px 6px;border-radius:3px;font-size:11px">' + (typeMap[q.qtype] || q.qtype) + '</span>'
         + '<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(q.stem) + '</span>'
-        + '<button class="btn-sm btn-sm-danger" onclick="deleteQuestion(' + q.id + ');loadRoleList(\'' + rid + "',\'" + roleName + "\');">删除</button>"
+        + '<button class="btn-sm btn-sm-danger" onclick="deleteQuestion(' + q.id + ');loadRoleList(\'' + rid + "\'" + "," + "\'" + roleName + "\'");">删除</button>"
         + "</div>";
     }).join("") + "</div>";
 };
