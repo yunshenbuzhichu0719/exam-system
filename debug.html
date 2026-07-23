@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>考试系统 - 诊断版</title>
+<style>
+body{font-family:sans-serif;padding:20px;background:#f5f5f5}
+.card{background:white;padding:20px;border-radius:8px;max-width:500px;margin:0 auto;box-shadow:0 2px 10px rgba(0,0,0,0.1)}
+h1{color:#1a3a6b;text-align:center}
+.info{margin:10px 0;padding:10px;background:#e8f4f8;border-radius:4px;font-size:14px}
+.error{background:#ffe8e8;color:#c0392b}
+.success{background:#e8ffe8;color:#27ae60}
+button{padding:10px 20px;background:#1a3a6b;color:white;border:none;border-radius:6px;cursor:pointer;margin:5px}
+button:hover{background:#2a5aaa}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>🛡️ 考试系统诊断版</h1>
+<div id="results"></div>
+</div>
+<script>
+// 诊断函数
+function runDiagnostics() {
+  let html = '';
+  
+  // 1. 检查 localStorage
+  html += '<div class="info">1️⃣ localStorage exam_questions: ' + 
+    (localStorage.getItem('exam_questions') ? '✅ 有数据' : '❌ 无数据') + '</div>';
+  
+  // 2. 检查全局变量
+  html += '<div class="info">2️⃣ window.render: ' + (typeof render === 'function' ? '✅ 存在' : '❌ 不存在') + '</div>';
+  html += '<div class="info">3️⃣ window.$: ' + (typeof $ === 'function' ? '✅ 存在' : '❌ 不存在') + '</div>';
+  html += '<div class="info">4️⃣ window.state: ' + (typeof state !== 'undefined' ? '✅ 存在' : '❌ 不存在') + '</div>';
+  
+  // 5. 检查 app 元素
+  const app = document.getElementById('app');
+  html += '<div class="info">5️⃣ #app 元素: ' + (app ? '✅ 存在' : '❌ 不存在') + '</div>';
+  
+  // 6. 尝试调用 render
+  if (typeof render === 'function' && app) {
+    try {
+      render();
+      html += '<div class="info success">6️⃣ render() 执行: ✅ 成功</div>';
+      html += '<div class="info">   #app 内容长度: ' + app.innerHTML.length + ' 字符</div>';
+    } catch(e) {
+      html += '<div class="info error">6️⃣ render() 执行: ❌ 错误 - ' + e.message + '</div>';
+    }
+  } else {
+    html += '<div class="info error">6️⃣ render() 未执行（条件不满足）</div>';
+  }
+  
+  // 7. 清除缓存并重试
+  html += '<hr><button onclick="clearAndReload()">🗑️ 清除 localStorage 并刷新</button>';
+  
+  document.getElementById('results').innerHTML = html;
+}
+
+function clearAndReload() {
+  localStorage.clear();
+  location.reload();
+}
+
+// 页面加载后运行诊断
+window.onload = runDiagnostics;
+</script>
+</body>
+</html>
