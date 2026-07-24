@@ -2025,19 +2025,25 @@ function startExam() {
     pools[t].push(q);
   });
 
-  // 每类随机打乱，按需抽取
+  // 抽取时按知识点去重（取keyword第一段为主知识点）
   var picked = [];
   var unmet = [];
   layout.forEach(function(item) {
     var pool = pools[item.type] || [];
     shuffleArray(pool);
-    var count = Math.min(item.need, pool.length);
-    for (var i = 0; i < count; i++) {
-      var q = JSON.parse(JSON.stringify(pool[i]));
-      q.score = item.score;
-      picked.push(q);
+    var usedKeywords = {}; // 已用主知识点集合
+    var count = 0;
+    for (var i = 0; i < pool.length && count < item.need; i++) {
+      var kw = (pool[i].keyword || "").split(",")[0].trim();
+      if (!kw || !usedKeywords[kw]) {
+        usedKeywords[kw] = true;
+        var q = JSON.parse(JSON.stringify(pool[i]));
+        q.score = item.score;
+        picked.push(q);
+        count++;
+      }
     }
-    if (count < item.need) unmet.push(item.label + "需" + item.need + "题，仅有" + pool.length + "题");
+    if (count < item.need) unmet.push(item.label + "需" + item.need + "题，仅抽到" + count + "题");
   });
 
   // 再次打乱所有题目，打乱后按题型排序
@@ -2059,10 +2065,26 @@ function startExam() {
   state.currentQ = 0;
   state.submitted = false;
   state.view = "exam";
+  state.examSwitchCount = 0;
   render();
   scrollTo(0, 0);
   showToast("【" + userRole + "】考核，共 " + picked.length + " 题，总分 " + state.totalScore + " 分", "info");
-}
+
+  // 初始化切换计数，注册页面可见性监听
+  if (!window._examVisibilityHandler) {
+    window._examVisibilityHandler = function() {
+      if (document.hidden && state.view === "exam" && !state.submitted) {
+        state.examSwitchCount = (state.examSwitchCount || 0) + 1;
+        var cnt = state.examSwitchCount;
+        showToast("⚠️ 检测到离开考试界面（" + cnt + "/3），切出 3 次将自动提交", cnt >= 3 ? "error" : "warn");
+        if (cnt >= 3) {
+          // 延迟一点让提示先出来
+          setTimeout(function() { if (!state.submitted) doSubmit(); }, 800);
+        }
+      }
+    };
+    document.addEventListener("visibilitychange", window._examVisibilityHandler);
+  }
 
 function renderExam() {
   let total = totalScore(state.questions);
@@ -2256,10 +2278,14 @@ function startTimer() {
 function confirmSubmit() {
   if(timerInterval){clearInterval(timerInterval);timerInterval=null}
   let unanswered=state.questions.filter(q=>!state.answers[q.id]).length;
+  let switchMsg = state.examSwitchCount >= 3
+    ? `<p style="color:#e53e3e;font-size:13px">⚠️ 已离开考试界面 <strong>${state.examSwitchCount} 次</strong>，系统将自动提交。</p>`
+    : (state.examSwitchCount > 0 ? `<p style="color:#c05621;font-size:13px">⚠️ 已离开考试界面 <strong>${state.examSwitchCount}/3</strong> 次，超限将自动提交。</p>` : ``);
   let html=`<div class="modal-overlay" onclick="closeModal(event)">
     <div class="modal-box" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="reopenSubmitModal()">×</button>
       <h3>确认提交试卷？</h3>
+      ${switchMsg}
       ${unanswered>0?`<p>你还有 <strong>${unanswered} 道题</strong>未作答，提交后将无法修改答案。</p>`:`<p>你已完成全部题目，确认提交吗？</p>`}
       <div class="modal-actions">
         <button class="btn btn-ghost" onclick="reopenSubmitModal()">继续答题</button>
