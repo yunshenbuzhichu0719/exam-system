@@ -2477,7 +2477,7 @@ function renderAdmin() {
     let typeMap = {single:"单选题",multi:"多选题",judge:"判断题",short:"简答题",scenario:"场景分析题"};
     let clsMap = {single:"type-single",multi:"type-multi",judge:"type-judge",short:"type-short",scenario:"type-scenario"};
     return `<tr>
-      <td>${qi+1}</td>
+      <td><input type="checkbox" class="cb-q" value="${q.id}" onchange="toggleQSel(${q.id})" style="width:16px;height:16px;cursor:pointer"></td>
       <td><span class="type-badge" style="background:#e8f4e8;color:#1a6b1a;font-size:11px;padding:2px 6px;border-radius:3px">${esc(q.role||"其他")}</span></td>
       <td><span class="type-badge ${clsMap[q.qtype]}">${typeMap[q.qtype]||q.qtype}</span></td>
       <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(q.stem)}</td>
@@ -2488,7 +2488,7 @@ function renderAdmin() {
 
   let recordsHtml = records.length===0
     ? "<p style='color:var(--text-light);font-size:13px;text-align:center;padding:24px'>暂无考试记录</p>"
-    : `<table class="q-table"><thead><tr><th>#</th><th>姓名</th><th>用户名</th><th>得分</th><th>结果</th><th>时间</th><th>操作</th></tr></thead><tbody>
+    : `<table class="q-table"><thead><tr><th><input type="checkbox" id="cb-sel-all" onchange="toggleAllQ(this.checked)" style="width:16px;height:16px;cursor:pointer" title="全选"></th><th>姓名</th><th>用户名</th><th>得分</th><th>结果</th><th>时间</th><th>操作</th></tr></thead><tbody>
     ${records.slice().reverse().map((r, di) => { let idx = records.length - 1 - di; return `<tr class="rec-row" onclick="openRecord(${idx})">
       <td>${di+1}</td><td>${esc(r.name)}</td><td>${esc(r.username||"")}</td>
       <td>${r.score} 分</td>
@@ -2501,7 +2501,47 @@ function renderAdmin() {
     </tr>`; }).join("")}
     </tbody></table>`;
 
-  return `<div class="page">
+  
+// ===== 题目批量勾选（依赖 DOM，非闭包）=====
+let _selQ = new Set();
+function _getFiltQ() {
+  var role = document.getElementById("filter-role")?.value || "";
+  var qtype = document.getElementById("filter-qtype")?.value || "";
+  return questions.filter(function(q){
+    if(role && q.role !== role) return false;
+    if(qtype && q.qtype !== qtype) return false;
+    return true;
+  });
+}
+function toggleQSel(id) {
+  if(_selQ.has(id)) _selQ.delete(id); else _selQ.add(id);
+  refreshSelUI();
+}
+function toggleAllQ(checked) {
+  var fq = _getFiltQ();
+  if(checked){ fq.forEach(function(q){ _selQ.add(q.id); }); }
+  else{ _selQ.clear(); }
+  document.querySelectorAll('.cb-q').forEach(function(el){ el.checked = checked; });
+  refreshSelUI();
+}
+function refreshSelUI() {
+  var fq = _getFiltQ();
+  var n = _selQ.size, tot = fq.length;
+  var el = document.getElementById('sel-count');
+  if(el) el.textContent = n > 0 ? '(' + n + ')' : '';
+  var allCb = document.getElementById('cb-sel-all');
+  if(allCb){ allCb.checked = n === tot && tot > 0; allCb.indeterminate = n > 0 && n < tot; }
+}
+function deleteSelectedQ() {
+  if(_selQ.size === 0){ showToast('请先勾选要删除的题目','warn'); return; }
+  if(!confirm('确定删除选中的 ' + _selQ.size + ' 道题目吗？此操作不可恢复！')) return;
+  var ids = Array.from(_selQ);
+  ids.forEach(function(id){ questions = questions.filter(function(q){ return q.id !== id; }); });
+  saveQuestions(); _selQ.clear();
+  showToast('已删除 ' + ids.length + ' 道题目','success');
+  render();
+}
+return `<div class="page">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
       <div style="display:flex;align-items:center;gap:12px">
         <div style="font-size:24px">⚙️</div>
@@ -2512,6 +2552,7 @@ function renderAdmin() {
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button class="btn btn-primary" onclick="showAdminTab('questions')">📝 题库</button>
+        <button class="btn btn-danger" onclick="deleteSelectedQ()">🗑 批量删除 <span id="sel-count"></span></button>
         <button class="btn btn-accent" onclick="showAdminTab('print')">📄 考核卷</button>
         <button class="btn btn-ghost" onclick="showAdminTab('records')">📊 记录</button>
         <button class="btn btn-ghost" onclick="showAdminTab('security')">🔐 安全</button>
