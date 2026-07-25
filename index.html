@@ -1937,8 +1937,22 @@ function attachHandlers() {
 }
 
 // ===== INIT =====
-loadQ();
-render();
+(async function() {
+  loadQ();
+  if (state.questions.length === 0) {
+    try {
+      const r = await fetch('questions_bank.json?t=' + Date.now());
+      if (r.ok) {
+        const qs = await r.json();
+        localStorage.setItem(Q_KEY, JSON.stringify(qs));
+        state.questions = qs;
+        console.log('Loaded', qs.length, 'questions from bank');
+    } catch(e) {
+      console.warn('Could not fetch questions_bank.json:', e);
+    }
+  }
+  render();
+})();
 </script>
 </body>
 </html>
