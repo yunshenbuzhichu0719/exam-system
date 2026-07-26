@@ -1947,6 +1947,7 @@ function attachHandlers() {
         localStorage.setItem(Q_KEY, JSON.stringify(qs));
         state.questions = qs;
         console.log('Loaded', qs.length, 'questions from bank');
+      }
     } catch(e) {
       console.warn('Could not fetch questions_bank.json:', e);
     }
