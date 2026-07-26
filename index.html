@@ -1937,45 +1937,22 @@ function attachHandlers() {
 }
 
 // ===== INIT =====
-(function() {
-  // Show loading immediately
-  document.getElementById('mainContent').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:16px;color:#666"><div style="font-size:48px">🛡️</div><div style="font-size:16px">加载题库中，请稍候…</div></div>';
-  
+(async function() {
   loadQ();
-  
-  function doRender() {
-    if (state.questions.length === 0) {
-      fetch('questions_bank.json?t=' + Date.now())
-        .then(r => { if (r.ok) return r.json(); throw new Error('fetch failed'); })
-        .then(qs => {
-          localStorage.setItem(Q_KEY, JSON.stringify(qs));
-          state.questions = qs;
-          console.log('Loaded', qs.length, 'questions');
-          render();
-        })
-        .catch(e => {
-          console.warn('Fetch error:', e);
-          // Try again with no-cache
-          fetch('questions_bank.json', {cache: 'no-store'})
-            .then(r => { if (r.ok) return r.json(); throw new Error('no-store failed'); })
-            .then(qs => {
-              localStorage.setItem(Q_KEY, JSON.stringify(qs));
-              state.questions = qs;
-              render();
-            })
-            .catch(e2 => {
-              console.error('All fetch attempts failed:', e2);
-              document.getElementById('mainContent').innerHTML = '<div style="text-align:center;padding:60px;color:#666"><div style="font-size:48px">⚠️</div><p style="margin-top:16px">题库加载失败，请刷新重试</p><button onclick="location.reload()" style="margin-top:12px;padding:8px 20px;background:#1a7a3c;color:white;border:none;border-radius:6px;cursor:pointer">刷新页面</button></div>';
-            });
-        });
-    } else {
-      render();
+  if (state.questions.length === 0) {
+    try {
+      const r = await fetch('questions_bank.json?t=' + Date.now());
+      if (r.ok) {
+        const qs = await r.json();
+        localStorage.setItem(Q_KEY, JSON.stringify(qs));
+        state.questions = qs;
+        console.log('Loaded', qs.length, 'questions from bank');
+    } catch(e) {
+      console.warn('Could not fetch questions_bank.json:', e);
     }
   }
-  
-  doRender();
+  render();
 })();
-();
 </script>
 </body>
 </html>
