@@ -1624,10 +1624,7 @@ let currentUser = (function(){
     let raw = localStorage.getItem(SESSION_KEY);
 
 
-    if (raw) return JSON.parse(raw);
-
-
-  } catch(e) {
+    if (raw) { let obj = JSON.parse(raw); if (obj && obj.role && typeof ROLE_KEYS !== "undefined") { var _rdk = {}; for (var _ri=0;_ri<ROLE_KEYS.length;_ri++) _rdk[ROLE_NAMES[ROLE_KEYS[_ri]]]=ROLE_KEYS[_ri]; if (_rdk[obj.role]) obj.role=_rdk[obj.role]; } return obj; }  } catch(e) {
 
 
     localStorage.removeItem(SESSION_KEY);
@@ -2850,14 +2847,15 @@ function doLogin() {
 
 
 
-  currentUser = { name: user.name, username: user.username, isAdmin: !!user.isAdmin };
-
-
+  currentUser = { name: user.name, username: user.username, role: user.role || "", isAdmin: !!user.isAdmin };
   isAdmin = !!user.isAdmin;
-
-
+  // Normalize legacy role display name to key
+  if (currentUser.role && typeof ROLE_KEYS !== "undefined") {
+    var _rdk = {};
+    for (var _ri = 0; _ri < ROLE_KEYS.length; _ri++) _rdk[ROLE_NAMES[ROLE_KEYS[_ri]]] = ROLE_KEYS[_ri];
+    if (_rdk[currentUser.role]) currentUser.role = _rdk[currentUser.role];
+  }
   localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
-
 
   showToast("欢迎回来，" + user.name + "！", "success");
 
@@ -2931,6 +2929,12 @@ function doRegister() {
   if (!role) { showToast("请选择岗位类型", "error"); return; }
 
 
+  // Map display name to role key for EXAM_CONFIG
+  var ROLE_DISPLAY_TO_KEY = {};
+  for (var _rki = 0; _rki < ROLE_KEYS.length; _rki++) {
+    ROLE_DISPLAY_TO_KEY[ROLE_NAMES[ROLE_KEYS[_rki]]] = ROLE_KEYS[_rki];
+  }
+  role = ROLE_DISPLAY_TO_KEY[role] || role;
   users.push({ name, username, pwHash: hashPin(pw), role: role, isAdmin: false, createdAt: new Date().toISOString() });
 
 
@@ -2941,6 +2945,12 @@ function doRegister() {
 
 
   currentUser = { name, username, role: role, isAdmin: false };
+  // Record original display name for user info display
+  var ROLE_DISPLAY_TO_KEY = {};
+  for (var _rki = 0; _rki < ROLE_KEYS.length; _rki++) {
+    ROLE_DISPLAY_TO_KEY[ROLE_NAMES[ROLE_KEYS[_rki]]] = ROLE_KEYS[_rki];
+  }
+  
 
 
   isAdmin = false;
@@ -3520,10 +3530,6 @@ function startExam(examType, isConcurrent) {
   state.view = "exam";
   render();
   scrollTo(0, 0);
-  initTabMonitor();
-  if (window._twInterval) clearInterval(window._twInterval);
-  window._twInterval = setInterval(updateTabWarnDisplay, 3000);
-
   showToast("考试开始，共 " + picked.length + " 题，时长 " + duration + "分钟，请独立完成", "info");
 }
 
@@ -3648,7 +3654,7 @@ function renderExam() {
           <span><span class="dot" style="background:#eef2ff;border-color:var(--primary-light)"></span>未答</span>
 
 
-          <span><span class="dot" style="background:#eef2ff;border-color:var(--primary-light)"></span>已答</span><div id="_tw" style="margin-top:8px"></div>
+          <span><span class="dot" style="background:#eef2ff;border-color:var(--primary-light)"></span>已答</span>
 
 
           <span><span class="dot" style="background:var(--accent);border-color:var(--accent)"></span>当前题</span>
@@ -6880,11 +6886,24 @@ window.enterModule = function(modId) {
 // ===== 管理员岗位题库上传 =====
 
 
-window.ROLE_KEYS = ["zuigao","zhiliang","jishufzr","shouquanqianziren"];
+window.ROLE_KEYS = ["zuigao","zhiliang","jishufzr","shouquanqianziren","caiyangyuan","lihua","weishengwu","neishenyuan","jianduyuan","shebeiyuan","guanlitixi","shengwuanquan"];
 
 
-window.ROLE_NAMES = {"zuigao":"最高管理者","zhiliang":"质量负责人","jishufzr":"技术负责人","shouquanqianziren":"授权签字人"};
-window.EXAM_CONFIG = {"zuigao": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 25, "multi": 15, "judge": 10}, "科目B": {"single": 5, "multi": 5, "judge": 5}}}}, "zhiliang": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 10, "multi": 5, "judge": 5}, "科目B": {"single": 15, "multi": 10, "judge": 5}, "科目C": {"single": 5, "multi": 5, "judge": 5}}}}, "jishufzr": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 5, "multi": 5, "judge": 2}, "科目B": {"single": 5, "multi": 5, "judge": 3}, "科目C": {"single": 12, "multi": 6, "judge": 6}, "科目D": {"single": 8, "multi": 4, "judge": 4}}}}, "shouquanqianziren": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 5, "multi": 5, "judge": 2}, "科目B": {"single": 5, "multi": 5, "judge": 3}, "科目C": {"single": 8, "multi": 4, "judge": 4}, "科目D": {"single": 12, "multi": 6, "judge": 6}}}}};
+window.ROLE_NAMES = {"zuigao":"最高管理者","zhiliang":"质量负责人","jishufzr":"技术负责人","shouquanqianziren":"授权签字人","caiyangyuan":"采样员","lihua":"理化检测员","weishengwu":"微生物","neishenyuan":"内审员","jianduyuan":"监督员","shebeiyuan":"设备员","guanlitixi":"管理体系文件及法律法规","shengwuanquan":"生物安全"};
+window.EXAM_CONFIG = {
+  "zuigao": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 25, "multi": 15, "judge": 10}, "科目B": {"single": 5, "multi": 5, "judge": 5}}}},
+  "zhiliang": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 10, "multi": 5, "judge": 5}, "科目B": {"single": 15, "multi": 10, "judge": 5}, "科目C": {"single": 5, "multi": 5, "judge": 5}}}},
+  "jishufzr": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 5, "multi": 5, "judge": 2}, "科目B": {"single": 5, "multi": 5, "judge": 3}, "科目C": {"single": 12, "multi": 6, "judge": 6}, "科目D": {"single": 8, "multi": 4, "judge": 4}}}},
+  "shouquanqianziren": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 5, "multi": 5, "judge": 2}, "科目B": {"single": 5, "multi": 5, "judge": 3}, "科目C": {"single": 8, "multi": 4, "judge": 4}, "科目D": {"single": 12, "multi": 6, "judge": 6}}}},
+  "caiyangyuan": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 25, "multi": 15, "judge": 10}}}},
+  "lihua": {"firstExam": {"duration": 90, "subjects": {"科目B": {"single": 25, "multi": 15, "judge": 10}}}},
+  "weishengwu": {"firstExam": {"duration": 90, "subjects": {"科目D": {"single": 25, "multi": 15, "judge": 10}}}},
+  "neishenyuan": {"firstExam": {"duration": 90, "subjects": {"科目C": {"single": 25, "multi": 15, "judge": 10}}}},
+  "jianduyuan": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 15, "multi": 10, "judge": 5}, "科目C": {"single": 10, "multi": 5, "judge": 5}}}},
+  "shebeiyuan": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 15, "multi": 10, "judge": 5}, "科目B": {"single": 10, "multi": 5, "judge": 5}}}},
+  "guanlitixi": {"firstExam": {"duration": 90, "subjects": {"科目C": {"single": 25, "multi": 15, "judge": 10}}}},
+  "shengwuanquan": {"firstExam": {"duration": 90, "subjects": {"科目D": {"single": 25, "multi": 15, "judge": 10}}}}
+};
 window.CONCURRENT_MAP = {"zuigao": "", "zhiliang": "shouquanqianziren", "jishufzr": "", "shouquanqianziren": "jishufzr"};
 
 
@@ -8827,54 +8846,6 @@ function renderLibraryContent() {
 
 
 
-
-
-
-// ===== 切屏检测（3次自动交卷）=====
-var _tabSwitchCount = 0;
-
-function initTabMonitor() {
-  _tabSwitchCount = 0;
-  document.removeEventListener("visibilitychange", _onTabSwitch);
-  document.removeEventListener("webkitvisibilitychange", _onTabSwitch);
-  document.addEventListener("visibilitychange", _onTabSwitch);
-  document.addEventListener("webkitvisibilitychange", _onTabSwitch);
-}
-
-function _onTabSwitch() {
-  if (document.hidden || document.webkitHidden) {
-    _handleTabSwitch();
-  }
-}
-
-function _handleTabSwitch() {
-  if (!state || state.submitted || !state.questions || state.questions.length === 0) return;
-  _tabSwitchCount = (_tabSwitchCount || 0) + 1;
-  var count = _tabSwitchCount;
-  if (count >= 3) {
-    showToast("⚠️ 切屏次数已达3次，系统将自动提交试卷！", "error");
-    setTimeout(function() {
-      if (!state.submitted) confirmSubmit();
-    }, 1000);
-  } else {
-    var rem = 3 - count;
-    showToast("⚠️ 切屏警告！第" + count + "次（共允许3次，剩余" + rem + "次），再次切屏将自动交卷", "warn");
-  }
-}
-
-function renderTabWarn() {
-  var c = _tabSwitchCount || 0;
-  if (c === 0) return "";
-  var rem = 3 - c;
-  var clr = rem <= 1 ? "#c0392b" : "#e67e22";
-  return '<div style="margin-top:8px;padding:6px 10px;background:' + clr + '15;border:1px solid ' + clr + ';border-radius:4px;font-size:12px;color:' + clr + ';line-height:1.4">⚠️ 切屏 ' + c + '/3 次</div>';
-}
-
-function updateTabWarnDisplay() {
-  var el = document.getElementById("_tw");
-  if (!el) return;
-  el.innerHTML = renderTabWarn();
-}
 
 </script>
 
