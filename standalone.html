@@ -3520,6 +3520,10 @@ function startExam(examType, isConcurrent) {
   state.view = "exam";
   render();
   scrollTo(0, 0);
+  initTabMonitor();
+  if (window._twInterval) clearInterval(window._twInterval);
+  window._twInterval = setInterval(updateTabWarnDisplay, 3000);
+
   showToast("考试开始，共 " + picked.length + " 题，时长 " + duration + "分钟，请独立完成", "info");
 }
 
@@ -3644,7 +3648,7 @@ function renderExam() {
           <span><span class="dot" style="background:#eef2ff;border-color:var(--primary-light)"></span>未答</span>
 
 
-          <span><span class="dot" style="background:#eef2ff;border-color:var(--primary-light)"></span>已答</span>
+          <span><span class="dot" style="background:#eef2ff;border-color:var(--primary-light)"></span>已答</span><div id="_tw" style="margin-top:8px"></div>
 
 
           <span><span class="dot" style="background:var(--accent);border-color:var(--accent)"></span>当前题</span>
@@ -8823,6 +8827,54 @@ function renderLibraryContent() {
 
 
 
+
+
+
+// ===== 切屏检测（3次自动交卷）=====
+var _tabSwitchCount = 0;
+
+function initTabMonitor() {
+  _tabSwitchCount = 0;
+  document.removeEventListener("visibilitychange", _onTabSwitch);
+  document.removeEventListener("webkitvisibilitychange", _onTabSwitch);
+  document.addEventListener("visibilitychange", _onTabSwitch);
+  document.addEventListener("webkitvisibilitychange", _onTabSwitch);
+}
+
+function _onTabSwitch() {
+  if (document.hidden || document.webkitHidden) {
+    _handleTabSwitch();
+  }
+}
+
+function _handleTabSwitch() {
+  if (!state || state.submitted || !state.questions || state.questions.length === 0) return;
+  _tabSwitchCount = (_tabSwitchCount || 0) + 1;
+  var count = _tabSwitchCount;
+  if (count >= 3) {
+    showToast("⚠️ 切屏次数已达3次，系统将自动提交试卷！", "error");
+    setTimeout(function() {
+      if (!state.submitted) confirmSubmit();
+    }, 1000);
+  } else {
+    var rem = 3 - count;
+    showToast("⚠️ 切屏警告！第" + count + "次（共允许3次，剩余" + rem + "次），再次切屏将自动交卷", "warn");
+  }
+}
+
+function renderTabWarn() {
+  var c = _tabSwitchCount || 0;
+  if (c === 0) return "";
+  var rem = 3 - c;
+  var clr = rem <= 1 ? "#c0392b" : "#e67e22";
+  return '<div style="margin-top:8px;padding:6px 10px;background:' + clr + '15;border:1px solid ' + clr + ';border-radius:4px;font-size:12px;color:' + clr + ';line-height:1.4">⚠️ 切屏 ' + c + '/3 次</div>';
+}
+
+function updateTabWarnDisplay() {
+  var el = document.getElementById("_tw");
+  if (!el) return;
+  el.innerHTML = renderTabWarn();
+}
 
 </script>
 
