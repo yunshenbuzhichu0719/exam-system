@@ -2113,6 +2113,24 @@ function renderHome() {
     </div>
 
 
+
+    <div id="exam-mode-panel" style="margin:16px 0;padding:16px;background:#f0fff4;border:1px solid #b8e6c8;border-radius:10px">
+      <div style="font-weight:700;font-size:15px;color:#1a7a3a;margin-bottom:10px">📋 考试类型选择（开始前请确认）</div>
+      <label style="display:flex;align-items:flex-start;gap:8px;margin:6px 0;cursor:pointer">
+        <input type="radio" name="examType" value="first" checked style="margin-top:3px">
+        <div><div style="font-weight:600">首次考试</div><div style="font-size:12px;color:#666">90分钟，按岗位科目要求组卷，满分100分，70分合格</div></div>
+      </label>
+      <label style="display:flex;align-items:flex-start;gap:8px;margin:6px 0;cursor:pointer">
+        <input type="radio" name="examType" value="extend" style="margin-top:3px">
+        <div><div style="font-weight:600">扩领域考试</div><div style="font-size:12px;color:#666">60分钟，仅考科目D（单选20×2+多选20×2+判断10×2=100分），70分合格</div></div>
+      </label>
+      <div style="margin-top:10px;padding:8px 10px;background:#e8f5ee;border-radius:6px">
+        <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer">
+          <input type="checkbox" id="exam-concurrent" style="margin-top:3px">
+          <div><div style="font-weight:600">本人兼任其他关键岗位</div><div style="font-size:12px;color:#666">最高管理者兼任→按被兼任岗；质量负责人兼任=授权签字人；授权签字人兼任=技术负责人</div></div>
+        </label>
+      </div>
+    </div>
     <div class="footer">© 2026 湖南绿盾卫士检测技术有限公司</div>
 
 
@@ -3401,49 +3419,49 @@ function shuffleArray(arr) {
 
 
 function startExam() {
-  if (!currentUser) { showToast("请先登录", "error"); switchAuthTab("login"); return; }
+  if (!currentUser) { showToast("请先登录", "error"); return; }
   state.candName = currentUser.name;
   var userRole = currentUser.role;
-  
-  var isConcurrent = !!document.getElementById("exam-concurrent")?.checked;
+  if (!userRole) { showToast("未设置岗位，请联系管理员", "error"); return; }
+
+  var isConcurrent = !!document.getElementById("exam-concurrent") && document.getElementById("exam-concurrent").checked;
   var effRole = userRole;
   if (isConcurrent) {
     var concurrentTarget = CONCURRENT_MAP[userRole] || "";
-    if (concurrentTarget) effRole = concurrentTarget;
-    var conName = ROLE_NAMES[concurrentTarget] || concurrentTarget;
-    showToast("兼任考试：按" + conName + "要求进行", "info");
+    if (concurrentTarget) {
+      effRole = concurrentTarget;
+      showToast("兼任考试：按" + ROLE_NAMES[concurrentTarget] + "要求组卷", "info");
+    }
   }
-  
+
   var isExtend = document.querySelector('input[name="examType"]:checked').value === "extend";
   var cfg = EXAM_CONFIG[effRole];
   if (!cfg) { showToast("未找到岗位考试配置", "error"); return; }
-  
-  var examCfg = isExtend ? null : cfg.firstExam;
-  var duration = isExtend ? 60 : (examCfg ? examCfg.duration : 90);
+
+  var duration = isExtend ? 60 : (cfg.firstExam ? cfg.firstExam.duration : 90);
   state.taskId = 1;
   state.examType = isExtend ? "extend" : "first";
-  
+  state.remainingSec = duration * 60;
+
   var subjectLayout;
   if (isExtend) {
     subjectLayout = {"科目D": {"single":20, "multi":20, "judge":10}};
-    state.totalScore = 100;
   } else {
-    subjectLayout = examCfg ? examCfg.subjects : {"科目A":{"single":25,"multi":15,"judge":10},"科目B":{"single":5,"multi":5,"judge":5}};
-    state.totalScore = 100;
+    subjectLayout = cfg.firstExam ? cfg.firstExam.subjects : {"科目A":{"single":25,"multi":15,"judge":10},"科目B":{"single":5,"multi":5,"judge":5}};
   }
-  
+
   var layout = [];
   for (var subj in subjectLayout) {
     var subjCfg = subjectLayout[subj];
     for (var qtype in subjCfg) {
       var need = subjCfg[qtype];
       if (need > 0) {
-        var score = qtype === "single" ? 1 : (qtype === "multi" ? 2 : 2);
-        layout.push({subject: subj, type: qtype, need: need, score: score, label: ""});
+        var score = qtype === "single" ? 1 : 2;
+        layout.push({subject: subj, type: qtype, need: need, score: score});
       }
     }
   }
-  
+
   var picked = [];
   var unmet = [];
   layout.forEach(function(item) {
@@ -3453,8 +3471,8 @@ function startExam() {
     }
     shuffleArray(pool);
     var count = Math.min(item.need, pool.length);
-    for (var i = 0; i < count; i++) {
-      var q = JSON.parse(JSON.stringify(pool[i]));
+    for (var k = 0; k < count; k++) {
+      var q = JSON.parse(JSON.stringify(pool[k]));
       q.score = item.score;
       picked.push(q);
     }
@@ -3462,38 +3480,28 @@ function startExam() {
       unmet.push(item.subject + " " + item.type + " 需" + item.need + "题，实际" + count + "题");
     }
   });
-  
+
   shuffleArray(picked);
   var typeOrder = {single:1, multi:2, judge:3};
   picked.sort(function(a, b) { return (typeOrder[a.qtype]||99) - (typeOrder[b.qtype]||99); });
-  
+
   if (picked.length < 5) {
     showToast("题库不足，仅" + picked.length + "题", "error");
     return;
   }
-  if (unmet.length) showToast("题数不足：" + unmet.join("; "), "warn");
-  
+  if (unmet.length) showToast("题数不足：" + unmet.join("；"), "warn");
+
   state.questions = picked;
   state.answers = {};
   state.currentQ = 0;
   state.submitted = false;
-  state.remainingSec = duration * 60;
   state.view = "exam";
   render();
   scrollTo(0, 0);
   showToast("考试开始，共 " + picked.length + " 题，时长 " + duration + "分钟，请独立完成", "info");
-  
-  if (window.timerInterval) clearInterval(window.timerInterval);
-  window.timerInterval = setInterval(function() {
-    state.remainingSec--;
-    updateTimerDisplay();
-    if (state.remainingSec <= 0) {
-      clearInterval(window.timerInterval);
-      showToast("考试时间到，系统自动提交", "warn");
-      submitExam();
-    }
-  }, 1000);
 }
+
+
 function renderExam() {
 
 
@@ -4031,7 +4039,7 @@ function startTimer() {
   if(timerInterval) clearInterval(timerInterval);
 
 
-  let sec = 60*60;
+  let sec = state.remainingSec || 90*60;
 
 
   timerInterval = setInterval(() => {
@@ -4157,7 +4165,7 @@ function doSubmit() {
   state.score = result;
 
 
-  state.passed = state.score >= 80;
+  state.passed = state.score >= 70;
 
 
   state.submitted = true;
@@ -7564,7 +7572,7 @@ function renderPracticeExam() {
     + '<div class="q-group-dots-practice">' + dots + '</div>'
 
 
-    + '<div class="timer-box" style="margin-top:14px"><div class="timer-label">剩余时间</div><div id="timer-display" style="font-size:22px;font-weight:800;color:var(--primary)">90分00秒</div><div style="font-size:12px;color:#888;margin-top:4px" id="timer-warn"></div>' + num + '/' + qTotal + '</div></div>'
+    + '<div class="timer-box" style="margin-top:14px"><div class="timer-label">当前</div><div style="font-size:22px;font-weight:800;color:var(--primary)">' + num + '/' + qTotal + '</div></div>'
 
 
     + '</div></div>'
@@ -8719,26 +8727,7 @@ function renderLibraryContent() {
     + '<div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">'
 
 
-    + '
-<div id="exam-mode-panel" style="margin:16px 0;padding:14px;background:#f0fff0;border:1px solid #b8e6b8;border-radius:8px">
-  <div style="margin-bottom:10px;font-weight:600;font-size:14px;color:#2a7a2a">考试类型选择</div>
-  <label style="display:flex;align-items:center;margin:5px 0;cursor:pointer">
-    <input type="radio" name="examType" value="first" checked onchange="toggleExamMode()" style="margin-right:6px"> 
-    <div><div style="font-weight:500">首次考试</div><div style="font-size:12px;color:#666">90分钟，按岗位科目要求组卷，70分合格</div></div>
-  </label>
-  <label style="display:flex;align-items:center;margin:5px 0;cursor:pointer">
-    <input type="radio" name="examType" value="extend" onchange="toggleExamMode()" style="margin-right:6px"> 
-    <div><div style="font-weight:500">扩领域考试</div><div style="font-size:12px;color:#666">60分钟，仅考科目D，100分满分70分合格</div></div>
-  </label>
-  <div id="concurrent-section" style="margin-top:10px;padding:8px;background:#e8f5e8;border-radius:6px">
-    <label style="display:flex;align-items:center;cursor:pointer">
-      <input type="checkbox" id="exam-concurrent" style="margin-right:6px">
-      <div><div style="font-weight:500">本人兼任其他关键岗位</div>
-      <div style="font-size:12px;color:#666">最高管理者兼任→按被兼任岗；质量负责人兼任=授权签字人；授权签字人兼任=技术负责人</div></div>
-    </label>
-  </div>
-</div>
-<button class="btn btn-ghost btn-sm" onclick="state.view=\'library\';render()">\u2190 \u8fd4\u56de\u8d44\u6599\u5e93</button></div>'
+    + '<button class="btn btn-ghost btn-sm" onclick="state.view=\'library\';render()">\u2190 \u8fd4\u56de\u8d44\u6599\u5e93</button></div>'
 
 
     + '<div class="card"><div class="card-title">\u6587\u4ef6\u9884\u89c8</div><p style="color:var(--text-light)">\u8bf7\u5728\u8d44\u6599\u5e93\u5217\u8868\u4e2d\u9009\u62e9\u6587\u4ef6\u9884\u89c8\u6216\u4e0b\u8f7d\u3002</p></div>'
@@ -8756,22 +8745,7 @@ function renderLibraryContent() {
 // \u6e05\u7406\u65e7\u7248\u57fa\u4e8e localStorage \u7684\u94fe\u63a5\u5f0f\u8d44\u6599\u6570\u636e
 
 
-(
-function updateTimerDisplay() {
-  var el = document.getElementById("timer-display");
-  if (!el) return;
-  var m = Math.floor(state.remainingSec / 60);
-  var s = state.remainingSec % 60;
-  el.textContent = m + "分" + (s < 10 ? "0" : "") + s + "秒";
-  if (state.remainingSec < 300) el.style.color = "red";
-}
-function toggleExamMode() {
-  var isExtend = document.querySelector("input[name=examType]:checked").value === "extend";
-  var cs = document.getElementById("concurrent-section");
-  if (cs) cs.style.display = isExtend ? "none" : "block";
-}
-
-function cleanupOldLibrary() {
+(function cleanupOldLibrary() {
 
 
   try { localStorage.removeItem('exam_library'); } catch(e) {}
@@ -8794,33 +8768,4 @@ function cleanupOldLibrary() {
 
 </html>
 
-function submitExam() {
-  if (state.submitted) return;
-  state.submitted = true;
-  if (window.timerInterval) clearInterval(window.timerInterval);
-  
-  var total = 0;
-  var correct = 0;
-  state.questions.forEach(function(q) {
-    var userAns = state.answers[q.id] || "";
-    var isCorrect = false;
-    if (q.qtype === "single" || q.qtype === "judge") {
-      isCorrect = (String(userAns) === String(q.answer));
-    } else if (q.qtype === "multi") {
-      var ua = String(userAns).split("").sort().join("");
-      var a = String(q.answer).split("").sort().join("");
-      isCorrect = (ua === a);
-    }
-    if (isCorrect) {
-      total += q.score || 1;
-      correct++;
-    }
-  });
-  
-  state.score = total;
-  state.pass = total >= 70;
-  state.correctCount = correct;
-  state.totalQuestions = state.questions.length;
-  state.view = "result";
-  render();
-}
+
