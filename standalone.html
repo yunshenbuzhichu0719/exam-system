@@ -3276,7 +3276,7 @@ function verifyAdminPin() {
 function closeModalForce() {
 
 
-  document.getElementById("admin-login-modal")?.remove();
+  document.getElementById("admin-login-modal")?.remove(); document.getElementById("exam-type-modal")?.remove();
 
 
 }
@@ -3291,10 +3291,7 @@ function closeModalForce() {
 function enterModule(id) {
 
 
-  if (id === "exam") {
-
-
-    startExam();
+  if (id === "exam") {       openExamTypeModal();
 
 
   } else if (id === "practice") {
