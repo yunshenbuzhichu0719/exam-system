@@ -1426,7 +1426,13 @@ const ADMIN_KEY = "exam_admin_config";
 const USERS_KEY = "exam_users";
 
 
-const QUESTIONS_KEY = "exam_questions_v2";  // Changed key to force reload from DEFAULT_QUESTIONS"exam_session";
+const QUESTIONS_KEY = "exam_questions_v2";
+
+
+const RECORDS_KEY = "exam_records";
+
+
+const SESSION_KEY = "exam_session";
 
 
 
@@ -1618,7 +1624,10 @@ let currentUser = (function(){
     let raw = localStorage.getItem(SESSION_KEY);
 
 
-    if (raw) { let obj = JSON.parse(raw); if (obj && obj.role && typeof ROLE_KEYS !== "undefined") { var _rdk = {}; for (var _ri=0;_ri<ROLE_KEYS.length;_ri++) _rdk[ROLE_NAMES[ROLE_KEYS[_ri]]]=ROLE_KEYS[_ri]; if (_rdk[obj.role]) obj.role=_rdk[obj.role]; } return obj; }  } catch(e) {
+    if (raw) return JSON.parse(raw);
+
+
+  } catch(e) {
 
 
     localStorage.removeItem(SESSION_KEY);
@@ -2105,7 +2114,21 @@ function renderHome() {
 
 
 
-          
+          <label style="display:flex;align-items:flex-start;gap:8px;margin:6px 0;cursor:pointer">
+        <input type="radio" name="examType" value="first" checked style="margin-top:3px">
+        <div><div style="font-weight:600">首次考试</div><div style="font-size:12px;color:#666">90分钟，按岗位科目要求组卷，满分100分，70分合格</div></div>
+      </label>
+      <label style="display:flex;align-items:flex-start;gap:8px;margin:6px 0;cursor:pointer">
+        <input type="radio" name="examType" value="extend" style="margin-top:3px">
+        <div><div style="font-weight:600">扩领域考试</div><div style="font-size:12px;color:#666">60分钟，仅考科目D（单选20×2+多选20×2+判断10×2=100分），70分合格</div></div>
+      </label>
+      <div style="margin-top:10px;padding:8px 10px;background:#e8f5ee;border-radius:6px">
+        <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer">
+          <input type="checkbox" id="exam-concurrent" style="margin-top:3px">
+          <div><div style="font-weight:600">本人兼任其他关键岗位</div><div style="font-size:12px;color:#666">最高管理者兼任→按被兼任岗；质量负责人兼任=授权签字人；授权签字人兼任=技术负责人</div></div>
+        </label>
+      </div>
+    </div>
     <div class="footer">© 2026 湖南绿盾卫士检测技术有限公司</div>
 
 
@@ -2323,7 +2346,9 @@ function renderAuthPage() {
 
 
           <select class="af-input" id="reg-role" style="background:#fff;cursor:pointer">
-            <option value="">请选择您的岗位</option>
+
+
+                        <option value="">请选择您的岗位</option>
             <option value="最高管理者">最高管理者</option>
             <option value="质量负责人">质量负责人</option>
             <option value="采样员">采样员</option>
@@ -2337,7 +2362,6 @@ function renderAuthPage() {
             <option value="管理体系文件及法律法规">管理体系文件及法律法规</option>
             <option value="生物安全">生物安全</option>
           </select>
-
 
 
         </div>
@@ -2820,15 +2844,14 @@ function doLogin() {
 
 
 
-  currentUser = { name: user.name, username: user.username, role: user.role || "", isAdmin: !!user.isAdmin };
+  currentUser = { name: user.name, username: user.username, isAdmin: !!user.isAdmin };
+
+
   isAdmin = !!user.isAdmin;
-  // Normalize legacy role display name to key
-  if (currentUser.role && typeof ROLE_KEYS !== "undefined") {
-    var _rdk = {};
-    for (var _ri = 0; _ri < ROLE_KEYS.length; _ri++) _rdk[ROLE_NAMES[ROLE_KEYS[_ri]]] = ROLE_KEYS[_ri];
-    if (_rdk[currentUser.role]) currentUser.role = _rdk[currentUser.role];
-  }
+
+
   localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
+
 
   showToast("欢迎回来，" + user.name + "！", "success");
 
@@ -2902,12 +2925,6 @@ function doRegister() {
   if (!role) { showToast("请选择岗位类型", "error"); return; }
 
 
-  // Map display name to role key for EXAM_CONFIG
-  var ROLE_DISPLAY_TO_KEY = {};
-  for (var _rki = 0; _rki < ROLE_KEYS.length; _rki++) {
-    ROLE_DISPLAY_TO_KEY[ROLE_NAMES[ROLE_KEYS[_rki]]] = ROLE_KEYS[_rki];
-  }
-  role = ROLE_DISPLAY_TO_KEY[role] || role;
   users.push({ name, username, pwHash: hashPin(pw), role: role, isAdmin: false, createdAt: new Date().toISOString() });
 
 
@@ -2918,12 +2935,6 @@ function doRegister() {
 
 
   currentUser = { name, username, role: role, isAdmin: false };
-  // Record original display name for user info display
-  var ROLE_DISPLAY_TO_KEY = {};
-  for (var _rki = 0; _rki < ROLE_KEYS.length; _rki++) {
-    ROLE_DISPLAY_TO_KEY[ROLE_NAMES[ROLE_KEYS[_rki]]] = ROLE_KEYS[_rki];
-  }
-  
 
 
   isAdmin = false;
@@ -3259,7 +3270,7 @@ function verifyAdminPin() {
 function closeModalForce() {
 
 
-  document.getElementById("admin-login-modal")?.remove(); document.getElementById("exam-type-modal")?.remove();
+  document.getElementById("admin-login-modal")?.remove();
 
 
 }
@@ -3274,7 +3285,10 @@ function closeModalForce() {
 function enterModule(id) {
 
 
-  if (id === "exam") {       openExamTypeModal();
+  if (id === "exam") {
+
+
+    startExam();
 
 
   } else if (id === "practice") {
@@ -3382,54 +3396,13 @@ function shuffleArray(arr) {
 // ===== 考试 =====
 
 
-
-
-function openExamTypeModal() {
-  if (!currentUser) { showToast("请先登录", "error"); return; }
-  var userRole = currentUser.role;
-  if (!userRole) { showToast("未设置岗位，请联系管理员", "error"); return; }
-  var mhtml = `<div class="modal-overlay" id="exam-type-modal">
-    <div class="modal-box">
-      <button class="modal-close" onclick="closeModalForce()">×</button>
-      <h3>📋 选择考试类型</h3>
-      <p style="font-size:13px;color:var(--text-light);margin-bottom:20px;line-height:1.6">请选择本次考试类型（开始前请确认）</p>
-      <label style="display:flex;align-items:flex-start;gap:8px;margin:8px 0;cursor:pointer">
-        <input type="radio" name="examTypeModal" value="first" checked style="margin-top:3px">
-        <div><div style="font-weight:600">首次考试</div><div style="font-size:12px;color:#666">90分钟，按岗位科目要求组卷，满分100分，70分合格</div></div>
-      </label>
-      <label style="display:flex;align-items:flex-start;gap:8px;margin:8px 0;cursor:pointer">
-        <input type="radio" name="examTypeModal" value="extend" style="margin-top:3px">
-        <div><div style="font-weight:600">扩领域考试</div><div style="font-size:12px;color:#666">60分钟，仅考科目D（单选20×2+多选20×2+判断10×2=100分），70分合格</div></div>
-      </label>
-      <div style="margin-top:12px;padding:8px 10px;background:#e8f5ee;border-radius:6px">
-        <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer">
-          <input type="checkbox" id="exam-concurrent-modal" style="margin-top:3px">
-          <div><div style="font-weight:600">本人兼任其他关键岗位</div><div style="font-size:12px;color:#666">最高管理者兼任→按被兼任岗；质量负责人兼任=授权签字人；授权签字人兼任=技术负责人</div></div>
-        </label>
-      </div>
-      <div class="modal-actions" style="margin-top:20px">
-        <button class="btn btn-ghost" onclick="closeModalForce()">取消</button>
-        <button class="btn btn-primary" onclick="startExamFromModal()">开始考试</button>
-      </div>
-    </div>
-  </div>`;
-  document.body.insertAdjacentHTML("beforeend", mhtml);
-}
-
-function startExamFromModal() {
-  var t = document.querySelector('input[name="examTypeModal"]:checked');
-  var examType = t ? t.value : "first";
-  var isConcurrent = !!document.getElementById("exam-concurrent-modal") && document.getElementById("exam-concurrent-modal").checked;
-  closeModalForce();
-  startExam(examType, isConcurrent);
-}
-
-function startExam(examType, isConcurrent) {
+function startExam() {
   if (!currentUser) { showToast("请先登录", "error"); return; }
   state.candName = currentUser.name;
   var userRole = currentUser.role;
   if (!userRole) { showToast("未设置岗位，请联系管理员", "error"); return; }
 
+  var isConcurrent = !!document.getElementById("exam-concurrent") && document.getElementById("exam-concurrent").checked;
   var effRole = userRole;
   if (isConcurrent) {
     var concurrentTarget = CONCURRENT_MAP[userRole] || "";
@@ -3439,7 +3412,7 @@ function startExam(examType, isConcurrent) {
     }
   }
 
-  var isExtend = examType === "extend";
+  var isExtend = document.querySelector('input[name="examType"]:checked').value === "extend";
   var cfg = EXAM_CONFIG[effRole];
   if (!cfg) { showToast("未找到岗位考试配置", "error"); return; }
 
@@ -5016,48 +4989,7 @@ return `<div class="page">
       </div>
 
 
-      <div class="card" id="role-upload-card"><div class="card-title">&#128229; 按岗位上传题库</div><p class="admin-hint">请选择岗位分类，再上传该岗位的 WORD 题库。系统将自动解析并追加到对应岗位分类中。</p><div class="role-tabs"><button class="btn btn-sm role-tab-btn" id="rtab-科目A" onclick="switchRoleTab('科目A')" style="border-radius:4px;font-size:12px">科目A（法律法规）</button><button class="btn btn-sm role-tab-btn" id="rtab-科目B" onclick="switchRoleTab('科目B')" style="border-radius:4px;font-size:12px">科目B（管理体系）</button><button class="btn btn-sm role-tab-btn" id="rtab-科目C" onclick="switchRoleTab('科目C')" style="border-radius:4px;font-size:12px">科目C（检验检测）</button><button class="btn btn-sm role-tab-btn" id="rtab-科目D" onclick="switchRoleTab('科目D')" style="border-radius:4px;font-size:12px">科目D（生态环境监测）</button></div>
-    <div class="role-panels"><div id="rpanel-科目A" style="display:none" class="role-panel">
-      <div style="margin-bottom:12px;font-size:13px;color:var(--text-light)">当前科目共有 <strong id="rcount-科目A">0</strong> 道题目</div>
-      <div class="admin-panel" style="margin-bottom:12px">
-        <label>上传 科目A（法律法规） WORD 题库</label>
-        <input type="file" id="word-file-科目A" accept=".doc,.docx">
-        <label>说明（可选）</label>
-        <input type="text" id="word-note-科目A" placeholder="如：2024年新版题库">
-        <button class="btn btn-primary" id="word-btn-科目A" onclick="importRoleQuestions('科目A')">&#128229; 导入科目A（法律法规）题库</button>
-      </div>
-      <div id="rlist-科目A" class="role-qlist"></div>
-    </div><div id="rpanel-科目B" style="display:none" class="role-panel">
-      <div style="margin-bottom:12px;font-size:13px;color:var(--text-light)">当前科目共有 <strong id="rcount-科目B">0</strong> 道题目</div>
-      <div class="admin-panel" style="margin-bottom:12px">
-        <label>上传 科目B（管理体系） WORD 题库</label>
-        <input type="file" id="word-file-科目B" accept=".doc,.docx">
-        <label>说明（可选）</label>
-        <input type="text" id="word-note-科目B" placeholder="如：2024年新版题库">
-        <button class="btn btn-primary" id="word-btn-科目B" onclick="importRoleQuestions('科目B')">&#128229; 导入科目B（管理体系）题库</button>
-      </div>
-      <div id="rlist-科目B" class="role-qlist"></div>
-    </div><div id="rpanel-科目C" style="display:none" class="role-panel">
-      <div style="margin-bottom:12px;font-size:13px;color:var(--text-light)">当前科目共有 <strong id="rcount-科目C">0</strong> 道题目</div>
-      <div class="admin-panel" style="margin-bottom:12px">
-        <label>上传 科目C（检验检测） WORD 题库</label>
-        <input type="file" id="word-file-科目C" accept=".doc,.docx">
-        <label>说明（可选）</label>
-        <input type="text" id="word-note-科目C" placeholder="如：2024年新版题库">
-        <button class="btn btn-primary" id="word-btn-科目C" onclick="importRoleQuestions('科目C')">&#128229; 导入科目C（检验检测）题库</button>
-      </div>
-      <div id="rlist-科目C" class="role-qlist"></div>
-    </div><div id="rpanel-科目D" style="display:none" class="role-panel">
-      <div style="margin-bottom:12px;font-size:13px;color:var(--text-light)">当前科目共有 <strong id="rcount-科目D">0</strong> 道题目</div>
-      <div class="admin-panel" style="margin-bottom:12px">
-        <label>上传 科目D（生态环境监测） WORD 题库</label>
-        <input type="file" id="word-file-科目D" accept=".doc,.docx">
-        <label>说明（可选）</label>
-        <input type="text" id="word-note-科目D" placeholder="如：2024年新版题库">
-        <button class="btn btn-primary" id="word-btn-科目D" onclick="importRoleQuestions('科目D')">&#128229; 导入科目D（生态环境监测）题库</button>
-      </div>
-      <div id="rlist-科目D" class="role-qlist"></div>
-    </div></div></div><div class="card" style="margin-top:16px"><div class="card-title">&#128203; 全部题库（${questions.length} 题）<span style="font-size:12px;font-weight:400;color:var(--text-light)"> · 筛选后可单独删除</span></div><div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap"><label style="font-size:12px;color:var(--text-light)">按岗位筛选：</label><select id="filter-role" onchange="renderAdmin()" style="font-size:12px;padding:4px 8px;border:1px solid #ddd;border-radius:4px"><option value="">全部岗位</option><option value="采样员">采样员</option><option value="理化检测员">理化检测员</option><option value="微生物">微生物</option><option value="技术负责人">技术负责人</option><option value="授权签字人">授权签字人</option><option value="内审员">内审员</option><option value="监督员">监督员</option><option value="设备员">设备员</option><option value="管理体系文件及法律法规">管理体系文件及法律法规</option><option value="生物安全">生物安全</option></select><label style="font-size:12px;color:var(--text-light)">按题型：</label><select id="filter-qtype" onchange="renderAdmin()" style="font-size:12px;padding:4px 8px;border:1px solid #ddd;border-radius:4px"><option value="">全部</option><option value="single">单选题</option><option value="multi">多选题</option><option value="judge">判断题</option><option value="short">简答题</option><option value="scenario">场景分析</option></select><button class="btn btn-ghost btn-sm" onclick="exportQuestions()">&#128230; 导出</button><button class="btn btn-ghost btn-sm" onclick="resetQuestions()">恢复默认</button></div><div class="card" style="margin-top:16px">
+      <div class="card" id="role-upload-card"><div class="card-title">&#128229; 按岗位上传题库</div><p class="admin-hint">请选择岗位分类，再上传该岗位的 WORD 题库。系统将自动解析并追加到对应岗位分类中。</p><div class="role-tabs"><button class="btn btn-sm role-tab-btn" id="rtab-caiyang" onclick="switchRoleTab('caiyang')" style="border-radius:4px;font-size:12px">采样员</button><button class="btn btn-sm role-tab-btn" id="rtab-lihua" onclick="switchRoleTab('lihua')" style="border-radius:4px;font-size:12px">理化检测员</button><button class="btn btn-sm role-tab-btn" id="rtab-weisheng" onclick="switchRoleTab('weisheng')" style="border-radius:4px;font-size:12px">微生物</button><button class="btn btn-sm role-tab-btn" id="rtab-jishu" onclick="switchRoleTab('jishu')" style="border-radius:4px;font-size:12px">技术负责人</button><button class="btn btn-sm role-tab-btn" id="rtab-shouquan" onclick="switchRoleTab('shouquan')" style="border-radius:4px;font-size:12px">授权签字人</button><button class="btn btn-sm role-tab-btn" id="rtab-neishen" onclick="switchRoleTab('neishen')" style="border-radius:4px;font-size:12px">内审员</button><button class="btn btn-sm role-tab-btn" id="rtab-jiandu" onclick="switchRoleTab('jiandu')" style="border-radius:4px;font-size:12px">监督员</button><button class="btn btn-sm role-tab-btn" id="rtab-shebei" onclick="switchRoleTab('shebei')" style="border-radius:4px;font-size:12px">设备员</button><button class="btn btn-sm role-tab-btn" id="rtab-guanli" onclick="switchRoleTab('guanli')" style="border-radius:4px;font-size:12px">管理体系文件及法律法规</button><button class="btn btn-sm role-tab-btn" id="rtab-anquan" onclick="switchRoleTab('anquan')" style="border-radius:4px;font-size:12px">生物安全</button></div><div id="rpanel-caiyang" style="display:none" class="role-panel"><div style="margin-bottom:12px;font-size:13px;color:var(--text-light)">当前岗位共有 <strong id="rcount-caiyang">0</strong> 道题目</div><div class="admin-panel" style="margin-bottom:12px"><label>上传 采样员 WORD 题库</label><input type="file" id="word-file-caiyang" accept=".doc,.docx"><label>说明（可选）</label><input type="text" id="word-note-caiyang" placeholder="如：2024年新版题库"><button class="btn btn-primary" id="word-btn-caiyang" onclick="importRoleQuestions('caiyang')">&#128229; 导入采样员题库</button></div><div id="rlist-caiyang" class="role-qlist"></div></div><div id="rpanel-lihua" style="display:none" class="role-panel"><div style="margin-bottom:12px;font-size:13px;color:var(--text-light)">当前岗位共有 <strong id="rcount-lihua">0</strong> 道题目</div><div class="admin-panel" style="margin-bottom:12px"><label>上传 理化检测员 WORD 题库</label><input type="file" id="word-file-lihua" accept=".doc,.docx"><label>说明（可选）</label><input type="text" id="word-note-lihua" placeholder="如：2024年新版题库"><button class="btn btn-primary" id="word-btn-lihua" onclick="importRoleQuestions('lihua')">&#128229; 导入理化检测员题库</button></div><div id="rlist-lihua" class="role-qlist"></div></div><div id="rpanel-weisheng" style="display:none" class="role-panel"><div style="margin-bottom:12px;font-size:13px;color:var(--text-light)">当前岗位共有 <strong id="rcount-weisheng">0</strong> 道题目</div><div class="admin-panel" style="margin-bottom:12px"><label>上传 微生物 WORD 题库</label><input type="file" id="word-file-weisheng" accept=".doc,.docx"><label>说明（可选）</label><input type="text" id="word-note-weisheng" placeholder="如：2024年新版题库"><button class="btn btn-primary" id="word-btn-weisheng" onclick="importRoleQuestions('weisheng')">&#128229; 导入微生物题库</button></div><div id="rlist-weisheng" class="role-qlist"></div></div><div id="rpanel-jishu" style="display:none" class="role-panel"><div style="margin-bottom:12px;font-size:13px;color:var(--text-light)">当前岗位共有 <strong id="rcount-jishu">0</strong> 道题目</div><div class="admin-panel" style="margin-bottom:12px"><label>上传 技术负责人 WORD 题库</label><input type="file" id="word-file-jishu" accept=".doc,.docx"><label>说明（可选）</label><input type="text" id="word-note-jishu" placeholder="如：2024年新版题库"><button class="btn btn-primary" id="word-btn-jishu" onclick="importRoleQuestions('jishu')">&#128229; 导入技术负责人题库</button></div><div id="rlist-jishu" class="role-qlist"></div></div><div id="rpanel-shouquan" style="display:none" class="role-panel"><div style="margin-bottom:12px;font-size:13px;color:var(--text-light)">当前岗位共有 <strong id="rcount-shouquan">0</strong> 道题目</div><div class="admin-panel" style="margin-bottom:12px"><label>上传 授权签字人 WORD 题库</label><input type="file" id="word-file-shouquan" accept=".doc,.docx"><label>说明（可选）</label><input type="text" id="word-note-shouquan" placeholder="如：2024年新版题库"><button class="btn btn-primary" id="word-btn-shouquan" onclick="importRoleQuestions('shouquan')">&#128229; 导入授权签字人题库</button></div><div id="rlist-shouquan" class="role-qlist"></div></div><div id="rpanel-neishen" style="display:none" class="role-panel"><div style="margin-bottom:12px;font-size:13px;color:var(--text-light)">当前岗位共有 <strong id="rcount-neishen">0</strong> 道题目</div><div class="admin-panel" style="margin-bottom:12px"><label>上传 内审员 WORD 题库</label><input type="file" id="word-file-neishen" accept=".doc,.docx"><label>说明（可选）</label><input type="text" id="word-note-neishen" placeholder="如：2024年新版题库"><button class="btn btn-primary" id="word-btn-neishen" onclick="importRoleQuestions('neishen')">&#128229; 导入内审员题库</button></div><div id="rlist-neishen" class="role-qlist"></div></div><div id="rpanel-jiandu" style="display:none" class="role-panel"><div style="margin-bottom:12px;font-size:13px;color:var(--text-light)">当前岗位共有 <strong id="rcount-jiandu">0</strong> 道题目</div><div class="admin-panel" style="margin-bottom:12px"><label>上传 监督员 WORD 题库</label><input type="file" id="word-file-jiandu" accept=".doc,.docx"><label>说明（可选）</label><input type="text" id="word-note-jiandu" placeholder="如：2024年新版题库"><button class="btn btn-primary" id="word-btn-jiandu" onclick="importRoleQuestions('jiandu')">&#128229; 导入监督员题库</button></div><div id="rlist-jiandu" class="role-qlist"></div></div><div id="rpanel-shebei" style="display:none" class="role-panel"><div style="margin-bottom:12px;font-size:13px;color:var(--text-light)">当前岗位共有 <strong id="rcount-shebei">0</strong> 道题目</div><div class="admin-panel" style="margin-bottom:12px"><label>上传 设备员 WORD 题库</label><input type="file" id="word-file-shebei" accept=".doc,.docx"><label>说明（可选）</label><input type="text" id="word-note-shebei" placeholder="如：2024年新版题库"><button class="btn btn-primary" id="word-btn-shebei" onclick="importRoleQuestions('shebei')">&#128229; 导入设备员题库</button></div><div id="rlist-shebei" class="role-qlist"></div></div><div id="rpanel-guanli" style="display:none" class="role-panel"><div style="margin-bottom:12px;font-size:13px;color:var(--text-light)">当前岗位共有 <strong id="rcount-guanli">0</strong> 道题目</div><div class="admin-panel" style="margin-bottom:12px"><label>上传 管理体系文件及法律法规 WORD 题库</label><input type="file" id="word-file-guanli" accept=".doc,.docx"><label>说明（可选）</label><input type="text" id="word-note-guanli" placeholder="如：2024年新版题库"><button class="btn btn-primary" id="word-btn-guanli" onclick="importRoleQuestions('guanli')">&#128229; 导入管理体系文件及法律法规题库</button></div><div id="rlist-guanli" class="role-qlist"></div></div><div id="rpanel-anquan" style="display:none" class="role-panel"><div style="margin-bottom:12px;font-size:13px;color:var(--text-light)">当前岗位共有 <strong id="rcount-anquan">0</strong> 道题目</div><div class="admin-panel" style="margin-bottom:12px"><label>上传 生物安全 WORD 题库</label><input type="file" id="word-file-anquan" accept=".doc,.docx"><label>说明（可选）</label><input type="text" id="word-note-anquan" placeholder="如：2024年新版题库"><button class="btn btn-primary" id="word-btn-anquan" onclick="importRoleQuestions('anquan')">&#128229; 导入生物安全题库</button></div><div id="rlist-anquan" class="role-qlist"></div></div></div><div class="card" style="margin-top:16px"><div class="card-title">&#128203; 全部题库（${questions.length} 题）<span style="font-size:12px;font-weight:400;color:var(--text-light)"> · 筛选后可单独删除</span></div><div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap"><label style="font-size:12px;color:var(--text-light)">按岗位筛选：</label><select id="filter-role" onchange="renderAdmin()" style="font-size:12px;padding:4px 8px;border:1px solid #ddd;border-radius:4px"><option value="">全部岗位</option><option value="采样员">采样员</option><option value="理化检测员">理化检测员</option><option value="微生物">微生物</option><option value="技术负责人">技术负责人</option><option value="授权签字人">授权签字人</option><option value="内审员">内审员</option><option value="监督员">监督员</option><option value="设备员">设备员</option><option value="管理体系文件及法律法规">管理体系文件及法律法规</option><option value="生物安全">生物安全</option></select><label style="font-size:12px;color:var(--text-light)">按题型：</label><select id="filter-qtype" onchange="renderAdmin()" style="font-size:12px;padding:4px 8px;border:1px solid #ddd;border-radius:4px"><option value="">全部</option><option value="single">单选题</option><option value="multi">多选题</option><option value="judge">判断题</option><option value="short">简答题</option><option value="scenario">场景分析</option></select><button class="btn btn-ghost btn-sm" onclick="exportQuestions()">&#128230; 导出</button><button class="btn btn-ghost btn-sm" onclick="resetQuestions()">恢复默认</button></div><div class="card" style="margin-top:16px">
 
 
         <div class="card-title">当前题库（共 ${questions.length} 题）</div>
@@ -6859,24 +6791,11 @@ window.enterModule = function(modId) {
 // ===== 管理员岗位题库上传 =====
 
 
-window.ROLE_KEYS = ["zuigao","zhiliang","jishufzr","shouquanqianziren","caiyangyuan","lihua","weishengwu","neishenyuan","jianduyuan","shebeiyuan","guanlitixi","shengwuanquan"];
+window.ROLE_KEYS = ["zuigao","zhiliang","jishufzr","shouquanqianziren"];
 
 
-window.ROLE_NAMES = {"zuigao":"最高管理者","zhiliang":"质量负责人","jishufzr":"技术负责人","shouquanqianziren":"授权签字人","caiyangyuan":"采样员","lihua":"理化检测员","weishengwu":"微生物","neishenyuan":"内审员","jianduyuan":"监督员","shebeiyuan":"设备员","guanlitixi":"管理体系文件及法律法规","shengwuanquan":"生物安全"};
-window.EXAM_CONFIG = {
-  "zuigao": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 25, "multi": 15, "judge": 10}, "科目B": {"single": 5, "multi": 5, "judge": 5}}}},
-  "zhiliang": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 10, "multi": 5, "judge": 5}, "科目B": {"single": 15, "multi": 10, "judge": 5}, "科目C": {"single": 5, "multi": 5, "judge": 5}}}},
-  "jishufzr": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 5, "multi": 5, "judge": 2}, "科目B": {"single": 5, "multi": 5, "judge": 3}, "科目C": {"single": 12, "multi": 6, "judge": 6}, "科目D": {"single": 8, "multi": 4, "judge": 4}}}},
-  "shouquanqianziren": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 5, "multi": 5, "judge": 2}, "科目B": {"single": 5, "multi": 5, "judge": 3}, "科目C": {"single": 8, "multi": 4, "judge": 4}, "科目D": {"single": 12, "multi": 6, "judge": 6}}}},
-  "caiyangyuan": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 25, "multi": 15, "judge": 10}}}},
-  "lihua": {"firstExam": {"duration": 90, "subjects": {"科目B": {"single": 25, "multi": 15, "judge": 10}}}},
-  "weishengwu": {"firstExam": {"duration": 90, "subjects": {"科目D": {"single": 25, "multi": 15, "judge": 10}}}},
-  "neishenyuan": {"firstExam": {"duration": 90, "subjects": {"科目C": {"single": 25, "multi": 15, "judge": 10}}}},
-  "jianduyuan": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 15, "multi": 10, "judge": 5}, "科目C": {"single": 10, "multi": 5, "judge": 5}}}},
-  "shebeiyuan": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 15, "multi": 10, "judge": 5}, "科目B": {"single": 10, "multi": 5, "judge": 5}}}},
-  "guanlitixi": {"firstExam": {"duration": 90, "subjects": {"科目C": {"single": 25, "multi": 15, "judge": 10}}}},
-  "shengwuanquan": {"firstExam": {"duration": 90, "subjects": {"科目D": {"single": 25, "multi": 15, "judge": 10}}}}
-};
+window.ROLE_NAMES = {"zuigao":"最高管理者","zhiliang":"质量负责人","jishufzr":"技术负责人","shouquanqianziren":"授权签字人"};
+window.EXAM_CONFIG = {"zuigao": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 25, "multi": 15, "judge": 10}, "科目B": {"single": 5, "multi": 5, "judge": 5}}}}, "zhiliang": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 10, "multi": 5, "judge": 5}, "科目B": {"single": 15, "multi": 10, "judge": 5}, "科目C": {"single": 5, "multi": 5, "judge": 5}}}}, "jishufzr": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 5, "multi": 5, "judge": 2}, "科目B": {"single": 5, "multi": 5, "judge": 3}, "科目C": {"single": 12, "multi": 6, "judge": 6}, "科目D": {"single": 8, "multi": 4, "judge": 4}}}}, "shouquanqianziren": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 5, "multi": 5, "judge": 2}, "科目B": {"single": 5, "multi": 5, "judge": 3}, "科目C": {"single": 8, "multi": 4, "judge": 4}, "科目D": {"single": 12, "multi": 6, "judge": 6}}}}};
 window.CONCURRENT_MAP = {"zuigao": "", "zhiliang": "shouquanqianziren", "jishufzr": "", "shouquanqianziren": "jishufzr"};
 
 
@@ -8816,11 +8735,14 @@ function renderLibraryContent() {
 
 })();
 
-// ===== 启动入口 (等待 DOM 加载完成) =====
-document.addEventListener('DOMContentLoaded', function() {
-  try { render(); } catch(e) { console.error('Init error:', e); var el = document.getElementById('app'); if(el) el.innerHTML = '<div style="padding:40px;text-align:center"><h2>应用加载失败</h2><p style="color:red">' + (typeof esc==='function'?esc(e.message):e.message) + '</p><button onclick="location.reload()">重新加载</button></div>'; }
-});
 
+document.addEventListener('DOMContentLoaded', function() {
+  try { render(); } catch(e) {
+    console.error('Init error:', e);
+    var el = document.getElementById('app');
+    if (el) el.innerHTML = '<div style="padding:40px;text-align:center"><h2>应用加载失败</h2><p style="color:red">' + e.message + '</p></div>';
+  }
+});
 
 
 
