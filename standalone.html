@@ -8816,10 +8816,10 @@ function renderLibraryContent() {
 
 })();
 
-// ===== 启动入口 =====
-(function initApp() {
-  try { render(); } catch(e) { console.error('Init error:', e); document.getElementById('app').innerHTML = '<div style="padding:40px;text-align:center"><h2>应用加载失败</h2><p style="color:red">' + esc(e.message) + '</p><button onclick="location.reload()">重新加载</button></div>'; }
-})();
+// ===== 启动入口 (等待 DOM 加载完成) =====
+document.addEventListener('DOMContentLoaded', function() {
+  try { render(); } catch(e) { console.error('Init error:', e); var el = document.getElementById('app'); if(el) el.innerHTML = '<div style="padding:40px;text-align:center"><h2>应用加载失败</h2><p style="color:red">' + (typeof esc==='function'?esc(e.message):e.message) + '</p><button onclick="location.reload()">重新加载</button></div>'; }
+});
 
 
 
