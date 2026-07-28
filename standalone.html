@@ -2324,22 +2324,20 @@ function renderAuthPage() {
 
           <select class="af-input" id="reg-role" style="background:#fff;cursor:pointer">
             <option value="">请选择您的岗位</option>
+            <option value="最高管理者">最高管理者</option>
+            <option value="质量负责人">质量负责人</option>
+            <option value="采样员">采样员</option>
+            <option value="理化检测员">理化检测员</option>
+            <option value="微生物">微生物</option>
+            <option value="技术负责人">技术负责人</option>
+            <option value="授权签字人">授权签字人</option>
+            <option value="内审员">内审员</option>
+            <option value="监督员">监督员</option>
+            <option value="设备员">设备员</option>
+            <option value="管理体系文件及法律法规">管理体系文件及法律法规</option>
+            <option value="生物安全">生物安全</option>
           </select>
-          <script>
-          (function(){
-            var sel = document.getElementById("reg-role");
-            if (!sel || sel.__filled) return;
-            sel.__filled = true;
-            var keys = window.ROLE_KEYS || [];
-            var names = window.ROLE_NAMES || {};
-            keys.forEach(function(k){
-              var opt = document.createElement("option");
-              opt.value = names[k] || k;
-              opt.textContent = names[k] || k;
-              sel.appendChild(opt);
-            });
-          })();
-          </script>
+
 
 
         </div>
