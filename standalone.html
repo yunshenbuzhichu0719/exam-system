@@ -918,6 +918,9 @@ input:focus,select:focus,textarea:focus,
   .detail-stats{ grid-template-columns:repeat(2,1fr); }
   .q-nav{ grid-template-columns:repeat(6,1fr); }
   .cert-box{ padding:24px 16px; }
+  .dash-grid{ grid-template-columns:1fr !important; }
+  .upload-textarea{ min-height:150px !important; font-size:11px !important; }
+  .role-config-item{ padding:12px !important; }
 }
 </style>
 
@@ -3362,15 +3365,30 @@ return `<div class="page">
 
     </div>
 
-  </div>`;
+    <div id="tab-dashboard" style="display:none">
+      <div id="dashboard-content"></div>
+    </div>
 
+    <div id="tab-users" style="display:none">
+      <div id="users-content"></div>
+    </div>
+
+    <div id="tab-upload" style="display:none">
+      <div id="upload-content"></div>
+    </div>
+
+    <div id="tab-roles" style="display:none">
+      <div id="roles-content"></div>
+    </div>
+
+  </div>`;
 }
 
 function showAdminTab(tab) {
 
   if(tab==="questions"){_selQ&&_selQ.clear();}
 
-  ["questions","print","records","security"].forEach(t => {
+  ["questions","print","records","security","dashboard","users","upload","roles"].forEach(t => {
 
     let el = document.getElementById("tab-"+t);
 
@@ -3380,7 +3398,471 @@ function showAdminTab(tab) {
 
   if (tab==="print") setTimeout(generatePrint, 50);
 
+  if (tab==="dashboard") setTimeout(renderDashboard, 50);
+
+  if (tab==="users") setTimeout(renderUsers, 50);
+
+  if (tab==="upload") setTimeout(renderUpload, 50);
+
+  if (tab==="roles") setTimeout(renderRoles, 50);
+
 }
+
+
+// ===== 仪表盘模块 =====
+
+function renderDashboard() {
+  var users = getUsers();
+  var recs = getRecords();
+  var passCount = recs.filter(function(r){ return r.passed; }).length;
+  var passRate = recs.length > 0 ? Math.round(passCount / recs.length * 100) : 0;
+
+  var roleStats = {};
+  questions.forEach(function(q) {
+    var r = q.role || "未分类";
+    if (!roleStats[r]) roleStats[r] = 0;
+    roleStats[r]++;
+  });
+
+  var typeStats = {};
+  questions.forEach(function(q) {
+    var t = q.qtype || "other";
+    if (!typeStats[t]) typeStats[t] = 0;
+    typeStats[t]++;
+  });
+
+  var typeNames = {single:"单选题",multi:"多选题",judge:"判断题",short:"简答题",scenario:"场景分析题"};
+
+  var userRoleStats = {};
+  users.forEach(function(u) {
+    var r = u.role || "未设置";
+    if (!userRoleStats[r]) userRoleStats[r] = 0;
+    userRoleStats[r]++;
+  });
+
+  var roleBars = Object.keys(roleStats).map(function(r) {
+    var pct = Math.round(roleStats[r] / questions.length * 100);
+    return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
+      + '<div style="width:120px;font-size:12px;color:var(--text);text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(r) + '</div>'
+      + '<div style="flex:1;height:22px;background:var(--bg);border-radius:4px;overflow:hidden">'
+      + '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:11px;color:#fff;font-weight:600">' + roleStats[r] + '</div>'
+      + '</div></div>';
+  }).join("");
+
+  var typeBars = Object.keys(typeStats).map(function(t) {
+    var pct = Math.round(typeStats[t] / questions.length * 100);
+    return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
+      + '<div style="width:80px;font-size:12px;color:var(--text);text-align:right">' + (typeNames[t]||t) + '</div>'
+      + '<div style="flex:1;height:22px;background:var(--bg);border-radius:4px;overflow:hidden">'
+      + '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#1a8a4a,#5ab878);border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:11px;color:#fff;font-weight:600">' + typeStats[t] + '</div>'
+      + '</div></div>';
+  }).join("");
+
+  var recentRecs = recs.slice(-5).reverse().map(function(r) {
+    return '<tr>'
+      + '<td>' + esc(r.name) + '</td>'
+      + '<td>' + esc(r.username||"") + '</td>'
+      + '<td>' + r.score + '分</td>'
+      + '<td><span class="tag ' + (r.passed?'tag-right':'tag-wrong') + '">' + (r.passed?'合格':'不合格') + '</span></td>'
+      + '<td style="font-size:12px;color:var(--text-light)">' + new Date(r.time).toLocaleString("zh-CN") + '</td>'
+      + '</tr>';
+  }).join("");
+
+  var html = '<div class="stat-row">'
+    + '<div class="stat-item"><div class="si-num">' + users.length + '</div><div class="si-label">注册用户</div></div>'
+    + '<div class="stat-item"><div class="si-num">' + questions.length + '</div><div class="si-label">题目总数</div></div>'
+    + '<div class="stat-item"><div class="si-num">' + recs.length + '</div><div class="si-label">考试次数</div></div>'
+    + '<div class="stat-item"><div class="si-num">' + passRate + '%</div><div class="si-label">合格率</div></div>'
+    + '</div>';
+
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px" class="dash-grid">';
+  html += '<div class="card"><div class="card-title">题库分布（按岗位）</div>' + (roleBars || '<p style="color:var(--text-light);font-size:13px">暂无题目</p>') + '</div>';
+  html += '<div class="card"><div class="card-title">题型分布</div>' + (typeBars || '<p style="color:var(--text-light);font-size:13px">暂无题目</p>') + '</div>';
+  html += '</div>';
+
+  html += '<div class="card" style="margin-top:16px"><div class="card-title">用户岗位分布</div>';
+  if (Object.keys(userRoleStats).length > 0) {
+    html += '<div style="display:flex;flex-wrap:wrap;gap:8px">';
+    Object.keys(userRoleStats).forEach(function(r) {
+      html += '<span style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;background:var(--bg);font-size:13px">'
+        + '<span style="font-weight:600;color:var(--primary)">' + userRoleStats[r] + '</span>'
+        + '<span style="color:var(--text-light)">' + esc(r) + '</span></span>';
+    });
+    html += '</div>';
+  } else {
+    html += '<p style="color:var(--text-light);font-size:13px">暂无注册用户</p>';
+  }
+  html += '</div>';
+
+  html += '<div class="card" style="margin-top:16px"><div class="card-title">最近考试记录</div>';
+  if (recentRecs) {
+    html += '<div style="overflow-x:auto"><table class="q-table"><thead><tr><th>姓名</th><th>用户名</th><th>得分</th><th>结果</th><th>时间</th></tr></thead><tbody>' + recentRecs + '</tbody></table></div>';
+  } else {
+    html += '<p style="color:var(--text-light);font-size:13px;text-align:center;padding:16px">暂无考试记录</p>';
+  }
+  html += '</div>';
+
+  var el = document.getElementById("dashboard-content");
+  if (el) el.innerHTML = html;
+}
+
+// ===== 用户管理模块 =====
+
+function renderUsers() {
+  var users = getUsers();
+  var recs = getRecords();
+  var html = '<div class="card"><div class="card-title">注册用户管理（' + users.length + ' 人）</div>';
+
+  if (users.length === 0) {
+    html += '<p style="color:var(--text-light);font-size:13px;text-align:center;padding:24px">暂无注册用户</p>';
+  } else {
+    html += '<div style="overflow-x:auto"><table class="q-table"><thead><tr><th>序号</th><th>姓名</th><th>用户名</th><th>岗位</th><th>考试次数</th><th>最近考试</th><th>注册时间</th><th>操作</th></tr></thead><tbody>';
+    users.forEach(function(u, i) {
+      var userRecs = recs.filter(function(r) { return r.username === u.username; });
+      var lastExam = userRecs.length > 0 ? new Date(userRecs[userRecs.length-1].time).toLocaleDateString("zh-CN") : "—";
+      var createdAt = u.createdAt ? new Date(u.createdAt).toLocaleDateString("zh-CN") : "—";
+      html += '<tr>'
+        + '<td>' + (i+1) + '</td>'
+        + '<td>' + esc(u.name) + (u.isAdmin ? ' <span style="font-size:10px;color:var(--accent)">管理员</span>' : '') + '</td>'
+        + '<td>' + esc(u.username) + '</td>'
+        + '<td><span style="background:#e8f4e8;color:#1a6b1a;font-size:11px;padding:2px 6px;border-radius:3px">' + esc(u.role||"未设置") + '</span></td>'
+        + '<td style="text-align:center">' + userRecs.length + '</td>'
+        + '<td style="font-size:12px;color:var(--text-light)">' + lastExam + '</td>'
+        + '<td style="font-size:12px;color:var(--text-light)">' + createdAt + '</td>'
+        + '<td style="white-space:nowrap">'
+        + '<button class="btn-sm btn-sm-primary" onclick="resetUserPassword(\'' + esc(u.username) + '\')">重置密码</button>'
+        + ' <button class="btn-sm btn-sm-danger" onclick="deleteUser(\'' + esc(u.username) + '\')" ' + (u.isAdmin ? 'disabled style="opacity:0.5;cursor:not-allowed"' : '') + '>删除</button>'
+        + '</td></tr>';
+    });
+    html += '</tbody></table></div>';
+    html += '<div style="margin-top:12px;font-size:12px;color:var(--text-light)">提示：重置密码后默认密码为 <strong>123456</strong>，用户登录后请自行修改。管理员账号不可删除。</div>';
+  }
+  html += '</div>';
+
+  var el = document.getElementById("users-content");
+  if (el) el.innerHTML = html;
+}
+
+function deleteUser(username) {
+  if (!confirm('确定删除用户 "' + username + '" 吗？此操作不可恢复，该用户的考试记录将保留。')) return;
+  var users = getUsers();
+  users = users.filter(function(u) { return u.username !== username; });
+  saveUsers(users);
+  showToast('用户已删除', 'success');
+  renderUsers();
+}
+
+function resetUserPassword(username) {
+  if (!confirm('确定重置用户 "' + username + '" 的密码为 123456 吗？')) return;
+  var users = getUsers();
+  var u = users.find(function(u) { return u.username === username; });
+  if (!u) { showToast('用户不存在', 'error'); return; }
+  u.pwHash = hashPin('123456');
+  saveUsers(users);
+  showToast('密码已重置为 123456', 'success');
+}
+
+// ===== 上传题库模块 =====
+
+function renderUpload() {
+  var html = '<div class="card"><div class="card-title">批量导入题库</div>';
+  html += '<p class="admin-hint">支持 JSON 格式批量导入题目，导入后将<strong>追加</strong>到现有题库（不会覆盖原有题目）。</p>';
+
+  html += '<div style="margin-bottom:16px">';
+  html += '<label style="font-weight:600;font-size:14px;margin-bottom:8px;display:block">方式一：上传 JSON 文件</label>';
+  html += '<input type="file" id="upload-json-file" accept=".json" style="margin-bottom:8px">';
+  html += '<button class="btn btn-primary" onclick="handleQuestionFile()">解析文件</button>';
+  html += '</div>';
+
+  html += '<div style="margin-bottom:16px">';
+  html += '<label style="font-weight:600;font-size:14px;margin-bottom:8px;display:block">方式二：粘贴 JSON 文本</label>';
+  html += '<textarea id="upload-json-text" placeholder="在此粘贴 JSON 格式的题目数组..." style="width:100%;min-height:200px;font-family:monospace;font-size:12px;border:1px solid var(--border);border-radius:8px;padding:12px;resize:vertical" class="upload-textarea"></textarea>';
+  html += '<button class="btn btn-primary" onclick="parsePastedQuestions()" style="margin-top:8px">解析文本</button>';
+  html += '</div>';
+
+  html += '<div id="upload-preview" style="display:none;margin-bottom:16px"></div>';
+
+  html += '<div style="margin-bottom:16px;padding:16px;background:var(--bg);border-radius:8px;font-size:13px;color:var(--text-light)">';
+  html += '<strong style="color:var(--text)">JSON 格式说明：</strong><br>';
+  html += '每道题需包含以下字段：<br>';
+  html += '<code style="display:block;margin:8px 0;padding:12px;background:#fff;border-radius:6px;font-size:11px;overflow-x:auto">[{<br>';
+  html += '&nbsp;&nbsp;"id": 10001,<br>';
+  html += '&nbsp;&nbsp;"role": "采样员",<br>';
+  html += '&nbsp;&nbsp;"qtype": "single",<br>';
+  html += '&nbsp;&nbsp;"stem": "题目内容",<br>';
+  html += '&nbsp;&nbsp;"options": ["A.选项1", "B.选项2", "C.选项3", "D.选项4"],<br>';
+  html += '&nbsp;&nbsp;"answer": "A",<br>';
+  html += '&nbsp;&nbsp;"score": 1,<br>';
+  html += '&nbsp;&nbsp;"analysis": "解析说明（可选）"<br>';
+  html += '}]</code>';
+  html += '<strong>字段说明：</strong><br>';
+  html += '- <code>qtype</code>：single=单选题, multi=多选题, judge=判断题, short=简答题, scenario=场景分析题<br>';
+  html += '- <code>role</code>：岗位名称（如 采样员、理化检测员 等）<br>';
+  html += '- <code>answer</code>：多选题用逗号分隔（如 "A,C,D"），判断题填"对"或"错"<br>';
+  html += '- <code>id</code>：如不填将自动生成';
+  html += '</div>';
+
+  html += '<div style="display:flex;gap:10px;flex-wrap:wrap">';
+  html += '<button class="btn btn-accent" onclick="importParsedQuestions()" id="btn-import" style="display:none">确认导入</button>';
+  html += '<button class="btn btn-ghost" onclick="renderUpload()">重新输入</button>';
+  html += '</div>';
+  html += '</div>';
+
+  var el = document.getElementById("upload-content");
+  if (el) el.innerHTML = html;
+}
+
+var _parsedQuestions = [];
+
+function handleQuestionFile() {
+  var fileInput = document.getElementById("upload-json-file");
+  if (!fileInput || !fileInput.files[0]) { showToast("请先选择 JSON 文件", "error"); return; }
+  var file = fileInput.files[0];
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var data = JSON.parse(e.target.result);
+      showUploadPreview(data);
+    } catch(err) {
+      showToast("JSON 解析失败：" + err.message, "error");
+    }
+  };
+  reader.readAsText(file, "UTF-8");
+}
+
+function parsePastedQuestions() {
+  var text = (document.getElementById("upload-json-text")||{}).value;
+  if (text) text = text.trim();
+  if (!text) { showToast("请先粘贴 JSON 文本", "error"); return; }
+  try {
+    var data = JSON.parse(text);
+    showUploadPreview(data);
+  } catch(err) {
+    showToast("JSON 解析失败：" + err.message, "error");
+  }
+}
+
+function showUploadPreview(data) {
+  if (!Array.isArray(data)) { showToast("数据格式错误：应为题目数组", "error"); return; }
+
+  _parsedQuestions = data.map(function(q, i) {
+    return {
+      id: q.id || (Date.now() + i),
+      role: q.role || "未分类",
+      qtype: q.qtype || "single",
+      stem: q.stem || "",
+      options: q.options || [],
+      answer: q.answer || "",
+      score: q.score || 1,
+      analysis: q.analysis || ""
+    };
+  });
+
+  var validCount = _parsedQuestions.filter(function(q) { return q.stem; }).length;
+  var typeMap = {single:"单选题",multi:"多选题",judge:"判断题",short:"简答题",scenario:"场景分析题"};
+
+  var html = '<div class="card" style="border:2px solid var(--accent)">';
+  html += '<div class="card-title">解析结果预览</div>';
+  html += '<div class="stat-row" style="margin-bottom:12px">';
+  html += '<div class="stat-item"><div class="si-num">' + _parsedQuestions.length + '</div><div class="si-label">总题数</div></div>';
+  html += '<div class="stat-item"><div class="si-num">' + validCount + '</div><div class="si-label">有效题目</div></div>';
+  html += '</div>';
+
+  var roleGroups = {};
+  _parsedQuestions.forEach(function(q) {
+    if (!roleGroups[q.role]) roleGroups[q.role] = 0;
+    roleGroups[q.role]++;
+  });
+  html += '<div style="margin-bottom:12px;font-size:13px">';
+  Object.keys(roleGroups).forEach(function(r) {
+    html += '<span style="display:inline-block;margin:2px 6px;padding:4px 10px;border-radius:12px;background:var(--bg)">' + esc(r) + ': <strong>' + roleGroups[r] + '</strong>题</span>';
+  });
+  html += '</div>';
+
+  html += '<div style="overflow-x:auto;max-height:300px;overflow-y:auto"><table class="q-table"><thead><tr><th>序号</th><th>岗位</th><th>题型</th><th>题目</th><th>分值</th></tr></thead><tbody>';
+  _parsedQuestions.slice(0, 50).forEach(function(q, i) {
+    html += '<tr><td>' + (i+1) + '</td>'
+      + '<td><span style="background:#e8f4e8;color:#1a6b1a;font-size:11px;padding:2px 6px;border-radius:3px">' + esc(q.role) + '</span></td>'
+      + '<td>' + (typeMap[q.qtype]||q.qtype) + '</td>'
+      + '<td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(q.stem) + '</td>'
+      + '<td style="text-align:center">' + q.score + '</td></tr>';
+  });
+  if (_parsedQuestions.length > 50) {
+    html += '<tr><td colspan="5" style="text-align:center;color:var(--text-light);padding:8px">... 还有 ' + (_parsedQuestions.length - 50) + ' 道题未显示</td></tr>';
+  }
+  html += '</tbody></table></div>';
+  html += '</div>';
+
+  var el = document.getElementById("upload-preview");
+  if (el) { el.innerHTML = html; el.style.display = "block"; }
+  var btn = document.getElementById("btn-import");
+  if (btn) btn.style.display = "inline-flex";
+}
+
+function importParsedQuestions() {
+  if (_parsedQuestions.length === 0) { showToast("没有可导入的题目", "error"); return; }
+  var valid = _parsedQuestions.filter(function(q) { return q.stem; });
+  if (valid.length === 0) { showToast("没有有效题目可导入", "error"); return; }
+  if (!confirm('确定导入 ' + valid.length + ' 道题目到题库吗？\n导入后将追加到现有题库末尾。')) return;
+
+  var maxId = questions.reduce(function(m, q) { return Math.max(m, q.id || 0); }, 0);
+  valid.forEach(function(q, i) { q.id = maxId + i + 1; questions.push(q); });
+  saveQuestions();
+  showToast('成功导入 ' + valid.length + ' 道题目！题库现有 ' + questions.length + ' 题', 'success');
+  _parsedQuestions = [];
+  showAdminTab('questions');
+  render();
+}
+
+// ===== 岗位科目配置模块 =====
+
+var DEFAULT_EXAM_CONFIG = {"zuigao":{"firstExam":{"duration":90,"subjects":{"科目A":{"single":25,"multi":15,"judge":10},"科目B":{"single":5,"multi":5,"judge":5}}}},"zhiliang":{"firstExam":{"duration":90,"subjects":{"科目A":{"single":10,"multi":5,"judge":5},"科目B":{"single":15,"multi":10,"judge":5},"科目C":{"single":5,"multi":5,"judge":5}}}},"jishufzr":{"firstExam":{"duration":90,"subjects":{"科目A":{"single":5,"multi":5,"judge":2},"科目B":{"single":5,"multi":5,"judge":3},"科目C":{"single":12,"multi":6,"judge":6},"科目D":{"single":8,"multi":4,"judge":4}}}},"shouquanqianziren":{"firstExam":{"duration":90,"subjects":{"科目A":{"single":5,"multi":5,"judge":2},"科目B":{"single":5,"multi":5,"judge":3},"科目C":{"single":8,"multi":4,"judge":4},"科目D":{"single":12,"multi":6,"judge":6}}}}};
+
+var ROLE_CONFIG_KEY = "exam_role_config_v1";
+
+function getRoleConfig() {
+  try {
+    var raw = localStorage.getItem(ROLE_CONFIG_KEY);
+    if (raw) {
+      var cfg = JSON.parse(raw);
+      if (cfg && typeof cfg === "object") return cfg;
+    }
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(DEFAULT_EXAM_CONFIG));
+}
+
+function saveRoleConfig(cfg) {
+  localStorage.setItem(ROLE_CONFIG_KEY, JSON.stringify(cfg));
+  window.EXAM_CONFIG = cfg;
+}
+
+function renderRoles() {
+  var cfg = getRoleConfig();
+  var roleKeys = [
+    {key:"zuigao",name:"最高管理者"},
+    {key:"zhiliang",name:"质量负责人"},
+    {key:"caiyang",name:"采样员"},
+    {key:"lihua",name:"理化检测员"},
+    {key:"weisheng",name:"微生物"},
+    {key:"jishufzr",name:"技术负责人"},
+    {key:"shouquanqianziren",name:"授权签字人"},
+    {key:"neishen",name:"内审员"},
+    {key:"jiandu",name:"监督员"},
+    {key:"shebei",name:"设备员"},
+    {key:"guanli",name:"管理体系文件及法律法规"},
+    {key:"anquan",name:"生物安全"}
+  ];
+
+  var html = '<div class="card"><div class="card-title">岗位科目考试配置</div>';
+  html += '<p class="admin-hint">为每个岗位配置考试时长、科目和各题型题量。修改后请点击「保存配置」。</p>';
+
+  roleKeys.forEach(function(r) {
+    var rcfg = cfg[r.key];
+    var hasConfig = !!rcfg;
+    html += '<div style="margin-bottom:16px;padding:16px;border:1px solid var(--border);border-radius:8px" class="role-config-item">';
+    html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">';
+    html += '<div style="font-weight:700;font-size:14px;color:var(--primary)">' + r.name + '</div>';
+    html += '<label style="font-size:13px;display:flex;align-items:center;gap:6px">考试时长(分钟) <input type="number" id="role-duration-' + r.key + '" value="' + (hasConfig && rcfg.firstExam ? rcfg.firstExam.duration : 90) + '" min="10" max="300" style="width:70px;padding:4px 8px;border:1px solid var(--border);border-radius:4px"></label>';
+    html += '</div>';
+
+    if (hasConfig && rcfg.firstExam && rcfg.firstExam.subjects) {
+      html += '<table class="q-table" style="font-size:13px"><thead><tr><th>科目</th><th>单选题</th><th>多选题</th><th>判断题</th><th>小计</th><th>操作</th></tr></thead><tbody>';
+      var subjects = rcfg.firstExam.subjects;
+      Object.keys(subjects).forEach(function(subj) {
+        var s = subjects[subj];
+        var total = (s.single||0) + (s.multi||0) + (s.judge||0);
+        html += '<tr><td>' + subj + '</td>'
+          + '<td style="text-align:center"><input type="number" id="role-' + r.key + '-' + subj + '-single" value="' + (s.single||0) + '" min="0" style="width:60px;padding:4px;border:1px solid var(--border);border-radius:4px;text-align:center"></td>'
+          + '<td style="text-align:center"><input type="number" id="role-' + r.key + '-' + subj + '-multi" value="' + (s.multi||0) + '" min="0" style="width:60px;padding:4px;border:1px solid var(--border);border-radius:4px;text-align:center"></td>'
+          + '<td style="text-align:center"><input type="number" id="role-' + r.key + '-' + subj + '-judge" value="' + (s.judge||0) + '" min="0" style="width:60px;padding:4px;border:1px solid var(--border);border-radius:4px;text-align:center"></td>'
+          + '<td style="text-align:center;font-weight:600">' + total + '</td>'
+          + '<td><button class="btn-sm btn-sm-danger" onclick="removeRoleSubject(\'' + r.key + '\',\'' + subj + '\')">删除科目</button></td>'
+          + '</tr>';
+      });
+      html += '</tbody></table>';
+    } else {
+      html += '<p style="color:var(--text-light);font-size:13px;padding:8px 0">该岗位暂未配置考试科目</p>';
+    }
+
+    html += '<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">';
+    html += '<button class="btn-sm btn-sm-primary" onclick="addRoleSubject(\'' + r.key + '\')">+ 添加科目</button>';
+    html += '</div>';
+    html += '</div>';
+  });
+
+  html += '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:16px">';
+  html += '<button class="btn btn-accent" onclick="saveAllRoleConfig()">保存配置</button>';
+  html += '<button class="btn btn-ghost" onclick="resetRoleConfig()">恢复默认配置</button>';
+  html += '</div>';
+  html += '</div>';
+
+  var el = document.getElementById("roles-content");
+  if (el) el.innerHTML = html;
+}
+
+function addRoleSubject(roleKey) {
+  var cfg = getRoleConfig();
+  if (!cfg[roleKey]) cfg[roleKey] = {firstExam:{duration:90,subjects:{}}};
+  if (!cfg[roleKey].firstExam) cfg[roleKey].firstExam = {duration:90,subjects:{}};
+  if (!cfg[roleKey].firstExam.subjects) cfg[roleKey].firstExam.subjects = {};
+  var existing = Object.keys(cfg[roleKey].firstExam.subjects);
+  var subjName = "科目" + String.fromCharCode(65 + existing.length);
+  var n = 1;
+  while (cfg[roleKey].firstExam.subjects[subjName]) {
+    subjName = "科目" + String.fromCharCode(65 + existing.length + n);
+    n++;
+  }
+  cfg[roleKey].firstExam.subjects[subjName] = {single:5,multi:5,judge:5};
+  saveRoleConfig(cfg);
+  renderRoles();
+  showToast('已添加 ' + subjName, 'success');
+}
+
+function removeRoleSubject(roleKey, subjName) {
+  if (!confirm('确定删除 ' + subjName + ' 吗？')) return;
+  var cfg = getRoleConfig();
+  if (cfg[roleKey] && cfg[roleKey].firstExam && cfg[roleKey].firstExam.subjects) {
+    delete cfg[roleKey].firstExam.subjects[subjName];
+    saveRoleConfig(cfg);
+    renderRoles();
+    showToast(subjName + ' 已删除', 'info');
+  }
+}
+
+function saveAllRoleConfig() {
+  var roleKeys = ["zuigao","zhiliang","caiyang","lihua","weisheng","jishufzr","shouquanqianziren","neishen","jiandu","shebei","guanli","anquan"];
+  var cfg = getRoleConfig();
+  roleKeys.forEach(function(rk) {
+    var durEl = document.getElementById("role-duration-" + rk);
+    if (durEl) {
+      var duration = parseInt(durEl.value) || 90;
+      if (!cfg[rk]) cfg[rk] = {firstExam:{duration:duration,subjects:{}}};
+      if (!cfg[rk].firstExam) cfg[rk].firstExam = {duration:duration,subjects:{}};
+      cfg[rk].firstExam.duration = duration;
+      if (cfg[rk].firstExam.subjects) {
+        Object.keys(cfg[rk].firstExam.subjects).forEach(function(subj) {
+          var sEl = document.getElementById("role-" + rk + "-" + subj + "-single");
+          var mEl = document.getElementById("role-" + rk + "-" + subj + "-multi");
+          var jEl = document.getElementById("role-" + rk + "-" + subj + "-judge");
+          if (sEl) cfg[rk].firstExam.subjects[subj].single = parseInt(sEl.value) || 0;
+          if (mEl) cfg[rk].firstExam.subjects[subj].multi = parseInt(mEl.value) || 0;
+          if (jEl) cfg[rk].firstExam.subjects[subj].judge = parseInt(jEl.value) || 0;
+        });
+      }
+    }
+  });
+  saveRoleConfig(cfg);
+  showToast('岗位配置已保存', 'success');
+}
+
+function resetRoleConfig() {
+  if (!confirm('确定恢复所有岗位配置为默认值吗？这将覆盖当前配置。')) return;
+  localStorage.removeItem(ROLE_CONFIG_KEY);
+  window.EXAM_CONFIG = JSON.parse(JSON.stringify(DEFAULT_EXAM_CONFIG));
+  renderRoles();
+  showToast('已恢复默认配置', 'info');
+}
+
 
 function changeAdminPin() {
 
@@ -4351,7 +4833,13 @@ window.enterModule = function(modId) {
 window.ROLE_KEYS = ["zuigao","zhiliang","jishufzr","shouquanqianziren"];
 
 window.ROLE_NAMES = {"zuigao":"最高管理者","zhiliang":"质量负责人","jishufzr":"技术负责人","shouquanqianziren":"授权签字人"};
-window.EXAM_CONFIG = {"zuigao": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 25, "multi": 15, "judge": 10}, "科目B": {"single": 5, "multi": 5, "judge": 5}}}}, "zhiliang": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 10, "multi": 5, "judge": 5}, "科目B": {"single": 15, "multi": 10, "judge": 5}, "科目C": {"single": 5, "multi": 5, "judge": 5}}}}, "jishufzr": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 5, "multi": 5, "judge": 2}, "科目B": {"single": 5, "multi": 5, "judge": 3}, "科目C": {"single": 12, "multi": 6, "judge": 6}, "科目D": {"single": 8, "multi": 4, "judge": 4}}}}, "shouquanqianziren": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 5, "multi": 5, "judge": 2}, "科目B": {"single": 5, "multi": 5, "judge": 3}, "科目C": {"single": 8, "multi": 4, "judge": 4}, "科目D": {"single": 12, "multi": 6, "judge": 6}}}}};
+window.EXAM_CONFIG = (function() {
+  try {
+    var saved = localStorage.getItem("exam_role_config_v1");
+    if (saved) { var p = JSON.parse(saved); if (p && typeof p === "object") return p; }
+  } catch(e) {}
+  return {"zuigao": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 25, "multi": 15, "judge": 10}, "科目B": {"single": 5, "multi": 5, "judge": 5}}}}, "zhiliang": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 10, "multi": 5, "judge": 5}, "科目B": {"single": 15, "multi": 10, "judge": 5}, "科目C": {"single": 5, "multi": 5, "judge": 5}}}}, "jishufzr": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 5, "multi": 5, "judge": 2}, "科目B": {"single": 5, "multi": 5, "judge": 3}, "科目C": {"single": 12, "multi": 6, "judge": 6}, "科目D": {"single": 8, "multi": 4, "judge": 4}}}}, "shouquanqianziren": {"firstExam": {"duration": 90, "subjects": {"科目A": {"single": 5, "multi": 5, "judge": 2}, "科目B": {"single": 5, "multi": 5, "judge": 3}, "科目C": {"single": 8, "multi": 4, "judge": 4}, "科目D": {"single": 12, "multi": 6, "judge": 6}}}}};
+})();
 window.CONCURRENT_MAP = {"zuigao": "", "zhiliang": "shouquanqianziren", "jishufzr": "", "shouquanqianziren": "jishufzr"};
 
 window.switchRoleTab = function(rid) {
